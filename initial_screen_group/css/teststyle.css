@@ -1,0 +1,37 @@
+body {
+    /* PC画面全体に表示される背景色と配置の設定 */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh; /* 画面の高さ100% */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; /* PC画面の背景色（ここでは例として薄い灰色に） */
+}
+
+/* スマホの画面サイズを再現するコンテナ */
+.phone-screen {
+    /* 固定サイズに設定 */
+    width: 375px;  /* 一般的なスマホの横幅（iPhone Xなど） */
+    height: 667px; /* 一般的なスマホの縦幅 */
+    
+    /* 元のアプリの背景色と中央配置の設定 */
+    background-color: #FF6E6E;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* 見やすくするために枠線や影を追加 */
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+
+      /* 透明度の変化を滑らかにする */
+    transition: opacity 0.5s ease-in-out; 
+}
+
+.logo-image {
+    max-width: 50%; 
+    height: auto;
+}

@@ -1,0 +1,113 @@
+body {
+    /* PC画面全体に表示される背景色と配置の設定 */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; 
+}
+
+/* スマホの画面サイズを再現するコンテナ */
+.phone-screen {
+    /* 固定サイズに設定 */
+    width: 375px; 
+    height: 667px;
+    
+    /* アプリの背景色 */
+    background-color: #FF6E6E;
+    
+    /* 縦に要素を並べるためのFlexbox設定 */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    justify-content: flex-start;
+    
+    /* 画面の見た目を整えるための設定 */
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    padding: 20px; /* 全体の余白 */
+    box-sizing: border-box; /* パディングを含めてサイズを計算 */
+}
+
+/* ロゴエリア */
+.logo-area {
+    padding-top: 5px;
+    text-align: center;
+    padding-bottom: 0;
+}
+
+/* ロゴ画像のサイズを50%に設定 */
+.onboarding-logo {
+    max-width: 70%; 
+    height: auto;
+}
+
+/* テキストエリア */
+.text-area {
+    text-align: center;
+    color: black;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: -10px; 
+}
+
+/* 画像エリア */
+.image-area {
+    flex-grow: 1; /* 残りのスペースを埋めて画像を中央に配置 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 0;
+    margin-top: -30px; 
+}
+
+/* 画像のサイズ調整 */
+.main-image {
+    width: 112%;
+    height: auto;
+}
+
+/* ページングドット */
+.dots-area {
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    margin: 0 5px;
+    background-color: #ccc;
+    border-radius: 50%;
+    display: inline-block;
+    margin-top: -30px; 
+}
+
+.dot.active {
+    background-color: #FF0000;
+}
+
+/* ボタンエリア */
+.button-area {
+    width: 100%;
+}
+
+.start-button {
+    width: 100%;
+    padding: 13px;
+    background-color: #FF0000;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #FF6E6E;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
