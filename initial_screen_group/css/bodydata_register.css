@@ -1,0 +1,144 @@
+
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; 
+}
+
+.phone-screen {
+    width: 375px; 
+    height: 667px;
+    background-color: #FF6E6E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    padding: 20px; 
+    box-sizing: border-box; 
+    overflow-y: auto; 
+}
+
+.logo-area {
+    padding-top: 5px;
+    text-align: center;
+    padding-bottom: 0;
+}
+
+.onboarding-logo {
+    max-width: 70%; 
+    height: auto;
+}
+
+.progress-bar-container {
+    width: 100%; 
+    height: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    margin-bottom: 20px; 
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 20%; 
+    background-color: #FF0000; 
+    border-radius: 5px;
+}
+
+.text-area {
+    width: 100%;
+    text-align: left;
+    color: black;
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px; 
+}
+
+
+.full-width-form {
+    width: 100%;
+    text-align: left;
+}
+
+.required {
+    color: #FF0000; 
+    font-size: 0.6em; 
+    margin-left: 5px;
+    display: inline-block; 
+    position: relative; 
+    top: -2px; 
+}
+
+.full-width-form label {
+    display: block;
+    font-weight: bold; 
+    color: black;
+    font-size: 0.9em;
+    margin-top: 30px;
+    margin-bottom: 0; 
+    
+}
+
+.full-width-form label:first-of-type {
+    margin-top: 0;
+}
+
+input[type="number"],
+input[type="date"],
+input[type="text"] {
+    width: 100%;
+    padding: 10px; 
+    background-color: rgb(214, 214, 214); 
+    border: 1px solid #FF0000; 
+    border-radius: 10px; 
+    color: black; 
+    font-size: 0.95em;
+    box-sizing: border-box;
+    margin-top: 0px; 
+}
+
+::placeholder {
+    color: #787878; 
+}
+
+.full-width-form fieldset {
+    border: none;
+    padding: 0; 
+    margin: 0;
+    margin-top: 25px; 
+    font-weight: bold; 
+}
+
+.gender-options label {
+    font-weight: bold;
+    display: inline-block; 
+    margin-top: 5px; 
+    margin-right: 20px; 
+    margin-bottom: 0; 
+}
+
+.button-area {
+    width: 100%;
+}
+
+.next-button {
+    width: 100%;
+    padding: 13px;
+    background-color: #FF0000;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #FF6E6E; 
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 30px; 
+}
