@@ -43,7 +43,7 @@ function updateContent() {
     if (currentIndex < 0) {
         currentIndex = 0;
     } else if (currentIndex >= contents.length) {
-        window.location.href = 'S3ログイン画面.html';
+        window.location.href = 'bodydata_register.html';
         return;
     }
 

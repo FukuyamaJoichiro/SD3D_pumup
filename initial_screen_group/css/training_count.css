@@ -1,0 +1,213 @@
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f0f0f0; 
+}
+.phone-screen {
+    width: 375px; 
+    height: 667px;
+    background-color: #FF6E6E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    box-sizing: border-box; 
+    overflow-y: auto;
+}
+.logo-area {
+    padding-top: 5px;
+    text-align: center;
+    padding-bottom: 0;
+}
+
+.onboarding-logo {
+    max-width: 70%; 
+    height: auto;
+}
+.progress-bar-container {
+    width: 100%; 
+    height: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    margin-bottom: 20px; 
+    overflow: hidden;
+}
+.progress-fill {
+    height: 100%;
+    width: 20%; 
+    background-color: #FF0000; 
+    border-radius: 5px;
+}
+.header-content {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px; 
+}
+.back-button {
+    font-size: 30px;
+    font-weight: bold;
+    color: black;
+    text-decoration: none;
+    margin-right: 15px;
+    position: relative;
+}
+.progress-bar-container {
+    flex-grow: 1; 
+    margin-bottom: 0;
+}
+.question-area {
+    width: 100%;
+    text-align: left;
+    color: black;
+    margin-bottom: 25px;
+}
+
+.question-area h1 {
+    font-size: 18px;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.question-area .sub-text {
+    font-size: 13px;
+    color: #333;
+    margin-top: 5px;
+}
+
+.option-container.count-options {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+}
+.recommend-badge {
+    background-color: #FF0000;
+    color: white;
+    font-size: 0.9em;
+    font-weight: bold;
+    padding: 3px 8px;
+    border-radius: 13px;
+    position: relative;
+    transform: translateX(-80px);
+    white-space: nowrap;
+    
+}
+
+.recommend-badge::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    border-width: 10px;
+    border-style: solid;
+    border-color: #FF0000 transparent transparent transparent;
+    transform: translateX(-50%); 
+}
+.slider-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+}
+.options-row {
+    width: 100%; 
+    display: flex;
+    justify-content: center;
+    position: relative;
+    padding: 10px 0;
+}
+.dot-wrapper {
+    width: 85%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+}
+.options-row::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 17px; 
+    right: 17px;
+    height: 4px;
+    background-color: #FFFFFF;
+    transform: translateY(-50%);
+    z-index: 1;
+}
+.choice-label {
+    position: relative;
+    z-index: 2; 
+    cursor: pointer;
+    background-color: #FF6E6E; 
+    padding: 0 5px;
+}
+
+.radio-dot {
+    display: none;
+}
+.dot-visual {
+    display: block;
+    width: 30px;
+    height: 30px; 
+    border-radius: 50%;
+    background-color: #dfdfdf; 
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.2s;
+}
+.choice-label input:checked + .dot-visual {
+    background-color: #FF0000;
+    transform: scale(1.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+}
+.number-labels {
+    width: 95%; 
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.number-labels span {
+    font-size: 1.1em;
+    color: #dfdfdf;
+    font-weight: bold;
+    text-align: center;
+    width: 30px;
+}
+.custom-goal-label {
+    display: block;
+    width: 100%;
+    text-align: left;
+    color: black;
+    font-size: 0.9em;
+    font-weight: bold;
+    margin-top: 30px;
+    margin-bottom: 5px;
+}
+
+
+.next-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #FF0000;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #FF6E6E;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 40px; 
+}

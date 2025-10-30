@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head> <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>目標設定</title>
+<link rel="stylesheet" href="../css/goal_setting.css">
+    </head>
+<body>
+<div class="phone-screen">
+<div class="logo-area">
+<img src="../images/Gorifit.ロゴ.png" alt="GoriFit Logo" class="onboarding-logo">
+</div>
+
+ <div class="header-content">
+ <a href="training_experience.html" class="back-button">&lt;</a>
+<div class="progress-bar-container" style="width: 100%;">
+ <div class="progress-fill" style="width: 60%;"></div>
+ </div>
+ </div>
+
+<div class="question-area">
+ <h1>どんな目標を達成したいですか？</h1>
+<p class="sub-text">目標はいつでも自由に変更できます</p>
+</div>
+
+<form id="goalForm" class="goal-form" action="../php/goal_setting.php" method="post">
+    <input type="hidden" name="selected_goal" id="selectedGoalInput" value="">
+ 
+<div class="option-container goal-options">
+<button type="button" class="goal-button goal-1" data-goal="1">
+<span class="goal-icon icon-body"></span> 
+<div class="text-content">
+<h2>理想のマッスルボディへ</h2>
+<p>気合で頑張るしかない。</p>
+</div>
+</button>
+
+ <button type="button" class="goal-button goal-2" data-goal="2">
+<span class="goal-icon icon-strength"></span> 
+ <div class="text-content">
+<h2>ストレングス (筋力) をつける</h2>
+<p>誰よりも強い力を。</p>
+ </div>
+</button>
+
+ <button type="button" class="goal-button goal-3" data-goal="3">
+<span class="goal-icon icon-ability"></span> 
+<div class="text-content">
+ <h2>身体能力を向上させる</h2>
+<p>様々な運動をうまくこなせるよう。</p>
+</div>
+</button>
+
+ <button type="button" class="goal-button goal-4" data-goal="4">
+<span class="goal-icon icon-stamina"></span> 
+<div class="text-content">
+<h2>体力をつける</h2>
+ <p>疲れないように体力を。</p>
+</div>
+</button>
+</div>
+
+<button type="submit" class="next-button">次へ</button>
+
+ </form>
+</div>
+<script src="../js/goal_setting.js"></script>
+</body>
+</html>
