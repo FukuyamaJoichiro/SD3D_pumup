@@ -1,0 +1,226 @@
+/* --- 全体の設定 --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f4f8;
+    margin: 0;
+    padding: 0;
+}
+
+.app-container {
+    max-width: 420px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    min-height: 100vh;
+    position: relative;
+    padding-bottom: 80px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+/* --- ヘッダー --- */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+}
+
+.btn-upgrade {
+    font-size: 0.8rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    background-color: #fff;
+    cursor: pointer;
+    margin-right: 1rem;
+}
+
+.icon-settings {
+    font-size: 1.5rem;
+    color: #888;
+}
+
+/* --- メインコンテンツ --- */
+.app-content {
+    padding: 1rem 1.5rem;
+}
+
+.card {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.07);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.card-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.icon-menu {
+    font-size: 1.2rem;
+    color: #aaa;
+    cursor: pointer;
+}
+
+/* --- 1. 目標カード --- */
+.goal-content {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.goal-icon {
+    width: 50px;
+    height: 50px;
+    background-color: #e0d6ff;
+    border-radius: 12px;
+    margin-right: 1rem;
+}
+
+.goal-text h3 {
+    font-size: 1.1rem;
+    margin: 0 0 0.25rem 0;
+}
+
+.goal-text p {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar-inner {
+    height: 100%;
+    background-color: #a78bfa;
+    border-radius: 10px;
+}
+
+.progress-text {
+    text-align: right;
+    font-size: 0.8rem;
+    color: #888;
+    margin-bottom: 1.5rem;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: white;
+    background-color: #f87171;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+}
+
+/* --- 2. おすすめルーティン --- */
+.icon-close {
+    font-size: 1.2rem;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.routine-scroll-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 1rem;
+    padding-bottom: 10px;
+}
+
+/* スクロールバー非表示 */
+.routine-scroll-container::-webkit-scrollbar {
+    display: none;
+}
+.routine-scroll-container {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.routine-item {
+    flex-shrink: 0;
+    width: 220px;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.routine-item img {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    margin-right: 1rem;
+    object-fit: cover;
+    background-color: #eee;
+}
+
+.routine-item-text h4 {
+    font-size: 0.9rem;
+    margin: 0 0 0.25rem 0
+}
+
+    /* --- 下部ナビゲーション --- */
+        .app-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 420px; /* コンテナ幅と合わせる */
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            background-color: #ffffff;
+            border-top: 1px solid #f0f0f0;
+            padding: 0.5rem 0;
+            padding-bottom: env(safe-area-inset-bottom); /* iPhoneのノッチ対応 */
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #999;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: #f87171; /* アクティブ時の色 */
+        }
+
+        .nav-item-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            /* */
+        }

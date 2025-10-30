@@ -201,7 +201,7 @@ $user = [
             <h3>ニックネーム変更</h3>
 
             <form method="POST" action="nickname_setting.php">
-                <input type="text" name="user_name" placeholder="ニックネームを入力してください" value="<?= htmlspecialchars($user['nickname']) ?>">
+                <input type="text" name="nickname" placeholder="ニックネームを入力してください" value="<?= htmlspecialchars($user['nickname']) ?>">
                 <div class="modal-buttons">
                     <button type="button" class="cancel-btn" onclick="history.back()">キャンセル</button>
                     <button type="submit" class="confirm-btn">確認</button>
@@ -213,5 +213,4 @@ $user = [
 </div>
 </body>
 </html>
-
 

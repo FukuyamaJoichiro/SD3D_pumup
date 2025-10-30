@@ -1,0 +1,186 @@
+/* --- 全体設定 --- */
+body {
+  margin: 0;
+  font-family: "Helvetica Neue", sans-serif;
+  background-color: #fafafa;
+}
+
+.container {
+  max-width: 420px;
+  margin: 0 auto;
+  background-color: #fff;
+  min-height: 100vh;
+  border: 1px solid #e6e6e6;
+}
+
+/* --- プロフィール部分 --- */
+.profile-section {
+  text-align: center;
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-icon img {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background-color: #f5f5f5;
+}
+
+.profile-register {
+  color: #ff6e6e;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.sub-text {
+  color: #888;
+  font-size: 12px;
+}
+
+.upgrade-btn {
+  margin-top: 8px;
+  padding: 6px 14px;
+  font-size: 12px;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* --- MYボディデータ --- */
+.body-data {
+  padding: 15px;
+}
+
+.body-data h2 {
+  margin-top: 0;
+}
+
+.body-card-container {
+  display: flex;
+  justify-content: space-between;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.body-card {
+  text-align: center;
+  flex: 1;
+}
+
+.icon {
+  font-size: 22px;
+}
+
+.value {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.label {
+  color: #888;
+  font-size: 12px;
+}
+
+/* --- トレーニングレポート --- */
+.training-report {
+  padding: 15px;
+  border-top: 1px solid #eee;
+}
+
+.report-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pro-badge {
+  background-color: #ccc;
+  color: #fff;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.report-content {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 15px;
+}
+
+.report-item {
+  text-align: center;
+  font-size: 13px;
+  color: #555;
+}
+
+/* --- 下部ナビゲーション --- */
+.app-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-around;
+  background-color: #ffffff;
+  border-top: 1px solid #f0f0f0;
+  padding: 0.5rem 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.7rem;
+  color: #999;
+  text-decoration: none;
+}
+
+.nav-item.active {
+  color: #f87171;
+}
+
+.nav-item-icon {
+  font-size: 1.5rem;
+  margin-bottom: 0.25rem;
+}
+
+    /* --- 下部ナビゲーション --- */
+        .app-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 420px; /* コンテナ幅と合わせる */
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            background-color: #ffffff;
+            border-top: 1px solid #f0f0f0;
+            padding: 0.5rem 0;
+            padding-bottom: env(safe-area-inset-bottom); /* iPhoneのノッチ対応 */
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #999;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: #f87171; /* アクティブ時の色 */
+        }
+
+        .nav-item-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            /* */
+        }
