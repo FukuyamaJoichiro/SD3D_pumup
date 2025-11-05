@@ -11,17 +11,12 @@ require_once("../../db_connect.php");
 function login($email, $password) {
     global $pdo;
 
-    // --- モード設定 ---
-    // false = 開発テスト用（平文パスワード）
-    // true  = 本番用（ハッシュ化されたパスワード）
-    $USE_HASH = false;
+    $USE_HASH = false; // 開発中はfalse（本番ではtrueに）
 
     try {
         if ($USE_HASH) {
-            // ✅ 本番用（ハッシュ化パスワード対応）
             $stmt = $pdo->prepare("SELECT user_id, password_hash FROM users WHERE email = :email");
         } else {
-            // 🧪 開発用（平文パスワード対応）
             $stmt = $pdo->prepare("SELECT user_id, password FROM users WHERE email = :email");
         }
 
@@ -34,9 +29,7 @@ function login($email, $password) {
             return false;
         }
 
-        // --- パスワードチェック ---
         if ($USE_HASH) {
-            // ハッシュを使う場合
             if (password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['user_id'];
                 return true;
@@ -45,7 +38,6 @@ function login($email, $password) {
                 return false;
             }
         } else {
-            // 平文を使う場合
             if ($user['password'] === $password) {
                 $_SESSION['user_id'] = $user['user_id'];
                 return true;
@@ -71,6 +63,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } else {
         echo "<p>ログインに失敗しました。</p>";
+    }
+}
+
+/**
+ * ログイン済みチェック
+ * @param string $redirect_path ログインしていない場合に飛ばす先
+ */
+function require_login($redirect_path) {
+    if (!isset($_SESSION['user_id'])) {
+        header("Location: $redirect_path");
+        exit();
     }
 }
 ?>
