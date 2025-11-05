@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once("../../db_connect.php");
+require_once("db_connect.php");
 
 /**
  * ログイン処理
@@ -11,12 +12,17 @@ require_once("../../db_connect.php");
 function login($email, $password) {
     global $pdo;
 
-    $USE_HASH = false; // 開発中はfalse（本番ではtrueに）
+    // --- モード設定 ---
+    // false = 開発テスト用（平文パスワード）
+    // true  = 本番用（ハッシュ化されたパスワード）
+    $USE_HASH = false;
 
     try {
         if ($USE_HASH) {
+            // ✅ 本番用（ハッシュ化パスワード対応）
             $stmt = $pdo->prepare("SELECT user_id, password_hash FROM users WHERE email = :email");
         } else {
+            // 🧪 開発用（平文パスワード対応）
             $stmt = $pdo->prepare("SELECT user_id, password FROM users WHERE email = :email");
         }
 
@@ -29,7 +35,9 @@ function login($email, $password) {
             return false;
         }
 
+        // --- パスワードチェック ---
         if ($USE_HASH) {
+            // ハッシュを使う場合
             if (password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['user_id'];
                 return true;
@@ -38,6 +46,7 @@ function login($email, $password) {
                 return false;
             }
         } else {
+            // 平文を使う場合
             if ($user['password'] === $password) {
                 $_SESSION['user_id'] = $user['user_id'];
                 return true;
@@ -52,6 +61,19 @@ function login($email, $password) {
         return false;
     }
 }
+/**
+ * ログインが必要なページで、ログイン状態をチェックし、未ログインならリダイレクトする
+ * @param string $login_url ログインページへのパス（未ログイン時にリダイレクトされる場所）
+ */
+// ★ 修正 2: require_login関数を追加
+function require_login($login_url) {
+    if (!isset($_SESSION['user_id'])) {
+        // 未ログインの場合、現在のURLをセッションに保存してからログインページへ
+        $_SESSION['redirect_to'] = $_SERVER['REQUEST_URI'];
+        header('Location: ' . $login_url);
+        exit;
+    }
+}
 
 // --- ログイン試行（例）---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -63,17 +85,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } else {
         echo "<p>ログインに失敗しました。</p>";
-    }
-}
-
-/**
- * ログイン済みチェック
- * @param string $redirect_path ログインしていない場合に飛ばす先
- */
-function require_login($redirect_path) {
-    if (!isset($_SESSION['user_id'])) {
-        header("Location: $redirect_path");
-        exit();
     }
 }
 ?>
