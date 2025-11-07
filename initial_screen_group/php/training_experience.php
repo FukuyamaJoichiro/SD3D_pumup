@@ -1,35 +1,26 @@
 <?php
-session_start(); // セッション開始
-require_once '../../db_connect.php'; 
+// セッションを開始
+session_start();
 
-$user_id = $_SESSION['user_id'] ?? null; 
-$experience_level = $_POST['experience_level'] ?? null; // HTML側で name="experience_level" の隠しフィールドが必要です
-
-if (!$user_id) {
-    exit('ユーザー情報が見つかりません。');
-}
-
-if (empty($experience_level)) {
-    // 選択されていない場合のエラー処理
-    exit('経験レベルが選択されていません。');
-}
-
-// usersテーブルの goal カラムを更新
-// ここでは level を goal に格納すると仮定します
-$sql = "UPDATE users SET goal = :level WHERE user_id = :user_id";
-
-try {
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([
-        ':level' => $experience_level, 
-        ':user_id' => $user_id
-    ]);
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
-    // 成功したら次の画面へリダイレクト
-    header('Location: ../html/goal_setting.html');
-    exit();
-
-} catch (PDOException $e) {
-    exit('経験レベル登録中にエラーが発生しました: ' . $e->getMessage());
+    // 変更点: $_POST['level'] ではなく $_POST['experience_level'] をチェックする
+    if (isset($_POST['experience_level'])) {
+        $selected_level = $_POST['experience_level'];
+        
+        // セッション変数に保持（キー名はお好みで。ここでは training_level を維持）
+        $_SESSION['training_level'] = $selected_level; 
+        
+        // 次の画面（goal_setting.html）にリダイレクト
+        header('Location: ../html/goal_setting.html'); 
+        exit;
+        
+    } else {
+        // エラーメッセージの変更（デバッグ用）
+        echo "エラー: トレーニングレベルが送信されていません。";
+    }
+} else {
+    // POST以外のリクエスト時の処理
+    // ...
 }
 ?>

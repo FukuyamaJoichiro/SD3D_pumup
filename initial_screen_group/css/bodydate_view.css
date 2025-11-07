@@ -1,3 +1,6 @@
+/* ---------------------------------------------------- */
+/*  1. 全体の構造と画面設定  */
+/* ---------------------------------------------------- */
 body {
     margin: 0;
     padding: 0;
@@ -12,7 +15,7 @@ body {
 .phone-screen {
     width: 375px; 
     height: 667px;
-    background-color: #FF6E6E;
+    background-color: #FF6E6E; /* 全体の背景色（ピンク）*/
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -25,6 +28,7 @@ body {
     overflow-y: auto; 
 }
 
+/* ヘッダー・プログレスバー */
 .logo-area {
     padding-top: 5px;
     text-align: center;
@@ -36,35 +40,11 @@ body {
     height: auto;
 }
 
-.progress-bar-container {
-    width: 100%; 
-    height: 10px;
-    background-color: #ffffff;
-    border-radius: 5px;
-    margin-bottom: 20px; 
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    width: 20%; 
-    background-color: #FF0000; 
-    border-radius: 5px;
-}
-.text-area {
-    width: 100%;
-    text-align: left;
-    color: black;
-    font-size: 8px;
-    letter-spacing: 0.5px;
-    margin-bottom: 15px; 
-}
-
 .header-content {
     display: flex;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
 }
 
 .back-button {
@@ -78,12 +58,20 @@ body {
 
 .progress-bar-container {
     flex-grow: 1; 
+    height: 10px;
+    background-color: #ffffff;
+    border-radius: 5px;
+    overflow: hidden;
     margin-bottom: 0; 
 }
-.full-width-form {
-    width: 100%;
-    text-align: left;
+
+.progress-fill {
+    height: 100%;
+    background-color: #FF0000; 
+    border-radius: 5px;
 }
+
+/* 質問エリア */
 .question-area {
     width: 100%; 
     text-align: left; 
@@ -92,6 +80,7 @@ body {
     padding: 0 10px; 
     box-sizing: border-box;
 }
+
 .question-area h1 {
     font-size: 20px; 
     font-weight: bold; 
@@ -99,16 +88,21 @@ body {
     margin: 0; 
     padding: 0; 
 }
+
 .question-area .sub-header-text {
     font-size: 0.85rem; 
     color: #020027; 
     margin-top: 5px; 
     margin-bottom: 0;
 }
-.header-content {
-    margin-bottom: 5px; 
+
+/* フォームと選択内容表示エリア */
+.goal-form {
+    width: 100%;
+    text-align: left;
 }
 
+/* 必須マーク */
 .required {
     color: #FF0000; 
     font-size: 0.6em; 
@@ -118,65 +112,37 @@ body {
     top: -2px;
 }
 
-.goal-form label {
+/* ラベル (体重、身長など) */
+.goal-form label, .selection-header {
     display: block; 
     font-weight: bold; 
     color: black;
-    font-size: 0.9em;
-    margin-top: 20px;
-    
+    font-size: 16px; /* .selection-headerと統一 */
+    margin-top: 25px; /* マージンを調整 */
+    margin-bottom: 5px;
+    text-align: left;
+    width: 100%;
 }
 
-input[type="number"],
-input[type="date"],
-input[type="text"] {
+/* 確認画面の入力値表示 (体重、身長など) */
+.display-value {
     width: 100%;
     padding: 10px; 
-    background-color: rgb(214, 214, 214); 
-    border: 1px solid #FF0000; 
+    background-color: rgb(214, 214, 214); /* グレーの背景 */
+    border: 1px solid #FF0000; /* 赤い枠線 */
     border-radius: 10px; 
     color: black; 
     font-size: 0.95em;
     box-sizing: border-box;
-}
-
-::placeholder {
-    color: #787878; 
-}
-
-.goal-form fieldset {
-    padding: 0; 
-    margin: 0;
-    margin-top: 25px;
-    font-weight: bold; 
-}
-#goalDetailForm fieldset {
-    border: none; 
-    padding: 0; 
-    margin: 0;
-    margin-top: 40px; 
-    font-weight: bold; 
-}
-
-.full-width-form fieldset {
-     border: none;  
-    padding: 0; 
-    margin: 0;
-    margin-top: 25px;
-    font-weight: bold; 
-}
-
-.gender-options label {
-    font-weight: bold;
-    display: inline-block; 
     margin-top: 5px; 
-    margin-right: 20px; 
-    margin-bottom: 0; 
+    margin-bottom: 20px; 
+    line-height: 1.2;
 }
 
-.button-area {
-    width: 100%;
-}
+
+/* ---------------------------------------------------- */
+/*  2. レベル表示 (1枚目の画像のデザインを反映)  */
+/* ---------------------------------------------------- */
 
 .option-container {
     width: 100%;
@@ -186,241 +152,114 @@ input[type="text"] {
     margin-bottom: 5px; 
 }
 
-.level-button {
-    margin-top: -15px;
+.level-button-display {
     width: 100%;
     padding: 10px;
-    border: none;
     border-radius: 10px;
-    background-color: #e0e0e0; 
-    color: black;
-    font-size: 14px;
-    text-align: left;
-    cursor: pointer;
+    /* ★★★ 1枚目の画像のデザインの変更点 ★★★ */
+    background-color: rgb(240, 240, 240); /* 薄いグレーの背景 */
+    border: 3px solid #FF0000; /* 赤い枠線 */
+    /* ★★★ ------------------------------ ★★★ */
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s;
     display: flex;
     align-items: center;
+    margin-top: 5px;
 }
 
-.level-button.selected {
-    border: 3px solid #FF0000; 
-    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
-}
-
-.level-badge {
+/* バッジ部分 (Lv. の文字が入っているが、画像を再現するため四角の背景として利用) */
+.level-button-display .level-badge {
+    /* ★★★ 1枚目の画像のデザインの変更点 ★★★ */
+    width: 50px; /* 四角の幅を調整 */
+    height: 50px; /* 四角の高さを調整 */
+    border-radius: 8px; /* 角丸を調整 */
+    padding: 0 5px;
+    border-radius: 8px;
+    margin-right: 15px; 
+    min-width: 50px;
+    /* Lv. の文字自体を非表示（四角い背景として使うため） */
+    color: white; 
+    background-color: #FFA500;
+    text-align: center;
     font-weight: bold;
     font-size: 1.1em;
-    padding: 5px 10px;
-    border-radius: 5px;
-    margin-right: 15px;
-    min-width: 60px;
-    text-align: center;
-}
-
-.level-1 .level-badge {
-    background-color: #FFA500; 
-    color: white;
-}
-.option-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    margin-bottom: 5px; 
-}
-
-.text-content {
-    flex-grow: 1;
-}
-
-.text-content h2 {
-    font-size: 1.0em; 
-    font-weight: bold;
-    margin: 0;
-    line-height: 1.2;
-}
-.text-content p {
-    font-size: 0.7em; 
-    color: #666;
-    margin: 3px 0 0 0;
-    line-height: 1.2;
-}
-
-.goal-options-wrapper{
-    margin-top: 35px;
-}
-
-.goal-button {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    background-color: #e0e0e0; 
-    color: black;
-    text-align: left;
-    cursor: pointer;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s;
-    display: flex;
-    align-items: center; 
-}
-
-.goal-icon {
     display: flex;
     justify-content: center;
     align-items: center;
-    width: 45px; 
-    height: 45px;
-    margin-right: 15px;
-    border-radius: 8px;
-
- background-size: 100%; 
- background-repeat: no-repeat;
- background-position: center;
- 
- font-size: 24px; 
- color: white; 
-}
-
-.icon-body {
-    background-color: #A06AD7; 
-    background-image: url('../images/素材1.png'); 
-    background-size: 70%;
-}
-
-.option-container.count-options {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 30px; 
-    margin-top: 30px;
-}
-
-.recommend-badge {
-    background-color: #FF0000;
-    color: white;
-    font-size: 0.9em;
+    /* ★★★ ------------------------------ ★★★ */
     font-weight: bold;
-    padding: 3px 8px;
-    border-radius: 13px;
-    position: relative;
-    transform: translateX(-80px);
-    white-space: nowrap;
-    
-}
-
-.recommend-badge::after {
-    content: '';
-    position: absolute;
-    bottom: -20px; 
-    left: 50%;
-
-    border-width: 10px;
-    border-style: solid;
-
-    border-color: #FF0000 transparent transparent transparent;
-    
-    transform: translateX(-50%); 
-}
-
-.slider-container {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10px;
-}
-
-.options-row {
-    width: 100%; 
-    display: flex;
-    justify-content: center; 
-    position: relative;
-    padding: 10px 0;
-}
-
-.dot-wrapper {
-    width: 85%; 
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-    z-index: 2;
-}
-
-.options-row::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 17px; 
-    right: 17px;
-    height: 4px;
-    background-color: #FFFFFF; 
-    transform: translateY(-50%);
-    z-index: 1;
-}
-.option-container.count-options {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-bottom: 30px; 
-    /* *** 変更点: 上のマージンを減らす *** */
-    margin-top: 5px; 
-}
-
-.choice-label {
-    position: relative;
-    z-index: 2; 
-    cursor: pointer;
-    background-color: #FF6E6E; 
-    padding: 0 5px;
-}
-.radio-dot {
-    display: none;
-}
-.dot-visual {
-    display: block;
-    width: 30px; 
-    height: 30px; 
-    border-radius: 50%;
-    background-color: #dfdfdf; 
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    transition: background-color 0.2s;
-}
-.choice-label input:checked + .dot-visual {
-    background-color: #FF0000;
-    transform: scale(1.1);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-}
-
-.number-labels {
-    width: 95%; 
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px; 
-}
-
-.number-labels span {
     font-size: 1.1em;
-    color: #dfdfdf;
-    font-weight: bold;
-    text-align: center;
-    width: 30px; 
 }
-.custom-goal-label {
-    display: block;
-    width: 100%;
-    text-align: left;
-    color: black; 
-    font-size: 0.9em;
+.level-button-display.level-1 .level-badge {
+    background-color: #FFA500; 
+}
+.level-button-display.level-2 .level-badge {
+    background-color: #28a745; 
+}
+.level-button-display.level-3 .level-badge {
+    background-color: #007bff; 
+}
+.level-button-display.level-4 .level-badge {
+    background-color: #dc3545; 
+}
+/* レベル値のテキスト (例: 1, 2, 3) */
+.level-button-display .level-text-display {
+    /* ★★★ 1枚目の画像のデザインの変更点 ★★★ */
+    font-size: 2.2em; /* 大きく表示 */
+    line-height: 1; 
+    /* ★★★ ------------------------------ ★★★ */
     font-weight: bold;
-    margin-top: 30px; 
-    margin-bottom: 5px;
+    margin: 0;
+    padding: 0;
+    color: black;
+    display: flex; /* flexコンテナ化 */
+    align-items: center;
 }
 
+
+/* ---------------------------------------------------- */
+/*  3. 目標表示 (goal-summary-card)  */
+/* ---------------------------------------------------- */
+
+.goal-summary-card {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #e0e0e0; 
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    margin-top: 5px;
+    text-align: left;
+}
+
+.goal-summary-card h2 {
+    font-size: 1.0em; 
+    font-weight: bold;
+    margin: 0;
+    line-height: 1.3;
+    color: black;
+}
+
+.goal-summary-card p {
+    font-size: 0.9em; 
+    color: #333; 
+    margin: 5px 0 0 0;
+    line-height: 1.3;
+}
+
+
+/* ---------------------------------------------------- */
+/*  4. 頻度表示  */
+/* ---------------------------------------------------- */
+.display-selection-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: black;
+    margin-top: 5px;
+    margin-bottom: 25px; /* 次のボタンとの間隔 */
+}
+
+/* ---------------------------------------------------- */
+/*  5. ボタン  */
+/* ---------------------------------------------------- */
 .next-button {
     width: 100%;
     padding: 13px;
@@ -434,13 +273,12 @@ input[type="text"] {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-top: 30px;
 }
-.selection-header {
-    display: block;
-    font-size: 16px;
-    font-weight: bold; 
-    color: #333;
-    margin-top: 40px; 
-    margin-bottom: 5px; 
-    text-align: left;
-    width: 100%;
+.level-card-wrapper{
+    width: 60%; /* カードの幅を画面の90%に制限 (この値を調整してください) */
+    max-width: 300px;
+}
+.goal-card-wrapper {
+    /* 画面幅の例：375px */
+    width: 80%; /* カードの幅を画面の90%に制限 (この値を調整してください) */
+    max-width: 300px;
 }

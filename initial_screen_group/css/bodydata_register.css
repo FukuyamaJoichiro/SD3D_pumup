@@ -93,7 +93,9 @@ body {
 
 input[type="number"],
 input[type="date"],
-input[type="text"] {
+input[type="text"],
+input[type="email"],
+input[type="password"] {
     width: 100%;
     padding: 10px; 
     background-color: rgb(214, 214, 214); 

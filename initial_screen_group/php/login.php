@@ -10,8 +10,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'メールアドレスとパスワードを入力してください。';
     } else {
         if (login($email, $password)) {
-            $redirect = $_SESSION['redirect_to'] ?? '../home_screen_group/php/home.php';
+            $default_redirect = '../../home_screen_group/php/home.php';
+
+            $redirect = $_SESSION['redirect_to'] ?? $default_redirect;
             unset($_SESSION['redirect_to']);
+            
             header('Location: ' . $redirect);
             exit;
         } else {
