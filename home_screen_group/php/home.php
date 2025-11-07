@@ -116,7 +116,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['user_name' => ''];
             <a href="home.php" class="nav-item active">
                 <span class="nav-item-icon">🏠</span> ホーム
             </a>
-            <a href="calendar.php" class="nav-item">
+            <a href="http://localhost/pumpup/SD3D_pumup/training_screen_group/php/calendar.php" class="nav-item">
                 <span class="nav-item-icon">💪</span> カレンダー
             </a>
             <a href="mypage.php" class="nav-item">

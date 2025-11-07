@@ -1,29 +1,29 @@
 <?php
-session_start();
-require_once("../../db_connect.php");
-require_once("db_connect.php");
+// ✅ セッション衝突を防ぐ
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+require_once __DIR__ . '/db_connect.php';
 
 /**
  * ログイン処理
- * @param string $email    入力されたメールアドレス
- * @param string $password 入力されたパスワード
- * @return bool 成功なら true、失敗なら false
+ * @return array [成功(bool), メッセージ(string)]
  */
 function login($email, $password) {
     global $pdo;
 
-    // --- モード設定 ---
-    // false = 開発テスト用（平文パスワード）
-    // true  = 本番用（ハッシュ化されたパスワード）
-    $USE_HASH = false;
+    $USE_HASH = false; // ←本番でハッシュに切り替える時は true
 
     try {
         if ($USE_HASH) {
-            // ✅ 本番用（ハッシュ化パスワード対応）
-            $stmt = $pdo->prepare("SELECT user_id, password_hash FROM users WHERE email = :email");
+            $stmt = $pdo->prepare(
+                "SELECT user_id, password_hash FROM users WHERE email = :email"
+            );
         } else {
-            // 🧪 開発用（平文パスワード対応）
-            $stmt = $pdo->prepare("SELECT user_id, password FROM users WHERE email = :email");
+            $stmt = $pdo->prepare(
+                "SELECT user_id, password FROM users WHERE email = :email"
+            );
         }
 
         $stmt->bindValue(":email", $email, PDO::PARAM_STR);
@@ -31,60 +31,36 @@ function login($email, $password) {
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$user) {
-            echo "⚠️ ユーザーが見つかりません。<br>";
-            return false;
+            return [false, "ユーザーが見つかりません。"];
         }
 
-        // --- パスワードチェック ---
         if ($USE_HASH) {
-            // ハッシュを使う場合
             if (password_verify($password, $user['password_hash'])) {
                 $_SESSION['user_id'] = $user['user_id'];
-                return true;
+                return [true, ""];
             } else {
-                echo "❌ パスワードが違います。<br>";
-                return false;
+                return [false, "パスワードが違います。"];
             }
         } else {
-            // 平文を使う場合
             if ($user['password'] === $password) {
                 $_SESSION['user_id'] = $user['user_id'];
-                return true;
+                return [true, ""];
             } else {
-                echo "❌ パスワードが違います。<br>";
-                return false;
+                return [false, "パスワードが違います。"];
             }
         }
 
-    } catch (PDOException $e) {
-        echo "データベースエラー: " . htmlspecialchars($e->getMessage()) . "<br>";
-        return false;
+    } catch (Exception $e) {
+        return [false, "システムエラーが発生しました。"];
     }
 }
+
 /**
- * ログインが必要なページで、ログイン状態をチェックし、未ログインならリダイレクトする
- * @param string $login_url ログインページへのパス（未ログイン時にリダイレクトされる場所）
+ * ログイン必須チェック
  */
-// ★ 修正 2: require_login関数を追加
-function require_login($login_url) {
+function require_login() {
     if (!isset($_SESSION['user_id'])) {
-        // 未ログインの場合、現在のURLをセッションに保存してからログインページへ
-        $_SESSION['redirect_to'] = $_SERVER['REQUEST_URI'];
-        header('Location: ' . $login_url);
+        header("Location: /pumpup/SD3D_pumup/initial_screen_group/php/login.php");
         exit;
     }
 }
-
-// --- ログイン試行（例）---
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = $_POST['email'] ?? '';
-    $password = $_POST['password'] ?? '';
-
-    if (login($email, $password)) {
-        header("Location: ../home_screen_group/php/home.php");
-        exit;
-    } else {
-        echo "<p>ログインに失敗しました。</p>";
-    }
-}
-?>
