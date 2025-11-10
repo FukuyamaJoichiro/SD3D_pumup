@@ -127,9 +127,9 @@ foreach ($dates as $d) {
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item"><a href="home.php">🏠<br>ホーム</a></div>
+        <div class="nav-item"><a href="../../home_screen_group/php/home.php">🏠<br>ホーム</a></div>
         <div class="nav-item active"><a href="calendar.php">📅<br>カレンダー</a></div>
-        <div class="nav-item"><a href="mypage.php">👤<br>マイページ</a></div>
+        <div class="nav-item"><a href="../../home_screen_group/php/mypage.php">👤<br>マイページ</a></div>
     </div>
 </div>
 </body>
