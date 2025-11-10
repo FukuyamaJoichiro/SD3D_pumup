@@ -1,4 +1,7 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
 require_once __DIR__ . '/../../auth.php';
 require_login('../../initial_screen_group/php/login.php');
@@ -16,7 +19,7 @@ if (!$user_id) {
 // ✅ DBからユーザー情報を取得
 try {
     $stmt = $pdo->prepare("
-        SELECT user_id, user_name, gender, weight, height, birth
+        SELECT user_id, user_name, gender, weight, height, birthday
         FROM users
         WHERE user_id = :id
         LIMIT 1
