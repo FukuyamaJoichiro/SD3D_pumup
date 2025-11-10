@@ -10,14 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($email === '' || $password === '') {
         $error = 'メールアドレスとパスワードを入力してください。';
     } else {
+        if (login($email, $password)) {
+            $default_redirect = '../../home_screen_group/php/home.php';
 
-        // ✅ auth.php から成功・メッセージ受け取る
-        list($success, $msg) = login($email, $password);
-
-        if ($success) {
-
-            // ✅ ログイン成功 → ホームへ
-            header('Location: /pumpup/SD3D_pumup/home_screen_group/php/home.php');
+            $redirect = $_SESSION['redirect_to'] ?? $default_redirect;
+            unset($_SESSION['redirect_to']);
+            
+            header('Location: ' . $redirect);
             exit;
 
         } else {

@@ -19,7 +19,7 @@ try {
         ':goal_level' => $goal_level, // goalカラムにレベルを格納
         ':user_id' => $user_id         // どのユーザーを更新するか指定
     ]);
-    header('Location: ../html/goal_detail.html');
+    header('Location: fetch_goal_data.php');
     exit();
 
 } catch (PDOException $e) {
