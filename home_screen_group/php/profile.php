@@ -202,7 +202,7 @@ function copyUserId() {
     <a href="../../home_screen_group/php/home.php">
       <span>🏠</span>ホーム
     </a>
-    <a href="../../calendar_screen_group/php/calendar.php">
+    <a href="../../training_screen_group/php/calendar.php">
       <span>📅</span>カレンダー
     </a>
     <a href="#" class="active">
