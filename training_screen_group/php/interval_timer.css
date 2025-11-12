@@ -1,0 +1,193 @@
+/* --- ベーススタイル (提供されたものを採用) --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f4f4f8; /* 外側の背景色 */
+    margin: 0;
+    padding: 0;
+    line-height: 1.4;
+    display: flex; /* スマホ画面を中央に配置するために追加 */
+    justify-content: center;
+    min-height: 100vh;
+}
+
+/* --- コンテナ (提供されたものを採用) --- */
+.app-container {
+    max-width: 420px; /* スマホ画面幅 */
+    margin: 0 auto;
+    background-color: #ffffff; /* タイマー以外の背景は白 */
+    min-height: 100vh;
+    position: relative;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    /* Flexboxで中身を制御 */
+    display: flex;
+    flex-direction: column;
+    width: 100%; /* max-width内で幅いっぱいにする */
+}
+
+.timer-container {
+    background-color: #ff6e6e; /* トマトレッド (画像の色) */
+    width: 100%;
+    /* app-containerの残りのスペースを埋める */
+    flex-grow: 1; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+/* 戻るボタン */
+.back-button {
+    color: white;
+    font-size: 24px;
+    align-self: flex-start;
+    margin-left: 20px;
+    text-decoration: none;
+    padding: 10px 0; /* タッチしやすいようにパディング */
+}
+
+/* タイマー表示エリア */
+.timer-display {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin-top: 50px;
+    margin-bottom: 50px; /* 下部との間隔を確保 */
+}
+
+/* SVGリングの基本スタイル */
+.progress-ring {
+    transform: rotate(-90deg); /* 0度を真上にする */
+}
+
+/* 背景リング */
+.progress-ring-bg {
+    stroke-width: 10;          /* 目盛りの線の太さ */
+    stroke: #ff0000; /* 半透明の白で背景の目盛りを表現 */
+    fill: transparent;
+    /* ドット状の目盛りを作成 */
+    stroke-dasharray: 50 10;   /* 線2px、間隔10px の破線 */
+    stroke-linecap: butt;    /* 線の端を丸くする */
+}
+
+.progress-ring-bg-1 {
+    stroke-width: 10;          /* 目盛りの線の太さ */
+    stroke: #ffffff; /* 半透明の白で背景の目盛りを表現 */
+    fill: transparent;
+    /* ドット状の目盛りを作成 */
+    stroke-dasharray: 50 10;   /* 線2px、間隔10px の破線 */
+    stroke-linecap: butt;    /* 線の端を丸くする */
+    transition: stroke-dashoffset 1s linear;
+}
+
+/* 経過リング */
+.progress-ring-fg {
+    stroke-width: 8;          /* 経過リングの線の太さ (背景と同じか少し細く/太く) */
+    stroke: #ff0000;          /* 経過リングの色を白に */
+    fill: transparent;
+    stroke-dasharray: 2 5; 
+    stroke-linecap: butt;
+}
+.progress-ring-fg-1 {
+    stroke-width: 8;          /* 経過リングの線の太さ (背景と同じか少し細く/太く) */
+    stroke: #ffffff;          /* 経過リングの色を白に */
+    fill: transparent;
+    stroke-dasharray: 2 5;
+    transition: stroke-dashoffset 1s linear;
+    stroke-linecap: butt;   /* 線の端を丸くする */
+}
+
+/* タイマーの中央情報 */
+.timer-info {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+}
+
+.timer-label {
+    font-size: 16px;
+    margin-bottom: 5px;
+}
+
+.timer-time {
+    font-size: 60px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 再生/一時停止ボタン */
+.play-pause-button {
+    background: none;
+    border: 3px solid white;
+    border-radius: 50%;
+    color: white;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-top: 10px;
+    padding-left: 5px; /* ▶ の形に合わせて微調整 */
+}
+
+.play-pause-button:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.play-icon, .pause-icon {
+    font-size: 24px;
+    line-height: 1;
+}
+
+/* --- 時間設定エリア (下部) --- */
+.settings-container {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start; /* 上寄せに調整 */
+    width: 100%;
+    padding: 20px 0;
+    background-color: #ffffff; /* 白い背景 */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); /* 上部に影を追加 */
+    /* app-containerのpadding-bottom分をなくすため、代わりにbottom-paddingを排除 */
+}
+
+.setting-item {
+    text-align: center;
+    padding: 5px;
+}
+
+.setting-item input {
+    /* 画像に合わせたスタイルに調整 */
+    background-color: #ffffff; 
+    color: #ff6347; /* テキスト色 */
+    border: 2px solid #ff6e6e;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 20px;
+    font-weight: bold;
+    text-align: center;
+    padding: 0;
+}
+
+.setting-item input::-webkit-outer-spin-button,
+.setting-item input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.setting-item label {
+    display: block;
+    margin-top: 5px;
+    font-size: 14px;
+    color: #ff6347;
+}
