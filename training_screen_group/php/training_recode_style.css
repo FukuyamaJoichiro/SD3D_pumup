@@ -98,9 +98,19 @@ html, body {
   text-align: center;
   padding: 10px;
   font-size: 14px;
-  color: #777;
   border-bottom: 2px solid transparent;
   cursor: pointer;
+  font-weight: bold; 
+}
+.tab a {
+    /* リンクの色を薄いグレーに設定 */
+    color: #a0a0a0; /* 例: 指定された薄いグレー */
+    
+    /* リンクの下線を消去 */
+    text-decoration: none; 
+    
+    /* 親要素から太字が継承されない場合はここで再設定（太字はすでに継承されている可能性が高いですが念のため） */
+    font-weight: bold; 
 }
 
 .tab.active {
