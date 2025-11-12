@@ -61,7 +61,7 @@ $user = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['user_name' => ''];
 
                 <p class="progress-text">0/4</p>
                 
-                <button class="btn-primary" onclick="location.href='training_list.php'">トレーニングを始める</button>
+                <button class="btn-primary" onclick="location.href='../../training_screen_group/php/training_record.php'">トレーニングを始める</button>
             </section>
 
             <!-- 2. おすすめルーティン -->
