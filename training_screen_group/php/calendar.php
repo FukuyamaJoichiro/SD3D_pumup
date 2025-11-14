@@ -72,17 +72,21 @@ foreach ($dates as $d) {
 <link rel="stylesheet" href="calendar_style.css">
 </head>
 <body>
-<div class="calendar-container">
-    <div class="calendar-header">
+    <div class="app-container">
+        <div class="app-header">
         <p><?= $year ?>年<?= $month ?>月</p>
         <h2>Total : <?= $total ?>days!</h2>
         <p>Monthly Archive. <strong><?= $monthly_count ?>day</strong></p>
     </div>
 
-    <table class="calendar">
+    <div class="calendar-warpper">
+        <table class="calender">
+            <thead>
         <tr>
             <th>日</th><th>月</th><th>火</th><th>水</th><th>木</th><th>金</th><th>土</th>
         </tr>
+            </thead>
+        <tbody>
         <?php
         $first_day_week = date('w', strtotime($start_date));
         $days_in_month = date('t', strtotime($start_date));
@@ -114,6 +118,7 @@ foreach ($dates as $d) {
         for ($i=$last_weekday; $i<6; $i++) echo "<td></td>";
         echo "</tr>";
         ?>
+        </tbody>
     </table>
 
     <div class="calendar-footer">
@@ -122,10 +127,11 @@ foreach ($dates as $d) {
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item"><a href="home.php">🏠<br>ホーム</a></div>
+        <div class="nav-item"><a href="../../home_screen_group/php/home.php">🏠<br>ホーム</a></div>
         <div class="nav-item active"><a href="calendar.php">📅<br>カレンダー</a></div>
-        <div class="nav-item"><a href="mypage.php">👤<br>マイページ</a></div>
+        <div class="nav-item"><a href="../../home_screen_group/php/mypage.php">👤<br>マイページ</a></div>
     </div>
 </div>
 </body>
+
 </html>

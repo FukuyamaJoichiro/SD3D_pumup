@@ -1,0 +1,214 @@
+/* --- 全体設定 --- */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  width: 100vw;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: #f8f8fa;
+  overflow-y: auto; /* コンテンツが増えてもスクロールできるように変更 */
+  overflow-x: hidden;
+}
+
+/* --- コンテナ --- */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: #fff;
+  position: relative;
+  /* padding-bottom: 60px; /* 下部ナビ用 - 今回は省略 */
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* --- ヘッダー (共通部分) --- */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+  font-size: 18px;
+  font-weight: bold;
+  position: relative;
+}
+
+.back-btn {
+  position: absolute;
+  left: 15px;
+  font-size: 28px;
+  line-height: 18px;
+  color: #333;
+  cursor: pointer;
+}
+
+.month {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* --- カレンダー曜日表示 (共通部分) --- */
+.calendar-week {
+  width: 100%;
+  text-align: center;
+  margin-top: 5px;
+  background-color: #fff; /* 背景色を追加 */
+}
+
+.calendar-week table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.calendar-week th {
+  color: #555;
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.calendar-week td {
+  font-size: 14px;
+  padding: 6px 0;
+}
+
+.calendar-week .today {
+  background-color: #ff6e6e; /* アクティブカラーに合わせる */
+  color: #fff;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: inline-block;
+  line-height: 28px;
+}
+
+.calendar-week .inactive {
+  color: #bbb;
+}
+
+/* --- タブメニュー (共通部分) --- */
+.tab-menu {
+  display: flex;
+  justify-content: space-around;
+  border-bottom: 1px solid #ddd;
+  margin-top: 8px;
+  background-color: #fff;
+}
+
+.tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  font-size: 14px;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-weight: bold; 
+}
+
+/* リンク要素へのスタイル設定 */
+.tab a {
+  color: #a0a0a0; /* 薄いグレー */
+  text-decoration: none; 
+  font-weight: bold; 
+  display: block; /* クリック領域をタブ全体に広げる */
+}
+
+.tab.active {
+  color: #ff6e6e;
+  border-bottom: 2px solid #ff6e6e;
+  font-weight: bold;
+}
+/* アクティブなタブ内のリンクの色を上書き */
+.tab.active a {
+    color: #ff6e6e;
+}
+
+/* --- MYボディデータ画面専用スタイル --- */
+
+/* ボディデータヘッダー (MYボディデータ / すべてを表示) */
+.bodydata-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background-color: #f8f8fa; /* 背景を薄いグレーにする */
+    border-bottom: 1px solid #eee;
+}
+
+.bodydata-header .title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin: 0;
+}
+
+.bodydata-header .view-all {
+    font-size: 13px;
+    color: #959595;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+/* データカードコンテナ */
+.data-cards-container {
+    padding: 10px 15px;
+    background-color: #fff;
+}
+
+/* データカード */
+.data-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+}
+
+.data-card:last-child {
+    border-bottom: none; /* 最後の子要素の下線は消す */
+}
+
+.card-content {
+    display: flex;
+    align-items: center;
+}
+
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.icon-circle svg {
+    width: 20px;
+    height: 20px;
+}
+
+.data-info {
+    text-align: left;
+}
+
+.data-label {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 0;
+    color: #333;
+}
+
+.data-value {
+    font-size: 13px;
+    color: #777;
+    margin: 2px 0 0 0;
+}
+
+.arrow {
+    font-size: 20px;
+    color: #ccc;
+    font-weight: 300;
+}

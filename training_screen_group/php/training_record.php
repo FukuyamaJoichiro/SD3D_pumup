@@ -8,7 +8,6 @@ $user_id = 1;
 // 今日の日付
 $today = date('Y-m-d');
 $month = date('n');
-
 // --- データ取得例（必要に応じて拡張可能） ---
 // 今日のトレーニングが登録済みか確認
 $sql = "SELECT COUNT(*) AS count FROM workout_sessions WHERE user_id = :user_id AND DATE(date) = :today";
@@ -57,7 +56,7 @@ $hasTraining = $result['count'] > 0;
     <!-- タブメニュー -->
     <div class="tab-menu">
       <div class="tab active">トレーニング記録</div>
-      <div class="tab">ボディデータ</div>
+      <div class="tab"><a href="bodydata.php" >ボディデータ</a></div>
     </div>
 
     <!-- トレーニング選択カード -->
