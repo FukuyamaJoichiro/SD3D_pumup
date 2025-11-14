@@ -63,7 +63,7 @@ $hasTraining = $result['count'] > 0;
     <section class="training-card">
       <h3>今日のトレーニング</h3>
       <p>トレーニングを計画してみましょう！</p>
-      <button class="training-btn" onclick="location.href='training_select.php'">トレーニング選択</button>
+      <button class="training-btn" onclick="location.href='training_list.php'">トレーニング選択</button>
     </section>
 
 <!-- タイマー・休み表示 -->
