@@ -31,6 +31,6 @@ try {
 }
 
 // データをセッションに保存したら、HTMLファイルへリダイレクト
-header('Location: ../html/goal_detail.html'); // HTMLファイルへのパスを調整してください
+header('Location: goal_detail.php'); // HTMLファイルへのパスを調整してください
 exit();
 ?>

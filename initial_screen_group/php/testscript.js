@@ -19,8 +19,8 @@ function navigateToNextPage() {
     screen.style.opacity = '0';
     // フェードアウトが完了した後に次のページに遷移
     setTimeout(() =>{
-    window.location.href = 'intro.html'; // 'next_page.html'を次の画面のファイル名に置き換えてください
-    }, 500);
+    window.location.href = 'intro.php'; // パスは修正済み
+    }, 500);
     // 画面クリックで遷移
-document.querySelector('.phone-screen').addEventListener('click', navigateToNextPage);
+    document.querySelector('.phone-screen').addEventListener('click', navigateToNextPage);
 }

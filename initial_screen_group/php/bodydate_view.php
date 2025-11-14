@@ -59,7 +59,7 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登録内容確認</title>
-    <link rel="stylesheet" href="../css/bodydate_view.css">
+    <link rel="stylesheet" href="bodydate_view.css">
 </head>
 <body>
     <div class="phone-screen">
@@ -68,7 +68,7 @@ try {
         </div>
 
         <div class="header-content">
-            <a href="training_count.html" class="back-button">&lt;</a>
+            <a href="training_count.php" class="back-button">&lt;</a>
             <div class="progress-bar-container" style="width: 100%;">
                 <div class="progress-fill" style="width: 99%;"></div>
             </div>

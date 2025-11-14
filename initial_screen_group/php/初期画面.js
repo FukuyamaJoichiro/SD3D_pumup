@@ -43,7 +43,7 @@ function updateContent() {
     if (currentIndex < 0) {
         currentIndex = 0;
     } else if (currentIndex >= contents.length) {
-        window.location.href = 'bodydata_register.html';
+        window.location.href = '/pumpup/SD3D_pumup/initial_screen_group/php/bodydata_register.php';
         return;
     }
 
