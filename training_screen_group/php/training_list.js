@@ -17,6 +17,7 @@ searchInput.addEventListener('input', function() {
 
 // ===== フィルター機能 =====
 let activePartIds = [];
+let isBookmarkFilter = false;
 
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', function() {
@@ -25,15 +26,29 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         // 「□」ボタン（全て表示）がクリックされた場合
         if (partId === 'all') {
             activePartIds = [];
+            isBookmarkFilter = false;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
             filterTrainings();
             return;
         }
         
-        // 「□」ボタンの選択を解除
+        // 「ブックマーク」ボタンがクリックされた場合
+        if (partId === 'bookmark') {
+            activePartIds = [];
+            isBookmarkFilter = true;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterTrainings();
+            return;
+        }
+        
+        // 「□」ボタンとブックマークボタンの選択を解除
+        isBookmarkFilter = false;
         const allBtn = document.querySelector('.filter-btn[data-part-id="all"]');
+        const bookmarkBtn = document.querySelector('.filter-btn[data-part-id="bookmark"]');
         if (allBtn) allBtn.classList.remove('active');
+        if (bookmarkBtn) bookmarkBtn.classList.remove('active');
         
         // クリックされたボタンの切り替え
         this.classList.toggle('active');
@@ -60,6 +75,13 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 function filterTrainings() {
     trainingItems.forEach(item => {
         const itemPartIds = item.getAttribute('data-part-ids');
+        const isBookmarked = item.getAttribute('data-bookmarked') === '1';
+        
+        // ブックマークフィルターが有効な場合
+        if (isBookmarkFilter) {
+            item.style.display = isBookmarked ? 'flex' : 'none';
+            return;
+        }
         
         // フィルターが選択されていない場合は全て表示
         if (activePartIds.length === 0) {
@@ -86,7 +108,36 @@ function filterTrainings() {
 // ===== ブックマーク機能 =====
 document.querySelectorAll('.bookmark-icon').forEach(icon => {
     icon.addEventListener('click', function() {
-        this.textContent = this.textContent === '🏴' ? '🚩' : '🏴';
+        const trainingId = this.getAttribute('data-training-id');
+        const trainingItem = this.closest('.training-item');
+        
+        // サーバーにブックマーク切り替えリクエストを送信
+        fetch('bookmark_toggle.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `training_id=${trainingId}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // アイコンを切り替え
+                if (data.action === 'added') {
+                    this.textContent = '🚩';
+                    trainingItem.setAttribute('data-bookmarked', '1');
+                } else {
+                    this.textContent = '🏴';
+                    trainingItem.setAttribute('data-bookmarked', '0');
+                }
+            } else {
+                alert('エラー: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('ブックマークの切り替えに失敗しました。');
+        });
     });
 });
 
@@ -99,7 +150,7 @@ const addTrainingForm = document.getElementById('add-training-form');
 // +ボタンクリックでモーダルを表示
 addBtn.addEventListener('click', function() {
     modalOverlay.classList.add('active');
-    document.body.style.overflow = 'hidden'; // スクロール無効化
+    document.body.style.overflow = 'hidden';
 });
 
 // 閉じるボタンクリックでモーダルを閉じる
@@ -117,13 +168,11 @@ modalOverlay.addEventListener('click', function(e) {
 // モーダルを閉じる関数
 function closeModal() {
     modalOverlay.classList.remove('active');
-    document.body.style.overflow = ''; // スクロール有効化
-    addTrainingForm.reset(); // フォームをリセット
-    // すべてのトグルボタンの選択を解除
+    document.body.style.overflow = '';
+    addTrainingForm.reset();
     document.querySelectorAll('.toggle-btn').forEach(btn => {
         btn.classList.remove('active');
     });
-    // hidden inputもクリア
     document.getElementById('part_id').value = '';
     document.getElementById('tool_id').value = '';
     document.getElementById('type_id').value = '';
@@ -171,7 +220,6 @@ addTrainingForm.addEventListener('submit', function(e) {
         if (data.success) {
             alert('トレーニングを追加しました！');
             closeModal();
-            // ページをリロードして新しいトレーニングを表示
             location.reload();
         } else {
             alert('エラー: ' + data.message);

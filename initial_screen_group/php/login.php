@@ -114,4 +114,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <p class="hint">初回利用の場合は管理者にアカウント作成を依頼してください。</p>
     </div>
 </body>
-</html>
+</html> 
