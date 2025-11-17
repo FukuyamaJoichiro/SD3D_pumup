@@ -1,8 +1,12 @@
 <?php
 // データベース接続ファイルを読み込み
-require_once ('../../db_connect.php');
+require_once '../../db_connect.php';
 
 try {
+    // セッションからユーザーIDを取得（仮で1を使用）
+    session_start();
+    $user_id = $_SESSION['user_id'] ?? 1;
+    
     // trainingsテーブルから種目名を取得し、部位情報も結合
     $stmt = $pdo->query("
         SELECT t.training_id, t.training_name, tp.part_id
@@ -12,6 +16,11 @@ try {
     ");
     $training_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+    // ユーザーのブックマークを取得
+    $stmt = $pdo->prepare("SELECT training_id FROM bookmarks WHERE user_id = ?");
+    $stmt->execute([$user_id]);
+    $bookmarked_ids = $stmt->fetchAll(PDO::FETCH_COLUMN);
+    
     // トレーニングごとに部位IDをグループ化
     $trainings = [];
     foreach ($training_data as $row) {
@@ -20,7 +29,8 @@ try {
             $trainings[$id] = [
                 'training_id' => $id,
                 'training_name' => $row['training_name'],
-                'part_ids' => []
+                'part_ids' => [],
+                'is_bookmarked' => in_array($id, $bookmarked_ids)
             ];
         }
         if ($row['part_id']) {
@@ -65,6 +75,7 @@ try {
     
     <div class="filter-section">
         <button class="filter-btn active" data-part-id="all">□</button>
+        <button class="filter-btn" data-part-id="bookmark">🏴 ブックマーク</button>
         <?php foreach ($parts as $part): ?>
             <button class="filter-btn" data-part-id="<?php echo $part['part_id']; ?>">
                 <?php echo htmlspecialchars($part['part_name']); ?>
@@ -86,10 +97,13 @@ try {
             <?php foreach ($trainings as $training): ?>
                 <div class="training-item" 
                      data-training-id="<?php echo $training['training_id']; ?>"
-                     data-part-ids="<?php echo !empty($training['part_ids']) ? implode(',', $training['part_ids']) : ''; ?>">
+                     data-part-ids="<?php echo !empty($training['part_ids']) ? implode(',', $training['part_ids']) : ''; ?>"
+                     data-bookmarked="<?php echo $training['is_bookmarked'] ? '1' : '0'; ?>">
                     <input type="checkbox" class="checkbox" name="training[]" value="<?php echo $training['training_id']; ?>">
                     <span class="training-name"><?php echo htmlspecialchars($training['training_name']); ?></span>
-                    <button type="button" class="bookmark-icon" data-training-id="<?php echo $training['training_id']; ?>">🏴</button>
+                    <button type="button" class="bookmark-icon" data-training-id="<?php echo $training['training_id']; ?>">
+                        <?php echo $training['is_bookmarked'] ? '🚩' : '🏴'; ?>
+                    </button>
                     <button type="button" class="info-icon" data-training-id="<?php echo $training['training_id']; ?>">ⓘ</button>
                 </div>
             <?php endforeach; ?>

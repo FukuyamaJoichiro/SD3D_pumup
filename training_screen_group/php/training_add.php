@@ -1,7 +1,7 @@
 <?php
 // training_add.php
 // データベース接続
-require_once ('../../db_connect.php');
+require_once '../../db_connect.php';
 
 // JSONレスポンスを返す
 header('Content-Type: application/json');
