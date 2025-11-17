@@ -181,7 +181,6 @@ h1 {
 
 /* ===== モーダルスタイル ===== */
 
-/* モーダルオーバーレイ */
 .modal-overlay {
     display: none;
     position: fixed;
@@ -202,7 +201,6 @@ h1 {
     opacity: 1;
 }
 
-/* モーダルコンテンツ */
 .modal-content {
     background-color: white;
     width: 100%;
@@ -220,7 +218,6 @@ h1 {
     transform: translateY(0);
 }
 
-/* 閉じるボタン */
 .modal-close {
     position: absolute;
     top: 16px;
@@ -238,7 +235,6 @@ h1 {
     color: #000;
 }
 
-/* 見出し */
 .modal-content h2 {
     font-size: 20px;
     font-weight: bold;
@@ -246,7 +242,6 @@ h1 {
     text-align: center;
 }
 
-/* フォームグループ */
 .form-group {
     margin-bottom: 24px;
 }
@@ -264,7 +259,6 @@ h1 {
     font-weight: normal;
 }
 
-/* テキスト入力 */
 .form-input {
     width: 100%;
     padding: 12px 16px;
@@ -278,14 +272,12 @@ h1 {
     border-color: #333;
 }
 
-/* ボタングループ */
 .button-group {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
 }
 
-/* トグルボタン */
 .toggle-btn {
     padding: 8px 20px;
     border: 1px solid #ddd;
@@ -306,7 +298,6 @@ h1 {
     border-color: #333;
 }
 
-/* モーダル送信ボタン */
 .modal-submit-btn {
     width: 100%;
     padding: 16px;
