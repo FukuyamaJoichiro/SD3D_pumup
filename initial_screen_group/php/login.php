@@ -111,7 +111,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn">ログイン</button>
         </form>
 
-        <p class="hint">初回利用の場合は管理者にアカウント作成を依頼してください。</p>
+        <a href="bodydata_register.php">新規登録の方はこちらから </a>
+
+        <!-- <p class="hint">初回利用の場合は管理者にアカウント作成を依頼してください。</p> -->
     </div>
 </body>
-</html> 
+</html>
