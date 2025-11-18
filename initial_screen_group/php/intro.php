@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>トレーニングを開始</title>
-    <link rel="stylesheet" href="../css/style2.css">
+    <link rel="stylesheet" href="style2.css">
 </head>
 <body>
     <div class="phone-screen">
@@ -32,6 +32,6 @@
             <button id="next-button" class="start-button">トレーニングを始める</button>
         </div>
     </div>
-    <script src="../js/初期画面.js"></script>
+    <script src="初期画面.js"></script>
 </body>
 </html>

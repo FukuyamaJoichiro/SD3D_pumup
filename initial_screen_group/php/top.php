@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoriFit</title>
-    <link rel="stylesheet" href="../css/teststyle.css">
+    <link rel="stylesheet" href="teststyle.css">
 </head>
 <body>
     <div class="phone-screen" onclick="navigateToNextPage()">
         <img src="../images/Gorifit.ロゴ.png" alt="GoriFit Logo" class="logo-image">
     </div>
-    <script src="../js/testscript.js"></script>
+    <script src="testscript.js"></script>
 </body>
 </html>
