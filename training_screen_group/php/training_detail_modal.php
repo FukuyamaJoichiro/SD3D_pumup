@@ -45,7 +45,7 @@ $descriptionLines = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $d
     <!-- ▼ ヘッダー -->
     <div class="modal-header">
         <h2 class="modal-title"><?php echo htmlspecialchars($training['training_name'], ENT_QUOTES, 'UTF-8'); ?></h2>
-        <button class="modal-close-btn" id="modal-info-close">✕</button>
+        <button class="modal-close-btn" id="modal-info-close"></button>
     </div>
 
     <!-- ▼ 説明タブ -->
@@ -55,36 +55,31 @@ $descriptionLines = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $d
 
     <!-- ▼ 種目画像/動画 -->
 <?php
+// move = "Back Squat.mp4" などのファイル名が入っている前提
+$mediaFile = $training['move'] ?? null;
 $mediaPath = null;
 
-if (!empty($training['move'])) {
-    // move(BLOB) をデコードしてパスに変換
-    $decoded = base64_decode($training['move'], true);
-    if ($decoded !== false) {
-        $mediaPath = $decoded;
-    }
+if ($mediaFile) {
+    // トレーニング詳細画面と同じ階層のフォルダに置いている想定
+    // 例：training_screen_group/php/tr_img/Back Squat.mp4
+    $mediaPath = "../tr_img/" . $mediaFile;
 }
 
+// 判定して表示する
 if ($mediaPath):
-    // ファイル拡張子を判定するために小文字化
     $lower = strtolower($mediaPath);
 ?>
-    <?php if (preg_match('/\.(mp4|mov|webm)$/i', $lower)): ?>
-        <video src="<?php echo htmlspecialchars($mediaPath, ENT_QUOTES, 'UTF-8'); ?>"
-               controls playsinline class="media-box"></video>
 
-    <?php elseif (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $lower)): ?>
-        <img src="<?php echo htmlspecialchars($mediaPath, ENT_QUOTES, 'UTF-8'); ?>"
-             class="media-box" alt="トレーニング画像">
+<?php if (preg_match('/\.(mp4|mov|webm)$/i', $lower)): ?>
+    <video src="<?php echo $mediaPath; ?>" controls playsinline class="media-box"></video>
 
-    <?php else: ?>
-        <!-- パスの形式が不明な場合はデバッグ確認用に表示 -->
-        <p style="color:#d00; font-size:12px;">※ moveに対応外のデータ形式が入っています</p>
-        <p style="font-size:12px; word-break: break-all;">
-            <?php echo htmlspecialchars($mediaPath, ENT_QUOTES, 'UTF-8'); ?>
-        </p>
-    <?php endif; ?>
+<?php elseif (preg_match('/\.(jpg|jpeg|png|gif|webp)$/i', $lower)): ?>
+    <img src="<?php echo $mediaPath; ?>" class="media-box" alt="トレーニング画像">
+
 <?php endif; ?>
+
+<?php endif; ?>
+
 
 
     <!-- ▼ ツール＆タイプ -->
