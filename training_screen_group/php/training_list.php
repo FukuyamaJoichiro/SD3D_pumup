@@ -1,6 +1,6 @@
 <?php
 // データベース接続ファイルを読み込み
-require_once '../../db_connect.php';
+require_once ('../../db_connect.php');
 
 try {
     session_start();
