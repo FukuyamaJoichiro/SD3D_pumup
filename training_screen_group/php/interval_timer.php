@@ -23,7 +23,7 @@
                 </svg>
                 
                 <div class="timer-info">
-                    <p class="timer-label">総トレーニング時間</p>
+                    <p class="timer-label">休憩時間</p>
                     <div class="timer-time" id="timer-time">03:00</div>
                     <button id="play-pause-button" class="play-pause-button">
                         <span class="play-icon">▶</span>
