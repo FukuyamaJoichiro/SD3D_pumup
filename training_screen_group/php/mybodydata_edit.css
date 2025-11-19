@@ -1,0 +1,223 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+    background-color: #fff;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 18px;
+    margin: 0;
+    color: #333;
+}
+
+.back-link {
+    position: absolute;
+    left: 15px;
+    font-size: 24px;
+    text-decoration: none;
+    color: #007aff;
+}
+
+.container {
+    padding: 20px;
+}
+
+.container h2 {
+    font-size: 16px;
+    color: #555;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: normal;
+}
+
+.data-item {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.icon-label {
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+label {
+    font-weight: bold;
+    color: #333;
+}
+
+/* 入力・表示フィールドのスタイル */
+.input-group, .output-group {
+    display: flex;
+    align-items: center;
+}
+
+.display-value, #muscleRateOutput, #bodyFatRateOutput {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    width: 80px;
+    text-align: right;
+    display: inline-block;
+}
+
+.unit {
+    font-size: 16px;
+    font-weight: bold;
+    color: #555;
+    margin-left: 5px;
+}
+
+.submit-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #007aff;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    margin-top: 30px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+/* --- モーダル関連 (ピッカー要素は削除) --- */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none; 
+    justify-content: center;
+    align-items: flex-end; 
+    z-index: 1000;
+}
+
+.modal-content {
+    background-color: white;
+    width: 100%;
+    max-width: 500px;
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+    transform: translateY(100%);
+    transition: transform 0.3s ease-out;
+}
+
+.modal-overlay.is-active .modal-content {
+    transform: translateY(0);
+}
+
+.modal-handle {
+    width: 40px;
+    height: 5px;
+    background-color: #ccc;
+    border-radius: 2.5px;
+    margin: 0 auto 20px;
+}
+
+.modal-content h3 {
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.confirm-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #ff3b30;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.picker-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 30px;
+    position: relative;
+    /* 選択中の値を示すライン */
+    height: 150px; /* 3つのアイテムが見えるように (50px * 3) */
+}
+
+.picker {
+    width: 70px; /* 整数部と小数部の幅 */
+    height: 150px; /* 3つのアイテムが見える高さ */
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: y mandatory; /* スクロールをアイテムにスナップさせる */
+    padding: 50px 0; /* 上下にダミーのスペース（中心に1つ目のアイテムが来るように） */
+    box-sizing: border-box;
+    text-align: center;
+    border-top: 1px solid #aaa; 
+    border-bottom: 1px solid #aaa;
+    position: relative; /* z-indexを有効にするため */
+    z-index: 2;
+}
+.decimal-separator, .unit-label {
+    z-index: 3; /* ピッカーのボーダーより前面に表示 */
+}
+.picker::-webkit-scrollbar {
+    display: none;
+}
+.picker {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.picker-item {
+    line-height: 50px;
+    height: 50px;
+    font-size: 24px;
+    color: #999;
+    transition: color 0.1s;
+    scroll-snap-align: center; /* アイテムが中心にスナップするように */
+}
+.picker-item.selected {
+    color: #333; /* 選択されていない値とのコントラストを維持 */
+    font-weight: bold; /* 太字にする */
+    font-size: 32px; /* 選択されていることをより強調するためにサイズを大きくしても良い */
+}
+.decimal-separator {
+    font-size: 30px;
+    font-weight: bold;
+    color: #333;
+    line-height: 50px;
+    padding: 0 5px;
+}
+.unit-label {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    line-height: 50px;
+    margin-left: 5px;
+    align-self: center; /* 垂直方向の中央に合わせる */
+}
