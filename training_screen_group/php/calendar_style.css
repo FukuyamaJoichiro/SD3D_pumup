@@ -40,13 +40,13 @@ body {
     opacity: 0.9;
 }
 
-/* --- カレンダーラッパー (修正) --- */
-.calendar-warpper { /* HTMLのクラス名に合わせて修正 */
+/* --- カレンダーラッパー --- */
+.calendar-warpper {
     padding: 0 0.5rem; /* 左右に余白 */
 }
 
-/* --- カレンダー (修正) --- */
-.calender { /* HTMLのクラス名に合わせて修正 */
+/* --- カレンダー --- */
+.calender {
     width: 100%;
     border-collapse: collapse;
     text-align: center;
@@ -62,13 +62,21 @@ body {
     font-weight: bold;
 }
 
+/* 【曜日ヘッダーの色分け】 */
+.calender thead th:nth-child(1) { /* 日曜日 */
+    color: red;
+}
+.calender thead th:nth-child(7) { /* 土曜日 */
+    color: blue;
+}
+
 .calender td {
     height: 60px; /* 少し大きく */
     border: 1px solid #ddd;
     vertical-align: top;
     font-size: 0.8rem;
     position: relative;
-    padding: 0;
+    padding: 0; /* 【重要】子要素(.date-clickable-wrapper)を広げるために0にする */
 }
 
 .day-num {
@@ -79,26 +87,56 @@ body {
     color: #444;
 }
 
+/* 【日付の数字の色分け】 */
+.calender td.saturday .day-num {
+    color: blue;
+}
+.calender td.holiday .day-num {
+    color: red;
+}
+
 .training-part {
     /* 複数の部位を表示するために調整 */
     display: inline-block;
     margin: 2px 1px 0;
     padding: 2px 4px;
     border-radius: 4px;
-    background-color: #ffd4d4;
+    background-color: #fd5c5c;
     font-size: 0.6rem;
     color: #444;
     line-height: 1;
 }
 
-.today {
-    background-color: #fff5f5;
-    border: 2px solid #ff6e6e !important;
+/* --- 今日の日付のスタイル --- */
+.calender td.today {
+    /* 枠線は内側の.date-clickable-wrapperに任せるため、tdの枠線は標準に戻す */
+    border: 1px solid #ddd !important; 
+    background-color: #ffb5b5;
     border-radius: 4px;
 }
 
-.today .day-num {
-    color: #ff6e6e;
+/* --- 【新規】日付クリック可能なラッパーと選択状態のスタイル --- */
+
+.calender td .date-clickable-wrapper {
+    display: block;
+    height: 100%;
+    padding: 0;
+    cursor: pointer; /* クリック可能であることを示す */
+    box-sizing: border-box; 
+    transition: background-color 0.1s, border 0.1s;
+}
+
+/* 選択された日付のスタイル（1回目のクリックで適用） */
+.calender td .date-clickable-wrapper.selected {
+    background-color: #ffe0e0; /* 薄い赤色でハイライト */
+    border: 2px solid #ff7d7d; /* メインカラーの枠線 */
+    border-radius: 4px;
+}
+
+/* 今日の日付(.today)が選択された場合 */
+.calender td.today .date-clickable-wrapper.selected {
+    background-color: #ffcaca; /* 濃いめのハイライト色 */
+    border: 2px solid #d85050; /* 濃い赤の枠線 */
 }
 
 /* --- カレンダー下部 --- */
@@ -135,8 +173,8 @@ body {
     background-color: #ff6e6e;
 }
 
-/* --- 下部ナビゲーション (修正) --- */
-.bottom-nav { /* HTMLのクラス名に合わせて修正 */
+/* --- 下部ナビゲーション --- */
+.bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
@@ -164,7 +202,6 @@ body {
     text-decoration: none;
 }
 
-/* nav-item内のaタグのスタイルをリセット */
 .nav-item a {
     text-decoration: none;
     color: inherit;
@@ -178,12 +215,6 @@ body {
     font-weight: bold;
 }
 
-.nav-item-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.25rem;
-}
-
-/* --- スマホ対応 --- */
 @media (max-width: 480px) {
     .app-header h2 {
         font-size: 1.8rem;
@@ -197,9 +228,5 @@ body {
 
     .calendar-footer button {
         font-size: 1rem;
-    }
-
-    .nav-item-icon {
-        font-size: 1.3rem;
     }
 }
