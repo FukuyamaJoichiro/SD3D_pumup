@@ -1,48 +1,51 @@
 <?php
 // データベース接続ファイルを読み込み
-require_once('../../db_connect.php');
+require_once ('../../db_connect.php');
 
-// セッション開始
-session_start();
-
-// ユーザーIDを取得
-$user_id = $_SESSION['user_id'] ?? 1;
-
-// セッションに保存されたトレーニングリストを初期化
-if (!isset($_SESSION['workout_trainings'])) {
-    $_SESSION['workout_trainings'] = [];
-}
-
-// POSTで新しいトレーニングが送信された場合
-if (isset($_POST['training']) && is_array($_POST['training'])) {
-    foreach ($_POST['training'] as $training_id) {
-        $training_id = (int)$training_id; // 整数に変換
-        // 重複チェック：まだリストにない場合のみ追加
-        if (!in_array($training_id, $_SESSION['workout_trainings'])) {
-            $_SESSION['workout_trainings'][] = $training_id;
+try {
+    // セッションからユーザーIDを取得
+    session_start();
+    $user_id = $_SESSION['user_id'] ?? 1;
+    
+    // セッションに保存されたトレーニングリストを初期化
+    if (!isset($_SESSION['workout_trainings'])) {
+        $_SESSION['workout_trainings'] = [];
+    }
+    
+    // POSTで新しいトレーニングが送信された場合
+    if (isset($_POST['training']) && !empty($_POST['training'])) {
+        foreach ($_POST['training'] as $training_id) {
+            // 重複チェック：まだリストにない場合のみ追加
+            if (!in_array($training_id, $_SESSION['workout_trainings'])) {
+                $_SESSION['workout_trainings'][] = $training_id;
+            }
         }
     }
-}
-
-$selected_training_ids = $_SESSION['workout_trainings'];
-
-// 選択されたトレーニング情報を取得
-$trainings = [];
-if (!empty($selected_training_ids)) {
-    $placeholders = implode(',', array_fill(0, count($selected_training_ids), '?'));
-    $stmt = $pdo->prepare("
-        SELECT 
-            t.training_id, 
-            t.training_name,
-            GROUP_CONCAT(DISTINCT tt.type_id) as type_ids
-        FROM trainings t
-        LEFT JOIN training_types tt ON t.training_id = tt.training_id
-        WHERE t.training_id IN ($placeholders)
-        GROUP BY t.training_id
-        ORDER BY FIELD(t.training_id, $placeholders)
-    ");
-    $stmt->execute(array_merge($selected_training_ids, $selected_training_ids));
-    $trainings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    $selected_training_ids = $_SESSION['workout_trainings'];
+    
+    // 選択されたトレーニング情報を取得
+    $trainings = [];
+    if (!empty($selected_training_ids)) {
+        $placeholders = implode(',', array_fill(0, count($selected_training_ids), '?'));
+        $stmt = $pdo->prepare("
+            SELECT 
+                t.training_id, 
+                t.training_name,
+                GROUP_CONCAT(DISTINCT tt.type_id) as type_ids
+            FROM trainings t
+            LEFT JOIN training_types tt ON t.training_id = tt.training_id
+            WHERE t.training_id IN ($placeholders)
+            GROUP BY t.training_id
+            ORDER BY FIELD(t.training_id, $placeholders)
+        ");
+        $stmt->execute(array_merge($selected_training_ids, $selected_training_ids));
+        $trainings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+} catch(PDOException $e) {
+    echo "データ取得エラー: " . $e->getMessage();
+    exit;
 }
 ?>
 <!DOCTYPE html>
@@ -141,7 +144,7 @@ if (!empty($selected_training_ids)) {
                     トレーニング追加
                 </button>
                 
-                <!-- セッションクリアボタン -->
+                <!-- セッションクリアボタン（デバッグ用） -->
                 <form method="post" action="clear_session.php" style="margin-top: 8px;">
                     <button type="submit" class="clear-session-btn">全てリセット</button>
                 </form>
