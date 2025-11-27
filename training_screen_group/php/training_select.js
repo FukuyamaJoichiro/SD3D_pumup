@@ -77,7 +77,7 @@ function addSet(card, hasWeight, hasReps, hasDuration) {
         const isCompleted = this.getAttribute('data-completed') === 'true';
         if (isCompleted) {
             this.setAttribute('data-completed', 'false');
-            this.textContent = '完了';
+            this.textContent = '未完了';
             this.classList.remove('completed');
         } else {
             this.setAttribute('data-completed', 'true');
