@@ -305,11 +305,30 @@ body {
     font-size: 14px;
     color: #666;
     cursor: pointer;
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     transition: all 0.3s ease;
 }
 
 .add-training-btn:hover {
+    border-color: #ff6b6b;
+    color: #ff6b6b;
+}
+
+/* リセットボタン */
+.clear-session-btn {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #f5f5f5;
+    font-size: 13px;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.clear-session-btn:hover {
+    background-color: #ffebee;
     border-color: #ff6b6b;
     color: #ff6b6b;
 }
