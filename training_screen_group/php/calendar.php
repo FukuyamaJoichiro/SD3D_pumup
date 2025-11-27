@@ -14,6 +14,13 @@ $today = date('Y-m-d');
 $start_date = "$year-$month-01";
 $end_date = date("Y-m-t", strtotime($start_date));
 
+// 【重要】祝日データの定義（※実際の祝日データ取得ロジックは別途必要です）
+// 例として、2025年11月の祝日を仮で定義します。
+$holidays = [
+    "2025-11-03", // 文化の日
+    "2025-11-23", // 勤労感謝の日
+];
+
 // トレーニングデータ取得
 $sql = "
     SELECT DATE(ws.date) AS date, GROUP_CONCAT(DISTINCT p.part_name) AS parts
@@ -97,10 +104,29 @@ foreach ($dates as $d) {
 
         while ($day <= $days_in_month) {
             $current_date = sprintf("%04d-%02d-%02d", $year, $month, $day);
-            $weekday = date('w', strtotime($current_date));
+            $weekday = date('w', strtotime($current_date)); // 0(日)から6(土)
             $is_today = ($current_date == $today);
-            echo "<td class='" . ($is_today ? "today" : "") . "'>";
+            $is_holiday = in_array($current_date, $holidays); // 祝日判定
 
+            // CSSクラスの構築
+            $class_list = [];
+            if ($is_today) $class_list[] = "today";
+            
+            if ($weekday == 0 || $is_holiday) {
+                $class_list[] = "holiday";
+            } 
+            elseif ($weekday == 6) {
+                $class_list[] = "saturday";
+            }
+            if (isset($training_days[$current_date])) {
+                $class_list[] = "trained";
+            }
+
+            echo "<td class='" . implode(' ', $class_list) . "'>";
+
+            // 【JSによるクリック処理】日付データをdata属性に格納し、JS関数を呼び出す
+            echo "<div class='date-clickable-wrapper' data-date='$current_date' onclick='handleDateClick(this)'>";
+            
             echo "<div class='day-num'>$day</div>";
 
             if (isset($training_days[$current_date])) {
@@ -108,6 +134,9 @@ foreach ($dates as $d) {
                     echo "<div class='training-part'>$part</div>";
                 }
             }
+            
+            echo "</div>"; // date-clickable-wrapperを閉じる
+            
             echo "</td>";
 
             if ($weekday == 6) echo "</tr><tr>";
@@ -132,6 +161,8 @@ foreach ($dates as $d) {
         <div class="nav-item"><a href="../../home_screen_group/php/mypage.php">👤<br>マイページ</a></div>
     </div>
 </div>
-</body>
 
+<script src="calendar.js"></script>
+
+</body>
 </html>

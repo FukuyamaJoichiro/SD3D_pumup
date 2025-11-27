@@ -1,0 +1,270 @@
+/* --- 全体設定 --- */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    width: 100vw;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f8fa;
+    overflow-x: hidden; /* 横方向のオーバーフローを隠す */
+}
+
+/* --- コンテナ --- */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    background: #fff;
+    position: relative;
+    padding-bottom: 60px; /* 下部ナビ用 */
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+/* --- ヘッダー --- */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    padding: 10px 0;
+    font-size: 18px;
+    font-weight: bold;
+    position: relative;
+}
+
+.back-btn {
+    position: absolute;
+    left: 15px;
+    font-size: 28px;
+    line-height: 18px;
+    color: #333;
+    cursor: pointer;
+}
+
+.month {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+/* --- カレンダー曜日表示 / 日付スライダー --- */
+.calendar-week {
+    width: 100%;
+    text-align: center;
+    margin-top: 5px;
+    /* スワイプ機能を有効にするための設定 */
+    overflow: hidden; 
+    touch-action: pan-y; 
+}
+
+.calendar-week table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* 均等幅を維持 */
+    text-align: center;
+}
+
+/* 曜日 (th) のスタイル */
+.calendar-week th {
+    color: #555;
+    font-size: 13px;
+    font-weight: normal;
+    padding: 10px 0 2px;
+    text-align: center;
+    width: 14.28%;
+    margin-left: -2px; /* 👈 左右に適用 */
+    margin-right: -2px;
+}
+
+/* 日付セル (td) の基本スタイル */
+.calendar-week td {
+    font-size: 13px;
+    padding: 0; /* リンク要素でpaddingを調整 */
+    position: relative;
+    text-align: center;
+    width: 14.28%;
+    overflow: visible;
+    height: 40px;
+    margin-left: -2px; /* 👈 左に2pxずらして、セルの境界を視覚的に詰める */
+    margin-right: -2px;
+}
+
+/* 日付リンク (a) の基本スタイル */
+.calendar-week td a {
+    display: block;
+    text-decoration: none;
+    color: #444;
+    padding: 8px 0;
+    line-height: 1.5;
+    transition: color 0.1s;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+/* 曜日別の文字色 */
+.calendar-week th:nth-child(1),
+.calendar-week td.weekday-sun a {
+    color: #ff4a4a; /* 日曜日を赤く */
+}
+.calendar-week th:nth-child(7),
+.calendar-week td.weekday-sat a {
+    color: #007aff; /* 土曜日を青く */
+}
+
+/* --- 選択された日付のハイライト（赤丸） --- */
+.calendar-week td.selected a {
+    position: relative;
+    color: white !important; /* 選択された日付の文字色を白に */
+    font-weight: bold;
+    z-index: 1;
+}
+
+.calendar-week td.selected a::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 28px;
+    height: 28px;
+    background-color: #ff4a4a; /* アクティブカラーの赤い丸 */
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* --- 今日(本日)の日付マーク（selectedと重ならない薄いハイライト） --- */
+.calendar-week td.today-mark a {
+    /* 真円にするための調整 */
+    display: inline-flex; /* flexにして内包要素を中央寄せ */
+    align-items: center; 
+    justify-content: center;
+    width: 35px; /* 選択された日付の赤丸と同じ幅 */
+    height: 35px; /* 選択された日付の赤丸と同じ高さ */
+    padding: 0; /* paddingを削除してサイズを固定 */
+    
+    color: #ff6e6e; /* 文字を赤く */
+    border: 1px solid #ff6e6e; 
+    border-radius: 50%; /* 真円に */
+    position: relative;
+    z-index: 10;
+}
+/* --- タブメニュー --- */
+.tab-menu {
+    display: flex;
+    justify-content: space-around;
+    border-bottom: 1px solid #ddd;
+    margin-top: 8px;
+    background-color: #fff;
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-weight: bold; 
+}
+.tab a {
+    color: #a0a0a0; /* リンクの色を薄いグレーに設定 */
+    text-decoration: none; 
+    font-weight: bold; 
+}
+
+.tab.active {
+    color: #ff4a4a;
+    border-bottom: 2px solid #ff4a4a;
+    font-weight: bold;
+}
+
+/* --- トレーニングカード --- */
+.training-card {
+    background-color: #fff;
+    margin: 20px 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    padding: 15px;
+    text-align: center;
+}
+
+.training-card h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.training-card p {
+    font-size: 13px;
+    color: #666;
+    margin: 0 0 10px 0;
+}
+
+.training-btn {
+    background-color: #ff6e6e;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+    cursor: pointer;
+    width: 80%;
+    max-width: 280px;
+}
+
+/* --- タイマー・休み部分 --- */
+.status-section {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.status-section .timer {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+    cursor: pointer;
+}
+
+.status-section .rest {
+    font-size: 16px;
+    color: #888;
+    margin-top: 15px;
+    cursor: pointer;
+}
+
+/* --- 下部ナビゲーション --- */
+.bottom-nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background-color: #fff;
+    border-top: 1px solid #ddd;
+    z-index: 100;
+}
+
+.nav-item {
+    flex: 1;
+    text-align: center;
+    color: #777;
+    font-size: 13px;
+    padding: 6px 0;
+}
+
+.nav-item.active {
+    color: #ff4a4a;
+    font-weight: bold;
+}
+
+.nav-item small {
+    display: block;
+    font-size: 11px;
+    margin-top: 2px;
+}
