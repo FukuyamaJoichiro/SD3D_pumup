@@ -29,7 +29,6 @@ body {
     text-align: center;
     padding-bottom: 0;
 }
-
 .onboarding-logo {
     max-width: 70%; 
     height: auto;
@@ -43,41 +42,44 @@ body {
     margin-bottom: 20px; 
     overflow: hidden;
 }
-
 .progress-fill {
     height: 100%;
     width: 20%; 
     background-color: #FF0000; 
     border-radius: 5px;
 }
-
+.text-area {
+    width: 100%;
+    text-align: left;
+    color: black;
+    font-size: 8px;
+    letter-spacing: 0.5px;
+    margin-bottom: 15px;
+}
 .header-content {
     display: flex;
     align-items: center;
     width: 100%;
-    margin-bottom: 20px;
+    margin-bottom: 20px; 
 }
-
 .back-button {
     font-size: 30px;
     font-weight: bold;
     color: black;
     text-decoration: none;
-    margin-right: 15px; 
+    margin-right: 15px;
     position: relative;
 }
-
 .progress-bar-container {
-    flex-grow: 1; 
-    margin-bottom: 0; 
+    flex-grow: 1;
+    margin-bottom: 0;
 }
 .question-area {
     width: 100%;
     text-align: left;
     color: black;
-    margin-bottom: 25px; 
+    margin-bottom: 25px;
 }
-
 .question-area h1 {
     font-size: 18px;
     margin: 0;
@@ -89,16 +91,42 @@ body {
     color: #333;
     margin-top: 5px;
 }
-
-
 .option-container {
     width: 100%;
-    display: flex;
     flex-direction: column;
-    gap: 15px; 
-    margin-bottom: 5px; 
+    gap: 15px;
+    margin-bottom: 5px;
+    align-items: center;
+    display: flex;
 }
 
+.level-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    background-color: #e0e0e0;
+    color: black;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    align-items: center;
+}
+.level-button.selected {
+    border: 3px solid #FF0000; 
+    box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+}
+.level-badge {
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-right: 15px;
+    min-width: 60px;
+    text-align: center;
+}
 .text-content {
     flex-grow: 1;
 }
@@ -109,10 +137,79 @@ body {
     line-height: 1.2;
 }
 .text-content p {
-    font-size: 0.7em; 
+    font-size: 0.7em;
     color: #666;
     margin: 3px 0 0 0;
     line-height: 1.2;
+}
+
+.goal-button {
+    width: 280px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #e0e0e0; 
+    color: black;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    
+    display: flex;
+    align-items: center; 
+}
+.goal-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px; 
+    height: 45px;
+    margin-right: 15px;
+    border-radius: 8px;
+    background-size: 100%; 
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    font-size: 24px; 
+    color: white; 
+}
+.icon-body {
+    background-color: #A06AD7;
+    background-image: url('../images/素材1.png'); 
+    background-size: 70%;
+}
+.icon-strength {
+    background-color: #999;
+    background-image: url('../images/素材2.png');
+    background-size: 75%; 
+}
+.icon-ability {
+    background-color: #28B463;
+    background-image: url('../images/素材3.png');
+    background-size: 85%;
+}
+.icon-stamina {
+    background-color: #E74C3C;
+    background-image: url('../images/素材4.png');
+    background-size: 70%;
+}
+.goal-button.selected {
+    border: 5px solid #FF0000; 
+    box-shadow: 0 0 12px rgba(255, 0, 0, 0.7); 
+}
+
+.next-button {
+    width: 100%;
+    padding: 13px;
+    background-color: #FF0000;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border: 2px solid #FF6E6E;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
 }
 .custom-goal-label {
     display: block;
@@ -143,86 +240,21 @@ body {
     line-height: 1.4;
     color: black;
 }
-
-.custom-goal-input::placeholder {
-    color: #999;
-}
-
 .char-counter {
+    /* position: absolute; は親要素の input-container に依存するため維持 */
     position: absolute;
-    bottom: 0; 
-    right: 5px; 
-    font-size: 0.75em;
-    color: white; 
+    
+    bottom: -25px;     /* 入力欄の下に表示されるよう位置を調整 */
+    right: 0;          /* 右端に基準を合わせる */
+    
+    font-size: 15px;    /* 見やすいように色を黒系に変更 */
     margin: 0;
     padding: 0;
-
-    transform: translateY(-20px); 
+    
+    /* ↓↓↓ 右揃えの核となる設定 ↓↓↓ */
+    width: 100%;       /* 親要素の幅全体を使う */
+    text-align: right; /* テキストを右に揃える */
+    padding-right: 5px; /* 右端から少し離すための余白 */
+    box-sizing: border-box; 
     pointer-events: none; 
-}
-
-.goal-button {
-    width: 255px;
-    padding: 15px;
-    border: none;
-    border-radius: 10px;
-    background-color: #e0e0e0; 
-    color: black;
-    text-align: left;
-    cursor: pointer;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.2s;
-    
-    display: flex;
-    align-items: center; 
-}
-.goal-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 45px; 
-    height: 45px;
-    margin-right: 15px;
-    border-radius: 8px;
-    background-size: 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    
-    font-size: 24px; 
-    color: white; 
-}
-.icon-body {
-    background-color: #A06AD7; 
-    background-image: url('../images/素材1.png'); 
-    background-size: 70%; 
-}
-.icon-strength {
-    background-color: #999; 
-    background-image: url('../images/素材2.png');
-    background-size: 75%; 
-}
-.icon-ability {
-    background-color: #28B463;
-    background-image: url('../images/素材3.png');
-    background-size: 85%;
-}
-
-.icon-stamina {
-    background-color: #E74C3C; 
-    background-image: url('../images/素材4.png');
-    background-size: 70%;
-}
-
-.next-button {
-    width: 100%;
-    padding: 15px;
-    background-color: #FF0000;
-    color: white;
-    font-size: 16px;
-    font-weight: bold;
-    border: 2px solid #FF6E6E; 
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    margin-top: 40px;
 }

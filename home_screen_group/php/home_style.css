@@ -91,11 +91,18 @@ body {
 }
 
 .goal-icon {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     background-color: #e0d6ff;
     border-radius: 12px;
     margin-right: 1rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 70%; /* 以前の画面と同じ70%に統一 */
 }
 
 .goal-text h3 {
@@ -224,3 +231,20 @@ body {
             margin-bottom: 0.25rem;
             /* */
         }
+
+.icon-body {
+    background-color: #a78bfa; /* 紫 */
+    background-image: url('../../initial_screen_group/images/素材1.png'); 
+}
+.icon-strength {
+    background-color: #999; /* グレー */
+    background-image: url('../../initial_screen_group/images/素材2.png');
+}
+.icon-ability {
+    background-color: #28B463; /* 緑 */
+    background-image: url('../../initial_screen_group/images/素材3.png');
+}
+.icon-stamina {
+    background-color: #E74C3C; /* 赤 */
+    background-image: url('../../initial_screen_group/images/素材4.png');
+}

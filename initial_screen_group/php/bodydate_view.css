@@ -117,8 +117,8 @@ body {
     display: block; 
     font-weight: bold; 
     color: black;
-    font-size: 16px; /* .selection-headerと統一 */
-    margin-top: 25px; /* マージンを調整 */
+    font-size: 16px; 
+    margin-top: 25px; 
     margin-bottom: 5px;
     text-align: left;
     width: 100%;
@@ -129,7 +129,7 @@ body {
     width: 100%;
     padding: 10px; 
     background-color: rgb(214, 214, 214); /* グレーの背景 */
-    border: 1px solid #FF0000; /* 赤い枠線 */
+    /* border: 1px solid #FF0000;  確認画面なので枠線は削除または薄く */
     border-radius: 10px; 
     color: black; 
     font-size: 0.95em;
@@ -139,9 +139,8 @@ body {
     line-height: 1.2;
 }
 
-
 /* ---------------------------------------------------- */
-/*  2. レベル表示 (1枚目の画像のデザインを反映)  */
+/*  2. レベル表示 (レベルカード)  */
 /* ---------------------------------------------------- */
 
 .option-container {
@@ -150,100 +149,123 @@ body {
     flex-direction: column;
     gap: 15px; 
     margin-bottom: 5px; 
+    align-items: center; /* カードを中央に寄せる */
 }
 
+/* レベルカードのラッパー幅（前の画面から流用） */
+.level-card-wrapper {
+    width: 280px; /* 目標ボタンと同じ幅に調整 */
+    max-width: 300px;
+    display: flex; /* カードをラッパー内で中央寄せ */
+    justify-content: center;
+}
 .level-button-display {
     width: 100%;
     padding: 10px;
     border-radius: 10px;
-    /* ★★★ 1枚目の画像のデザインの変更点 ★★★ */
-    background-color: rgb(240, 240, 240); /* 薄いグレーの背景 */
-    border: 3px solid #FF0000; /* 赤い枠線 */
-    /* ★★★ ------------------------------ ★★★ */
+    background-color: #e0e0e0;
     box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+
     display: flex;
     align-items: center;
     margin-top: 5px;
+    justify-content: flex-start;
+
+    height: 70px;
 }
 
-/* バッジ部分 (Lv. の文字が入っているが、画像を再現するため四角の背景として利用) */
-.level-button-display .level-badge {
-    /* ★★★ 1枚目の画像のデザインの変更点 ★★★ */
-    width: 50px; /* 四角の幅を調整 */
-    height: 50px; /* 四角の高さを調整 */
-    border-radius: 8px; /* 角丸を調整 */
-    padding: 0 5px;
-    border-radius: 8px;
-    margin-right: 15px; 
-    min-width: 50px;
-    /* Lv. の文字自体を非表示（四角い背景として使うため） */
+.level-badge-combined {
+    /* 四角い背景のサイズと形 */
+    width: 90px; /* ★幅を調整 (Lv.1 初めてです。全体を収めるため広め) */
+    height: 50px; 
+    border-radius: 8px; 
+    margin-right: 15px; /* 説明文との間隔 */
+    
+    /* テキストのスタイル */
     color: white; 
-    background-color: #FFA500;
-    text-align: center;
     font-weight: bold;
-    font-size: 1.1em;
+    font-size: 1.0em; 
+    
+    /* 中央揃え */
     display: flex;
     justify-content: center;
     align-items: center;
-    /* ★★★ ------------------------------ ★★★ */
-    font-weight: bold;
-    font-size: 1.1em;
-}
-.level-button-display.level-1 .level-badge {
-    background-color: #FFA500; 
-}
-.level-button-display.level-2 .level-badge {
-    background-color: #28a745; 
-}
-.level-button-display.level-3 .level-badge {
-    background-color: #007bff; 
-}
-.level-button-display.level-4 .level-badge {
-    background-color: #dc3545; 
-}
-/* レベル値のテキスト (例: 1, 2, 3) */
-.level-button-display .level-text-display {
-    /* ★★★ 1枚目の画像のデザインの変更点 ★★★ */
-    font-size: 2.2em; /* 大きく表示 */
-    line-height: 1; 
-    /* ★★★ ------------------------------ ★★★ */
-    font-weight: bold;
-    margin: 0;
-    padding: 0;
-    color: black;
-    display: flex; /* flexコンテナ化 */
-    align-items: center;
+    
+    /* 背景色（レベルごとの色をここで指定） */
+    /* 背景色自体は、レベルごとのクラスで定義します */
 }
 
+.level-button-display.level-1 .level-badge-combined { background-color: #FFA500; }
+.level-button-display.level-2 .level-badge-combined { background-color: #28a745; }
+.level-button-display.level-3 .level-badge-combined { background-color: #007bff; }
+.level-button-display.level-4 .level-badge-combined { background-color: #dc3545; }
 
-/* ---------------------------------------------------- */
-/*  3. 目標表示 (goal-summary-card)  */
-/* ---------------------------------------------------- */
 
-.goal-summary-card {
-    width: 100%;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: #e0e0e0; 
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
-    margin-top: 5px;
-    text-align: left;
-}
-
-.goal-summary-card h2 {
-    font-size: 1.0em; 
-    font-weight: bold;
-    margin: 0;
-    line-height: 1.3;
-    color: black;
-}
-
-.goal-summary-card p {
-    font-size: 0.9em; 
+.level-description-text {
+    flex-grow: 1; /* 残りのスペースを埋めて、テキストを左寄せにする */
+    font-size: 0.9em;
     color: #333; 
-    margin: 5px 0 0 0;
-    line-height: 1.3;
+    margin: 0; 
+    line-height: 1.5;
+    /* レベル値のテキストと垂直方向の中央で揃うように調整 */
+    align-self: center; 
 }
+
+/* ---------------------------------------------------- */
+/*  3. 目標表示 (目標ボタン形式)  */
+/* ---------------------------------------------------- */
+
+/* 目標カードのラッパー幅（前の画面から流用） */
+.goal-card-wrapper {
+    width: 280px; /* 固定幅に調整 */
+    max-width: 300px;
+    display: flex; /* カードをラッパー内で中央寄せ */
+    justify-content: center;
+}
+
+/* 目標ボタンの表示スタイル (goal_detail.cssのものを流用) */
+.goal-button-display {
+    width: 290px;
+    padding: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: #e0e0e0; /* 白い背景 */
+    color: black;
+    text-align: left;
+    cursor: pointer;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s;
+    
+    display: flex;
+    align-items: center; 
+}
+
+/* 目標アイコンの枠 */
+.goal-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px; 
+    height: 45px;
+    margin-right: 15px;
+    border-radius: 8px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%; /* 統一サイズ */
+    color: white; 
+    font-size: 24px; 
+}
+
+/* 各アイコンの色と画像設定 */
+.icon-body { background-color: #A06AD7; background-image: url('../images/素材1.png'); background-size: 70%; }
+.icon-strength { background-color: #999; background-image: url('../images/素材2.png'); background-size: 75%; }
+.icon-ability { background-color: #28B463; background-image: url('../images/素材3.png'); background-size: 85%;}
+.icon-stamina { background-color: #E74C3C; background-image: url('../images/素材4.png'); background-size: 70%;}
+
+/* テキストコンテンツのスタイル */
+.text-content { flex-grow: 1; }
+.text-content h2 { font-size: 1.1em; font-weight: bold; margin: 0; line-height: 1.2; }
+.text-content p { font-size: 0.7em; color: #666; margin: 3px 0 0 0; line-height: 1.2; }
 
 
 /* ---------------------------------------------------- */
@@ -254,7 +276,7 @@ body {
     font-weight: bold;
     color: black;
     margin-top: 5px;
-    margin-bottom: 25px; /* 次のボタンとの間隔 */
+    margin-bottom: 25px; 
 }
 
 /* ---------------------------------------------------- */
@@ -272,13 +294,4 @@ body {
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     margin-top: 30px;
-}
-.level-card-wrapper{
-    width: 60%; /* カードの幅を画面の90%に制限 (この値を調整してください) */
-    max-width: 300px;
-}
-.goal-card-wrapper {
-    /* 画面幅の例：375px */
-    width: 80%; /* カードの幅を画面の90%に制限 (この値を調整してください) */
-    max-width: 300px;
 }
