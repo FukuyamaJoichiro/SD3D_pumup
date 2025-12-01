@@ -12,10 +12,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error = 'メールアドレスとパスワードを入力してください。';
     } else {
         
-        // login.php の中の '2. 認証処理と戻り値の受け取り' の前に一時的に追加
-echo "Email: " . htmlspecialchars($email) . "<br>";
-echo "Password: " . htmlspecialchars($password) . "<br>"; 
-// exit; // 処理を止めて確認
         // 2. 認証処理と戻り値の受け取り
         // auth.phpのlogin関数が [成功(bool), メッセージ(string)] の配列を返すため、list()で受け取ります。
         list($success, $message) = login($email, $password);
