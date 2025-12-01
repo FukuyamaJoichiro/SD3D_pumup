@@ -1,16 +1,27 @@
 <?php
-require_once __DIR__ . '/../../auth.php';
+require_once __DIR__ . '/../../auth.php'; // auth.phpへの正しいパスを確認してください
 
 $error = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email'] ?? '');
     $password = $_POST['password'] ?? '';
 
+    // 1. 入力値の必須チェック
     if ($email === '' || $password === '') {
         $error = 'メールアドレスとパスワードを入力してください。';
     } else {
-        if (login($email, $password)) {
+        
+        // login.php の中の '2. 認証処理と戻り値の受け取り' の前に一時的に追加
+echo "Email: " . htmlspecialchars($email) . "<br>";
+echo "Password: " . htmlspecialchars($password) . "<br>"; 
+// exit; // 処理を止めて確認
+        // 2. 認証処理と戻り値の受け取り
+        // auth.phpのlogin関数が [成功(bool), メッセージ(string)] の配列を返すため、list()で受け取ります。
+        list($success, $message) = login($email, $password);
+
+        if ($success) {
+            // 3. 認証成功時のリダイレクト処理
             $default_redirect = '../../home_screen_group/php/home.php';
 
             $redirect = $_SESSION['redirect_to'] ?? $default_redirect;
@@ -20,8 +31,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             exit;
 
         } else {
-            // ✅ auth.php 内のエラー文を表示
-            $error = $msg;
+            // 4. 認証失敗時のエラーメッセージ表示
+            // login()関数から返されたメッセージをエラー変数に格納します。
+            $error = $message;
         }
     }
 }
@@ -112,8 +124,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <a href="bodydata_register.php">新規登録の方はこちらから </a>
-
-        <!-- <p class="hint">初回利用の場合は管理者にアカウント作成を依頼してください。</p> -->
     </div>
 </body>
 </html>
