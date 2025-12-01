@@ -101,9 +101,7 @@ $hasTraining = $result['count'] > 0;
 </section>
 
  <section class="status-section">
- <p class="timer" onclick="location.href='interval_timer.php'">
- ⏱ Interval Timer ⏱
- </p>
+ 
 
 <p class="rest" onclick="location.href='training_rest.php'">
  🛏 今日は休みます 🛏
