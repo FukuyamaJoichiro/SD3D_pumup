@@ -62,10 +62,10 @@ $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
     <link rel="stylesheet" href="mybodydata_edit.css">
 </head>
 <body>
-    <div class="header">
-        <a href="bodydata.php" class="back-link">&lt;</a>
+    <header class="header">
+        <div class="back-btn" onclick="location.href='bodydata.php'">&#x2039;</div>
         <h1>ボディデータ</h1>
-    </div>
+    </header>
 
     <div class="container">
         <h2>MYボディデータ</h2>

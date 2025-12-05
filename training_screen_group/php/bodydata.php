@@ -197,9 +197,19 @@ $class_string = implode(' ', $classes);
 <p class="data-value"><?= $display_fat ?></p>
 </div>
 </div>
-<div class="arrow">></div>
 </div>
 </div>
+ <nav class="app-nav">
+        <a href="../../home_screen_group/php/home.php" class="nav-item">
+                <span class="nav-item-icon">🏠</span> ホーム
+            </a>
+            <a href="calendar.php" class="nav-item activ">
+                <span class="nav-item-icon">💪</span> カレンダー
+            </a>
+            <a href="../../home_screen_group/php/mypage.php" class="nav-item">
+                <span class="nav-item-icon">👤</span> マイページ
+            </a>
+    </nav>
 </div>
 
 <script src="bodydata.js"></script>

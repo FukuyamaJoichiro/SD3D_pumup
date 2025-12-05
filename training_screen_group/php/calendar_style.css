@@ -4,7 +4,6 @@ body {
     background-color: #f4f4f8;
     margin: 0;
     padding: 0;
-    line-height: 1.4; /* 行の高さを調整 */
 }
 
 /* --- コンテナ --- */
@@ -174,46 +173,39 @@ body {
 }
 
 /* --- 下部ナビゲーション --- */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    max-width: 420px;
-    margin: 0 auto;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background-color: #ffffff;
-    border-top: 1px solid #f0f0f0;
-    padding: 0.5rem 0;
-    padding-bottom: env(safe-area-inset-bottom);
-    height: 60px;
-    z-index: 10;
-    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05); /* 影を追加 */
-}
+        .app-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            max-width: 420px; /* コンテナ幅と合わせる */
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            background-color: #ffffff;
+            border-top: 1px solid #f0f0f0;
+            padding: 0.5rem 0;
+            padding-bottom: env(safe-area-inset-bottom); /* iPhoneのノッチ対応 */
+        }
 
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 0.75rem;
-    color: #999;
-    text-decoration: none;
-}
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: #999;
+            text-decoration: none;
+        }
+        
+        .nav-item.active {
+            color: #f87171; /* アクティブ時の色 */
+        }
 
-.nav-item a {
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.nav-item.active {
-    color: #ff6e6e;
-    font-weight: bold;
-}
+        .nav-item-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.25rem;
+            /* */
+        }
 
 @media (max-width: 480px) {
     .app-header h2 {

@@ -1,42 +1,67 @@
+/* --- 全体設定 --- */
 body {
-    font-family: sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f4f9;
+    /* 外側の背景色（薄いグレー） */
+    background-color: #f4f4f9; 
+    overflow-y: auto;
 }
 
+/* --- 【最重要】ヘッダー --- */
 .header {
+    /* 中央寄せと最大幅の設定 */
+    max-width: 420px; 
+    margin: 0 auto;
+    
+    /* Flex設定で子要素を配置 */
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 15px;
+    justify-content: space-between; 
+    
+    padding: 15px 0; 
     background-color: #fff;
-    border-bottom: 1px solid #ddd;
+    border-bottom: none; 
     position: relative;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); 
+}
+
+/* 戻るボタンの修正 (HTMLのdiv.back-btnに対応) */
+.back-btn {
+    font-size: 28px;
+    line-height: 1; 
+    color: #333;
+    cursor: pointer;
+    padding: 0 15px; 
 }
 
 .header h1 {
     font-size: 18px;
     margin: 0;
     color: #333;
+    flex-grow: 1; 
+    text-align: center;
 }
 
-.back-link {
-    position: absolute;
-    left: 15px;
-    font-size: 24px;
-    text-decoration: none;
-    color: #007aff;
-}
-
+/* --- コンテナ (メインコンテンツ) --- */
 .container {
-    padding: 20px;
+    /* 中央寄せと最大幅の設定 */
+    max-width: 380px; 
+    margin: 0 auto; 
+    
+    background-color: #fff; 
+    /* ✅ 修正点: min-heightを100vh全体に設定し、確実に画面の最後まで白で覆う */
+    /* ただし、bodyのmin-heightがないため、ここでは高さを確保する計算を少し安全側に倒す */
+    min-height: calc(100vh - 48px); /* ヘッダーの高さを約48pxと想定し、計算を調整 */
+    
+    /* ヘッダーと連続しているように見せるため、上部の余白を調整 */
+    padding: 10px 20px 20px; 
 }
 
 .container h2 {
     font-size: 16px;
     color: #555;
-    margin-top: 0;
+    margin-top: 10px;
     margin-bottom: 20px;
     font-weight: normal;
 }
@@ -102,7 +127,7 @@ label {
     transition: background-color 0.2s;
 }
 
-/* --- モーダル関連 (ピッカー要素は削除) --- */
+/* --- モーダル関連 (変更なし) --- */
 
 .modal-overlay {
     position: fixed;
@@ -165,46 +190,45 @@ label {
     align-items: center;
     margin-bottom: 30px;
     position: relative;
-    /* 選択中の値を示すライン */
-    height: 150px; /* 3つのアイテムが見えるように (50px * 3) */
+    height: 150px;
 }
 
 .picker {
-    width: 70px; /* 整数部と小数部の幅 */
-    height: 150px; /* 3つのアイテムが見える高さ */
+    width: 70px;
+    height: 150px;
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
-    scroll-snap-type: y mandatory; /* スクロールをアイテムにスナップさせる */
-    padding: 50px 0; /* 上下にダミーのスペース（中心に1つ目のアイテムが来るように） */
+    scroll-snap-type: y mandatory;
+    padding: 50px 0;
     box-sizing: border-box;
     text-align: center;
     border-top: 1px solid #aaa; 
     border-bottom: 1px solid #aaa;
-    position: relative; /* z-indexを有効にするため */
+    position: relative;
     z-index: 2;
-}
-.decimal-separator, .unit-label {
-    z-index: 3; /* ピッカーのボーダーより前面に表示 */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
 }
 .picker::-webkit-scrollbar {
     display: none;
 }
-.picker {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+
+.decimal-separator, .unit-label {
+    z-index: 3;
 }
+
 .picker-item {
     line-height: 50px;
     height: 50px;
     font-size: 24px;
     color: #999;
     transition: color 0.1s;
-    scroll-snap-align: center; /* アイテムが中心にスナップするように */
+    scroll-snap-align: center;
 }
 .picker-item.selected {
-    color: #333; /* 選択されていない値とのコントラストを維持 */
-    font-weight: bold; /* 太字にする */
-    font-size: 32px; /* 選択されていることをより強調するためにサイズを大きくしても良い */
+    color: #333;
+    font-weight: bold;
+    font-size: 32px;
 }
 .decimal-separator {
     font-size: 30px;
@@ -219,5 +243,5 @@ label {
     color: #333;
     line-height: 50px;
     margin-left: 5px;
-    align-self: center; /* 垂直方向の中央に合わせる */
+    align-self: center;
 }

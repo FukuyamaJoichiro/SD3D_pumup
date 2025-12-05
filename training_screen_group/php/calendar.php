@@ -155,11 +155,17 @@ foreach ($dates as $d) {
         <button onclick="location.href='training_record.php'">今日のトレーニングプランを立てる</button>
     </div>
 
-    <div class="bottom-nav">
-        <div class="nav-item"><a href="../../home_screen_group/php/home.php">🏠<br>ホーム</a></div>
-        <div class="nav-item active"><a href="calendar.php">📅<br>カレンダー</a></div>
-        <div class="nav-item"><a href="../../home_screen_group/php/mypage.php">👤<br>マイページ</a></div>
-    </div>
+    <nav class="app-nav">
+        <a href="../../home_screen_group/php/home.php" class="nav-item">
+                <span class="nav-item-icon">🏠</span> ホーム
+            </a>
+            <a href="calendar.php" class="nav-item activ">
+                <span class="nav-item-icon">💪</span> カレンダー
+            </a>
+            <a href="../../home_screen_group/php/mypage.php" class="nav-item">
+                <span class="nav-item-icon">👤</span> マイページ
+            </a>
+    </nav>
 </div>
 
 <script src="calendar.js"></script>
