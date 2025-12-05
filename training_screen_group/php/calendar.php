@@ -1,4 +1,8 @@
 <?php
+
+echo "読み込んでいるDB接続ファイル: " . realpath("../../db_connect.php");
+exit;
+
 session_start();
 require_once("../../db_connect.php"); // パスは環境に合わせて変更
 
