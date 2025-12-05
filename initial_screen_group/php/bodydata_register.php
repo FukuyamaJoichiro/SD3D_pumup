@@ -2,12 +2,18 @@
 // データ処理部分をファイルの最上部に追加します
 session_start();
 
+// エラーメッセージ用変数とフラグを定義
+$email_error_message = ''; 
+$is_duplicate_error = false; 
+
 // POSTリクエストがある（フォームが送信された）場合のみ、データ処理を実行
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
     // データベース接続ファイルの読み込み
+    // 接続情報（$pdo）がこのファイル（../../db_connect.php）で定義されている前提です
     require_once '../../db_connect.php';
 
+    // フォームデータの受け取り
     $weight = $_POST['weight'] ?? null;
     $height = $_POST['height'] ?? null;
     $birthday = $_POST['birthday'] ?? null;
@@ -22,45 +28,62 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $goal_detail = null;
 
 
+    // 必須項目チェック (ここでは簡略化。本来はより詳細なバリデーションが必要)
     if (empty($weight) || empty($height) || empty($birthday) || empty($gender) || empty($email) || empty($password)) {
-        // エラー処理（ここでは一旦 exit していますが、実際にはフォームの下にエラーメッセージを表示するのが親切です）
-        exit('必須項目（体重、身長、生年月日、性別、メールアドレス、パスワード）が入力されていません。');
-    }
+        // 全ての必須項目が入力されていない場合は処理を中断し、画面表示へ進む
+        // または、ここでエラーメッセージを設定し、フォームに表示することも可能です。
+    } else {
+        // --- 【重要】メールアドレス重複チェック ---
+        try {
+            $check_sql = "SELECT COUNT(*) FROM users WHERE email = :email";
+            $check_stmt = $pdo->prepare($check_sql);
+            // プリペアドステートメントでSQLインジェクションを防止
+            $check_stmt->execute([':email' => $email]);
+            $count = $check_stmt->fetchColumn();
 
-    $_SESSION['original_password_length'] = mb_strlen($password);
+            if ($count > 0) {
+                // **重複あり**
+                $is_duplicate_error = true;
+                $email_error_message = 'このメールアドレスは既に登録されています！';
+                // INSERT処理はスキップし、このままHTMLの表示に進みます
+            } else {
+                // **重複なし -> 新規登録処理**
+                
+                $_SESSION['original_password_length'] = mb_strlen($password);
+                $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+                $sql = "INSERT INTO users (
+                            user_name, birthday, gender, height, weight, muscle_ptc, bodyfat_ptc, goal_detail,
+                            email,password
+                        ) VALUES (
+                            :user_name, :birthday, :gender, :height, :weight, :muscle_ptc, :bodyfat_ptc, :goal_detail,:email, :password
+                        )";
 
-    $sql = "INSERT INTO users (
-                user_name, birthday, gender, height, weight, muscle_ptc, bodyfat_ptc, goal_detail,
-                email,password
-            ) VALUES (
-                :user_name, :birthday, :gender, :height, :weight, :muscle_ptc, :bodyfat_ptc, :goal_detail,:email, :password
-            )";
-
-    try {
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute([
-            ':user_name' => $user_name,
-            ':birthday' => $birthday,
-            ':gender' => $gender,
-            ':height' => $height,
-            ':weight' => $weight,
-            ':muscle_ptc' => $muscle_ptc,
-            ':bodyfat_ptc' => $bodyfat_ptc,
-            ':goal_detail' => $goal_detail,
-            ':email' => $email,
-            ':password' => $hashed_password,
-        ]);
-        $user_id = $pdo->lastInsertId();
-        $_SESSION['user_id'] = $user_id;
-        
-        // 処理成功後、次のページへ遷移
-        header('Location: training_experience.php');
-        exit();
-    } catch (PDOException $e) {
-        // SQL実行失敗時の処理
-        exit('データ登録中にエラーが発生しました: ' . $e->getMessage());
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    ':user_name' => $user_name,
+                    ':birthday' => $birthday,
+                    ':gender' => $gender,
+                    ':height' => $height,
+                    ':weight' => $weight,
+                    ':muscle_ptc' => $muscle_ptc,
+                    ':bodyfat_ptc' => $bodyfat_ptc,
+                    ':goal_detail' => $goal_detail,
+                    ':email' => $email,
+                    ':password' => $hashed_password,
+                ]);
+                $user_id = $pdo->lastInsertId();
+                $_SESSION['user_id'] = $user_id;
+                
+                // 処理成功後、次のページへ遷移
+                header('Location: training_experience.php');
+                exit();
+            }
+        } catch (PDOException $e) {
+            // SQL実行失敗時の処理
+            // 本番環境ではエラーメッセージは出さず、ログに記録すべきです
+            exit('データベースエラーが発生しました。時間をおいて再度お試しください。');
+        }
     }
 }
 ?>
@@ -116,5 +139,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <button type="submit" class="next-button">次へ</button>
         </form>
     </div>
+
+    <div id="duplicateModal" class="modal-overlay <?php if ($is_duplicate_error) { echo 'active'; } ?>">
+        <div class="modal-content">
+            <div class="modal-icon">🚨</div>
+            <h2>登録できませんでした</h2>
+            <p><?php echo htmlspecialchars($email_error_message); ?></p>
+            <button class="modal-close-button">OK</button>
+        </div>
+    </div>
+
+    <script src="bodydata_register.js"></script>
+    
 </body>
 </html>
