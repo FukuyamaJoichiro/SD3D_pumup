@@ -2,6 +2,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     initializeTrainingCards();
     initializeTimers();
+    initializeTrainingMenu();
 });
 
 // トレーニングカードの初期化
@@ -238,3 +239,107 @@ document.querySelectorAll('.tab').forEach(tab => {
         // タブに応じたコンテンツ切り替え処理をここに追加
     });
 });
+
+// ===== トレーニングメニュー =====
+let currentTrainingCard = null;
+
+function initializeTrainingMenu() {
+    const overlay = document.getElementById('training-menu-overlay');
+    const closeBtn = document.getElementById('menu-close-btn');
+    
+    // すべての︙ボタンにイベントを設定
+    document.querySelectorAll('.menu-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const card = this.closest('.training-card');
+            const trainingName = card.querySelector('.training-name').textContent;
+            currentTrainingCard = card;
+            
+            // モーダルのタイトルを更新
+            document.getElementById('menu-training-name').textContent = trainingName;
+            
+            // モーダルを表示
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    });
+    
+    // 閉じるボタン
+    closeBtn.addEventListener('click', closeTrainingMenu);
+    
+    // オーバーレイクリックで閉じる
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            closeTrainingMenu();
+        }
+    });
+    
+    // メニュー項目のイベント
+    document.getElementById('menu-exchange').addEventListener('click', function() {
+        alert('トレーニング交換機能（未実装）');
+        closeTrainingMenu();
+    });
+    
+    document.getElementById('menu-superset').addEventListener('click', function() {
+        alert('スーパーセット機能（未実装）');
+        closeTrainingMenu();
+    });
+    
+    document.getElementById('menu-delete').addEventListener('click', function() {
+        if (confirm('このトレーニングを削除しますか？')) {
+            if (currentTrainingCard) {
+                const trainingId = currentTrainingCard.getAttribute('data-training-id');
+                
+                // モーダルを閉じる
+                closeTrainingMenu();
+                
+                // セッションから削除（サーバー側で処理）
+                fetch('remove_training.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `training_id=${trainingId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // カードを画面から削除
+                        currentTrainingCard.remove();
+                        
+                        // 残りのトレーニングカードを確認
+                        const remainingCards = document.querySelectorAll('.training-card');
+                        
+                        if (remainingCards.length === 0) {
+                            // 全て削除された場合、ページをリロードして空の状態を表示
+                            location.reload();
+                        } else {
+                            // 残りがある場合は番号を振り直す
+                            remainingCards.forEach((card, index) => {
+                                const numberSpan = card.querySelector('.training-number');
+                                if (numberSpan) {
+                                    numberSpan.textContent = `${index + 1}種`;
+                                }
+                            });
+                        }
+                    } else {
+                        alert('削除に失敗しました: ' + (data.message || ''));
+                        location.reload();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('通信エラーが発生しました');
+                    location.reload();
+                });
+            }
+        }
+    });
+}
+
+function closeTrainingMenu() {
+    const overlay = document.getElementById('training-menu-overlay');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    currentTrainingCard = null;
+}
