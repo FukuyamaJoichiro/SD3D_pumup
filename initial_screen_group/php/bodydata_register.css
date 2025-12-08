@@ -204,3 +204,79 @@ input[type="password"] {
 .modal-close-button:hover {
     background-color: #e60000;
 }
+
+/* 警告吹き出し全体を囲むコンテナのスタイル */
+.warning-tip {
+    position: relative; /* 吹き出しのしっぽを絶対位置で配置するため */
+    background-color: #ffffff; /* 最初の画像のようなオレンジ/黄色の背景 */
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* 軽めのシャドウ */
+    
+    /* 入力フィールドのすぐ下に配置 */
+    margin-top: 15px; /* 入力欄と吹き出しの間のスペース */
+    margin-bottom: 5px;
+    
+    width: auto; /* コンテンツの幅に合わせる */
+    max-width: 90%; 
+    box-sizing: border-box;
+    display: flex; 
+    align-items: center;
+    font-size: 0.9em;
+    line-height: 1.4;
+
+    /* 吹き出し全体を中央に寄せたい場合は以下の行を有効にしてください */
+     margin-left: auto;
+    margin-right: auto; 
+    justify-content: flex-start; 
+    align-items: center;
+    font-size: 0.9em;
+    line-height: 1.4;
+    border: 1px solid #a3a3a3
+}
+
+/* 吹き出しの「しっぽ」（上向きの三角形）のスタイル */
+.warning-tip::before {
+    content: "";
+    position: absolute;
+    /* 吹き出しの上端中央に配置 */
+    top: -10px; 
+    left: 30px;
+    transform: translateX(-50%);
+    
+    border-top: 1px solid #a3a3a3;
+    border-right: 1px solid #a3a3a3;
+    border-left: 1px solid #a3a3a3;
+    
+    /* 3. 【修正】三角形を少し上にずらして、吹き出し本体の枠線と接続させる */
+    top: -11px;
+    
+    /* 三角形の描画（borderトリック） */
+    border-width: 0 10px 10px 10px;
+    border-style: solid;
+    border-color: transparent transparent #ffffff transparent; /* 背景色と同じ色 */
+}
+
+/* 警告アイコン (!) のスタイル */
+.warning-icon {
+    background-color: #ff9800; /* 目立つオレンジ色 */
+    color: white;
+    font-weight: bold;
+    font-size: 1.1em;
+    padding: 2px 8px; 
+    border-radius: 3px;
+    margin-right: 10px; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 25px; 
+    height: 25px;
+    box-sizing: border-box;
+    flex-shrink: 0;
+}
+
+/* 警告テキストのスタイル */
+.warning-text {
+    flex-grow: 1; 
+}

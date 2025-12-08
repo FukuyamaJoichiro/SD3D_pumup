@@ -126,7 +126,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <input type="email" id="email" name="email" placeholder="例 : yourname@example.com" required>
 
             <label for="password">パスワード<span class="required">●</span></label>
-            <input type="password" id="password" name="password" placeholder="8文字以上の英数字" required minlength="8">
+            <input type="password" id="password" name="password" placeholder="8文字以上16文字以内の英数字" required maxlength="16">
+            <div id="password-error-tip" class="warning-tip" style="display: none;">
+                <span class="warning-icon">!</span>
+                <span class="warning-text"></span>
+            </div>
 
             <fieldset>
                 <legend>性別<span class="required">●</span></legend>
