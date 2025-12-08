@@ -1,69 +1,69 @@
 <?php
 // データベース接続ファイルを読み込み
-require_once '../../db_connect.php';
+require_once('../../db_connect.php');
 
-try {
-    // セッションからユーザーIDを取得
-    session_start();
-    $user_id = $_SESSION['user_id'] ?? 1;
-    
-    // セッションに保存されたトレーニングリストを初期化
-    if (!isset($_SESSION['workout_trainings'])) {
-        $_SESSION['workout_trainings'] = [];
-    }
-    
-    // POSTで新しいトレーニングが送信された場合
-    if (isset($_POST['training']) && !empty($_POST['training'])) {
-        foreach ($_POST['training'] as $training_id) {
-            // 重複チェック：まだリストにない場合のみ追加
-            if (!in_array($training_id, $_SESSION['workout_trainings'])) {
-                $_SESSION['workout_trainings'][] = $training_id;
-            }
+// セッション開始
+session_start();
+
+// ユーザーIDを取得
+$user_id = $_SESSION['user_id'] ?? 1;
+
+// セッションに保存されたトレーニングリストを初期化
+if (!isset($_SESSION['workout_trainings'])) {
+    $_SESSION['workout_trainings'] = [];
+}
+
+// POSTで新しいトレーニングが送信された場合
+if (isset($_POST['training']) && is_array($_POST['training'])) {
+    foreach ($_POST['training'] as $training_id) {
+        $training_id = (int)$training_id; // 整数に変換
+        // 重複チェック：まだリストにない場合のみ追加
+        if (!in_array($training_id, $_SESSION['workout_trainings'])) {
+            $_SESSION['workout_trainings'][] = $training_id;
         }
     }
-    
-    $selected_training_ids = $_SESSION['workout_trainings'];
-    
-    // 現在の日付情報を取得
-    $current_date = new DateTime();
-    $current_month = $current_date->format('n'); // 月（1-12）
-    $current_day = $current_date->format('j');   // 日（1-31）
-    $current_year = $current_date->format('Y');  // 年
-    
-    // 週間カレンダー用の日付を計算
-    $week_days = [];
-    for ($i = -3; $i <= 3; $i++) {
-        $date = clone $current_date;
-        $date->modify("$i days");
-        $week_days[] = [
-            'day_label' => ['日', '月', '火', '水', '木', '金', '土'][$date->format('w')],
-            'day_num' => $date->format('j'),
-            'is_today' => ($i === 0)
-        ];
-    }
-    
-    // 選択されたトレーニング情報を取得
-    $trainings = [];
-    if (!empty($selected_training_ids)) {
-        $placeholders = implode(',', array_fill(0, count($selected_training_ids), '?'));
-        $stmt = $pdo->prepare("
-            SELECT 
-                t.training_id, 
-                t.training_name,
-                GROUP_CONCAT(DISTINCT tt.type_id) as type_ids
-            FROM trainings t
-            LEFT JOIN training_types tt ON t.training_id = tt.training_id
-            WHERE t.training_id IN ($placeholders)
-            GROUP BY t.training_id
-            ORDER BY FIELD(t.training_id, $placeholders)
-        ");
-        $stmt->execute(array_merge($selected_training_ids, $selected_training_ids));
-        $trainings = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
-    
-} catch(PDOException $e) {
-    echo "データ取得エラー: " . $e->getMessage();
-    exit;
+}
+
+$selected_training_ids = $_SESSION['workout_trainings'];
+
+// 現在の日付情報を取得
+$current_date = new DateTime();
+$current_month = $current_date->format('n'); // 月（1-12）
+$current_day = $current_date->format('j'); // 日（1-31）
+$current_year = $current_date->format('Y'); // 年
+
+// 週の日付を計算（日曜日から土曜日まで）
+$week_dates = [];
+$day_of_week = $current_date->format('w'); // 0(日曜)〜6(土曜)
+
+for ($i = 0; $i < 7; $i++) {
+    $date = clone $current_date;
+    $date->modify('-' . $day_of_week . ' days');
+    $date->modify('+' . $i . ' days');
+    $week_dates[] = [
+        'day_label' => ['日', '月', '火', '水', '木', '金', '土'][$i],
+        'day_num' => $date->format('j'),
+        'is_today' => ($i == $day_of_week)
+    ];
+}
+
+// 選択されたトレーニング情報を取得
+$trainings = [];
+if (!empty($selected_training_ids)) {
+    $placeholders = implode(',', array_fill(0, count($selected_training_ids), '?'));
+    $stmt = $pdo->prepare("
+        SELECT 
+            t.training_id, 
+            t.training_name,
+            GROUP_CONCAT(DISTINCT tt.type_id) as type_ids
+        FROM trainings t
+        LEFT JOIN training_types tt ON t.training_id = tt.training_id
+        WHERE t.training_id IN ($placeholders)
+        GROUP BY t.training_id
+        ORDER BY FIELD(t.training_id, $placeholders)
+    ");
+    $stmt->execute(array_merge($selected_training_ids, $selected_training_ids));
+    $trainings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 <!DOCTYPE html>
@@ -86,10 +86,10 @@ try {
         
         <!-- 週間カレンダー -->
         <div class="week-calendar">
-            <?php foreach ($week_days as $day): ?>
-                <div class="day-item <?php echo $day['is_today'] ? 'active' : ''; ?>">
-                    <span class="day-label"><?php echo $day['day_label']; ?></span>
-                    <span class="day-num"><?php echo $day['day_num']; ?></span>
+            <?php foreach ($week_dates as $date): ?>
+                <div class="day-item<?php echo $date['is_today'] ? ' active' : ''; ?>">
+                    <span class="day-label"><?php echo $date['day_label']; ?></span>
+                    <span class="day-num"><?php echo $date['day_num']; ?></span>
                 </div>
             <?php endforeach; ?>
         </div>
@@ -110,7 +110,7 @@ try {
             <?php if (empty($trainings)): ?>
                 <div class="empty-message">
                     <p>トレーニングが選択されていません</p>
-                    <button onclick="history.back()" class="select-btn">トレーニングを選択</button>
+                    <button onclick="location.href='training_list.php'" class="select-btn">トレーニングを選択</button>
                 </div>
             <?php else: ?>
                 <?php foreach ($trainings as $index => $training): ?>
@@ -140,7 +140,7 @@ try {
                     トレーニング追加
                 </button>
                 
-                <!-- セッションクリアボタン（デバッグ用） -->
+                <!-- セッションクリアボタン -->
                 <form method="post" action="clear_session.php" style="margin-top: 8px;">
                     <button type="submit" class="clear-session-btn">全てリセット</button>
                 </form>
@@ -169,6 +169,31 @@ try {
             <button class="start-btn">トレーニングスタート</button>
         </div>
         <?php endif; ?>
+    </div>
+    
+    <!-- トレーニングメニューモーダル -->
+    <div class="training-menu-overlay" id="training-menu-overlay">
+        <div class="training-menu-content">
+            <div class="menu-header">
+                <span class="menu-training-name" id="menu-training-name">種</span>
+                <button class="menu-close-btn" id="menu-close-btn">✕</button>
+            </div>
+            <div class="menu-items">
+                <button class="menu-item" id="menu-exchange">
+                    <span class="menu-item-icon">⇄</span>
+                    <span class="menu-item-text">トレーニング交換</span>
+                    <span class="menu-item-arrow">▷</span>
+                </button>
+                <button class="menu-item" id="menu-superset">
+                    <span class="menu-item-icon">🔗</span>
+                    <span class="menu-item-text">スーパーセット</span>
+                    <span class="menu-item-arrow">▷</span>
+                </button>
+                <button class="menu-item delete" id="menu-delete">
+                    <span class="menu-item-text">削除</span>
+                </button>
+            </div>
+        </div>
     </div>
     
     <script src="training_select.js"></script>
