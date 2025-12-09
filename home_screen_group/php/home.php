@@ -16,18 +16,23 @@ $goal_data_mapping = [
 ];
 
 // ユーザー情報と目標IDの取得
-$stmt = $pdo->prepare("SELECT user_name, goal FROM users WHERE user_id = :id");
+$stmt = $pdo->prepare("SELECT user_name, goal, goal_detail FROM users WHERE user_id = :id");
 $stmt->bindValue(":id", $_SESSION['user_id'], PDO::PARAM_INT);
 $stmt->execute();
-$user_data = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['user_name' => 'ユーザー', 'goal' => '1'];
+$user_data = $stmt->fetch(PDO::FETCH_ASSOC) ?: ['user_name' => 'ユーザー', 'goal' => '1', 'goal_detail' => ''];
 
 $user_name = $user_data['user_name'];
 $goal_id = $user_data['goal'] ?? '1'; // DBから目標IDを取得
 $goal_info = $goal_data_mapping[$goal_id] ?? $goal_data_mapping['1']; // 対応する目標情報を取得
+$goal_detail = $user_data['goal_detail'];
 
 $display_goal_title = $goal_info['title'];
 $display_goal_icon_class = $goal_info['icon_class'];
-$display_goal_subtitle = $goal_info['subtitle'];
+$display_goal_subtitle = $user_data['goal_detail'];
+
+//var_dump($user_data);
+//exit;
+
 ?>
 
 
@@ -69,6 +74,7 @@ $display_goal_subtitle = $goal_info['subtitle'];
                     <div class="goal-text">
                         <h3><?php echo htmlspecialchars($display_goal_title); ?></h3>
                                 <p><?php echo htmlspecialchars($display_goal_subtitle); ?></p>
+
                     </div>
                 </div>
 
