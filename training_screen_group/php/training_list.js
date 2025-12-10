@@ -230,4 +230,3 @@ addTrainingForm.addEventListener('submit', function(e) {
         alert('トレーニングの追加に失敗しました。');
     });
 });
- 

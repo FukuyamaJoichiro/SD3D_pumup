@@ -63,6 +63,7 @@ try {
     <title>トレーニング一覧</title>
     <link rel="stylesheet" href="training_list.css">
 </head>
+
 <body>
     <div class="container">
    
@@ -108,6 +109,7 @@ try {
                 </div>
             <?php endforeach; ?>
         </div>
+
        
         <div class="add-section">
             <button type="button" class="add-btn">
@@ -180,6 +182,15 @@ try {
     </div>
    
     <script src="training_list.js"></script>
+    <script src="detail_modal.js"></script> <!-- ← 追加！ -->
 </body>
+<!-- ▼▼▼ ここから追加：トレーニング詳細モーダル（ⓘ 用） ▼▼▼ -->
+<div id="detail-modal-overlay" class="modal-overlay" style="z-index: 2000; display: none;">
+    <div id="detail-modal-content" class="modal-content detail-modal-box">
+        <!-- training_detail_modal.php の内容が JS によってここへ挿入される -->
+    </div>
+</div>
+<!-- ▲▲▲ 追加はここまで ▲▲▲ -->
+
 </html>
- 
+ <script src="training_detail_modal.js"></script>

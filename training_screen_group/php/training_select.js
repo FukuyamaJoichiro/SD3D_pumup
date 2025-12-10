@@ -3,27 +3,28 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeTrainingCards();
     initializeTimers();
     initializeTrainingMenu();
+    initializeExchangeModal();
 });
-
+ 
 // トレーニングカードの初期化
 function initializeTrainingCards() {
     const cards = document.querySelectorAll('.training-card');
-    
+   
     cards.forEach(card => {
         const typeIds = card.getAttribute('data-type-ids');
         const hasWeight = typeIds && typeIds.includes('1');
         const hasReps = typeIds && (typeIds.includes('1') || typeIds.includes('2'));
         const hasDuration = typeIds && typeIds.includes('3');
-        
+       
         // 最初のセットを追加
         addSet(card, hasWeight, hasReps, hasDuration);
-        
+       
         // セット追加ボタン
         const addBtn = card.querySelector('.add-set-btn');
         addBtn.addEventListener('click', () => {
             addSet(card, hasWeight, hasReps, hasDuration);
         });
-        
+       
         // セット削除ボタン
         const deleteBtn = card.querySelector('.delete-set-btn');
         deleteBtn.addEventListener('click', () => {
@@ -31,12 +32,12 @@ function initializeTrainingCards() {
         });
     });
 }
-
+ 
 // セットを追加
 function addSet(card, hasWeight, hasReps, hasDuration) {
     const container = card.querySelector('.sets-container');
     const setCount = container.querySelectorAll('.set-row').length;
-    
+   
     // ヘッダーが存在しない場合は追加
     if (setCount === 0) {
         const header = document.createElement('div');
@@ -49,21 +50,21 @@ function addSet(card, hasWeight, hasReps, hasDuration) {
         `;
         container.appendChild(header);
     }
-    
+   
     const setRow = document.createElement('div');
     setRow.className = 'set-row';
-    
+   
     const setNumber = setCount + 1;
-    
+   
     setRow.innerHTML = `
         <span class="set-label">${setNumber}</span>
         <input type="number" class="set-input" placeholder="0" step="0.5" data-type="weight">
         <input type="number" class="set-input" placeholder="0" data-type="reps">
         <button type="button" class="complete-btn" data-completed="false">未完了</button>
     `;
-    
+   
     container.appendChild(setRow);
-    
+   
     // 入力欄にフォーカスイベントを追加
     const inputs = setRow.querySelectorAll('.set-input');
     inputs.forEach(input => {
@@ -71,7 +72,7 @@ function addSet(card, hasWeight, hasReps, hasDuration) {
             this.select();
         });
     });
-    
+   
     // 完了ボタンのイベント
     const completeBtn = setRow.querySelector('.complete-btn');
     completeBtn.addEventListener('click', function() {
@@ -87,12 +88,12 @@ function addSet(card, hasWeight, hasReps, hasDuration) {
         }
     });
 }
-
+ 
 // 最後のセットを削除
 function deleteLastSet(card) {
     const container = card.querySelector('.sets-container');
     const sets = container.querySelectorAll('.set-row');
-    
+   
     if (sets.length > 1) {
         sets[sets.length - 1].remove();
     } else if (sets.length === 1) {
@@ -103,16 +104,16 @@ function deleteLastSet(card) {
         }
     }
 }
-
+ 
 // ===== タイマー機能 =====
 let restTimer = 0;
 let totalTimer = 0;
 let restInterval = null;
 let totalInterval = null;
-
+ 
 function initializeTimers() {
     const startBtn = document.querySelector('.start-btn');
-    
+   
     if (startBtn) {
         startBtn.addEventListener('click', function() {
             if (this.textContent === 'トレーニングスタート') {
@@ -129,7 +130,7 @@ function initializeTimers() {
         });
     }
 }
-
+ 
 function startTraining() {
     // 通算時間を開始
     totalInterval = setInterval(() => {
@@ -137,7 +138,7 @@ function startTraining() {
         updateTimerDisplay('total-timer', totalTimer);
     }, 1000);
 }
-
+ 
 function stopTraining() {
     // すべてのタイマーを停止
     if (totalInterval) {
@@ -148,35 +149,35 @@ function stopTraining() {
         clearInterval(restInterval);
         restInterval = null;
     }
-    
+   
     // データを保存する処理をここに追加
     saveWorkoutData();
 }
-
+ 
 function updateTimerDisplay(elementId, seconds) {
     const element = document.getElementById(elementId);
     if (!element) return;
-    
+   
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    
+   
     if (elementId === 'rest-timer') {
         element.textContent = `${minutes}:${secs.toString().padStart(2, '0')}`;
     } else {
         element.textContent = `${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 }
-
+ 
 // ワークアウトデータを保存
 function saveWorkoutData() {
     const cards = document.querySelectorAll('.training-card');
     const workoutData = [];
-    
+   
     cards.forEach(card => {
         const trainingId = card.getAttribute('data-training-id');
         const sets = card.querySelectorAll('.set-row');
         const trainingName = card.querySelector('.training-name').textContent;
-        
+       
         const setsData = [];
         sets.forEach((set, index) => {
             const inputs = set.querySelectorAll('.set-input:not(.hidden)');
@@ -188,23 +189,23 @@ function saveWorkoutData() {
             };
             setsData.push(setData);
         });
-        
+       
         workoutData.push({
             training_id: trainingId,
             training_name: trainingName,
             sets: setsData
         });
     });
-    
+   
     const memo = document.querySelector('.memo-input');
     const sessionData = {
         trainings: workoutData,
         memo: memo ? memo.value : '',
         total_time: totalTimer
     };
-    
+   
     console.log('保存データ:', sessionData);
-    
+   
     // サーバーに送信する処理をここに追加
     // fetch('save_workout.php', {
     //     method: 'POST',
@@ -221,7 +222,7 @@ function saveWorkoutData() {
     //     }
     // });
 }
-
+ 
 // ===== 日付選択 =====
 document.querySelectorAll('.day-item').forEach(item => {
     item.addEventListener('click', function() {
@@ -229,24 +230,24 @@ document.querySelectorAll('.day-item').forEach(item => {
         this.classList.add('active');
     });
 });
-
+ 
 // ===== タブ切り替え =====
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', function() {
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
         this.classList.add('active');
-        
+       
         // タブに応じたコンテンツ切り替え処理をここに追加
     });
 });
-
+ 
 // ===== トレーニングメニュー =====
 let currentTrainingCard = null;
-
+ 
 function initializeTrainingMenu() {
     const overlay = document.getElementById('training-menu-overlay');
     const closeBtn = document.getElementById('menu-close-btn');
-    
+   
     // すべての︙ボタンにイベントを設定
     document.querySelectorAll('.menu-btn').forEach(btn => {
         btn.addEventListener('click', function(e) {
@@ -254,45 +255,45 @@ function initializeTrainingMenu() {
             const card = this.closest('.training-card');
             const trainingName = card.querySelector('.training-name').textContent;
             currentTrainingCard = card;
-            
+           
             // モーダルのタイトルを更新
             document.getElementById('menu-training-name').textContent = trainingName;
-            
+           
             // モーダルを表示
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         });
     });
-    
+   
     // 閉じるボタン
     closeBtn.addEventListener('click', closeTrainingMenu);
-    
+   
     // オーバーレイクリックで閉じる
     overlay.addEventListener('click', function(e) {
         if (e.target === overlay) {
             closeTrainingMenu();
         }
     });
-    
+   
     // メニュー項目のイベント
     document.getElementById('menu-exchange').addEventListener('click', function() {
-        alert('トレーニング交換機能（未実装）');
         closeTrainingMenu();
+        openExchangeModal();
     });
-    
+   
     document.getElementById('menu-superset').addEventListener('click', function() {
         alert('スーパーセット機能（未実装）');
         closeTrainingMenu();
     });
-    
+   
     document.getElementById('menu-delete').addEventListener('click', function() {
         if (confirm('このトレーニングを削除しますか？')) {
             if (currentTrainingCard) {
                 const trainingId = currentTrainingCard.getAttribute('data-training-id');
-                
+               
                 // モーダルを閉じる
                 closeTrainingMenu();
-                
+               
                 // セッションから削除（サーバー側で処理）
                 fetch('remove_training.php', {
                     method: 'POST',
@@ -306,10 +307,10 @@ function initializeTrainingMenu() {
                     if (data.success) {
                         // カードを画面から削除
                         currentTrainingCard.remove();
-                        
+                       
                         // 残りのトレーニングカードを確認
                         const remainingCards = document.querySelectorAll('.training-card');
-                        
+                       
                         if (remainingCards.length === 0) {
                             // 全て削除された場合、ページをリロードして空の状態を表示
                             location.reload();
@@ -336,10 +337,144 @@ function initializeTrainingMenu() {
         }
     });
 }
-
+ 
 function closeTrainingMenu() {
     const overlay = document.getElementById('training-menu-overlay');
     overlay.classList.remove('active');
     document.body.style.overflow = '';
     currentTrainingCard = null;
 }
+ 
+// ===== トレーニング交換機能 =====
+let allTrainings = [];
+let selectedExchangeTrainingId = null;
+ 
+function initializeExchangeModal() {
+    const overlay = document.getElementById('exchange-modal-overlay');
+    const cancelBtn = document.getElementById('exchange-cancel-btn');
+    const confirmBtn = document.getElementById('exchange-confirm-btn');
+    const searchInput = document.getElementById('exchange-search');
+   
+    // キャンセルボタン
+    cancelBtn.addEventListener('click', closeExchangeModal);
+   
+    // オーバーレイクリックで閉じる
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) {
+            closeExchangeModal();
+        }
+    });
+   
+    // 検索機能
+    searchInput.addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        filterExchangeList(searchTerm);
+    });
+   
+    // 交換確定ボタン
+    confirmBtn.addEventListener('click', function() {
+        if (selectedExchangeTrainingId && currentTrainingCard) {
+            exchangeTraining(currentTrainingCard.getAttribute('data-training-id'), selectedExchangeTrainingId);
+        }
+    });
+}
+ 
+function openExchangeModal() {
+    // トレーニング一覧を取得
+    fetch('get_all_trainings.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                allTrainings = data.trainings;
+                renderExchangeList(allTrainings);
+               
+                const overlay = document.getElementById('exchange-modal-overlay');
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                alert('トレーニング一覧の取得に失敗しました');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('通信エラーが発生しました');
+        });
+}
+ 
+function renderExchangeList(trainings) {
+    const listContainer = document.getElementById('exchange-list');
+    listContainer.innerHTML = '';
+   
+    if (trainings.length === 0) {
+        listContainer.innerHTML = '<p style="text-align:center;color:#999;padding:20px;">該当するトレーニングがありません</p>';
+        return;
+    }
+   
+    trainings.forEach(training => {
+        const item = document.createElement('div');
+        item.className = 'exchange-item';
+        item.setAttribute('data-training-id', training.training_id);
+        item.innerHTML = `
+            <span class="exchange-item-name">${training.training_name}</span>
+            <span class="exchange-item-check">✓</span>
+        `;
+       
+        item.addEventListener('click', function() {
+            // 他の選択を解除
+            document.querySelectorAll('.exchange-item').forEach(i => i.classList.remove('selected'));
+           
+            // このアイテムを選択
+            this.classList.add('selected');
+            selectedExchangeTrainingId = this.getAttribute('data-training-id');
+           
+            // 確定ボタンを有効化
+            document.getElementById('exchange-confirm-btn').disabled = false;
+        });
+       
+        listContainer.appendChild(item);
+    });
+}
+ 
+function filterExchangeList(searchTerm) {
+    const filtered = allTrainings.filter(training =>
+        training.training_name.toLowerCase().includes(searchTerm)
+    );
+    renderExchangeList(filtered);
+}
+ 
+function exchangeTraining(oldTrainingId, newTrainingId) {
+    fetch('exchange_training.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `old_training_id=${oldTrainingId}&new_training_id=${newTrainingId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeExchangeModal();
+            // ページをリロードして更新を反映
+            location.reload();
+        } else {
+            alert('交換に失敗しました: ' + (data.message || ''));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('通信エラーが発生しました');
+    });
+}
+ 
+function closeExchangeModal() {
+    const overlay = document.getElementById('exchange-modal-overlay');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+   
+    // リセット
+    selectedExchangeTrainingId = null;
+    document.getElementById('exchange-search').value = '';
+    document.getElementById('exchange-confirm-btn').disabled = true;
+    document.querySelectorAll('.exchange-item').forEach(i => i.classList.remove('selected'));
+}
+ 
