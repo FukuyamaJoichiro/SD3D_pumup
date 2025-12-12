@@ -222,6 +222,26 @@ $streak = 0; // 0 のまま維持
     </nav>
 </div>
 
+<div id="activity-modal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h3 id="modal-date-display"></h3> 
+        <input type="hidden" id="selected-date-input">
+
+        <button id="record-workout-btn" class="modal-btn primary-btn">
+            ✅ トレーニングを記録する
+        </button>
+        <button id="remove-rest-btn" class="modal-btn secondary-btn">
+            ❌ おやすみを解除する
+        </button>
+        <button id="change-rest-btn" class="modal-btn secondary-btn">
+            🔄 おやすみを変更する
+        </button>
+        <button id="cancel-btn" class="modal-btn tertiary-btn">
+            キャンセル
+        </button>
+    </div>
+</div>
+
 <script src="calendar.js"></script>
 
 </body>
