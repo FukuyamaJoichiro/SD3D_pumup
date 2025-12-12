@@ -34,9 +34,6 @@ $fat_rate = isset($user['fat_rate']) && $user['fat_rate'] !== '' ? htmlspecialch
 
     <!-- プロフィール登録 -->
     <section class="profile-section">
-      <div class="profile-icon">
-        <img src="../images/user_icon.png" alt="プロフィール画像" />
-      </div>
       <div class="profile-info">
         <p class="profile-register">
           プロフィール登録 <a href="profile.php" class="edit-icon">✏️</a>
