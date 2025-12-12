@@ -118,7 +118,7 @@ if (!empty($selected_training_ids)) {
                         <div class="training-header">
                             <span class="training-number"><?php echo $index + 1; ?>種</span>
                             <span class="training-name"><?php echo htmlspecialchars($training['training_name']); ?></span>
-                            <button class="info-btn">ⓘ</button>
+                            <button class="info-btn" data-training-id="<?php echo $training['training_id']; ?>">ⓘ</button>
                             <button class="menu-btn">⋮</button>
                         </div>
                         
@@ -197,5 +197,17 @@ if (!empty($selected_training_ids)) {
     </div>
     
     <script src="training_select.js"></script>
+
+    <!-- ▼▼▼ ここから追加：トレーニング詳細モーダル（ⓘ 用） ▼▼▼ -->
+<div id="detail-modal-overlay" class="modal-overlay" style="z-index: 2000; display: none;">
+    <div id="detail-modal-content" class="modal-content detail-modal-box">
+        <!-- training_detail_modal.php の内容が JS によってここへ挿入される -->
+    </div>
+</div>
+<!-- ▲▲▲ 追加はここまで ▲▲▲ -->
+
+</html>
+ <script src="training_detail_modal.js"></script>
+
 </body>
 </html>

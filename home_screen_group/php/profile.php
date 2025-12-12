@@ -97,8 +97,8 @@ try {
 <div class="info-item">
   <span class="label">ニックネーム</span>
   <span class="value">
-    <?= htmlspecialchars($user['user_name']) ?>
-    <button class="edit-btn" onclick="toggleEdit('editName')">変更</button>
+    <?= htmlspecialchars($user['user_name'] ?? '', ENT_QUOTES, 'UTF-8');?>
+    <button class="ed it-btn" onclick="toggleEdit('editName')">変更</button>
   </span>
 </div>
 <div id="editName" class="edit-area">
