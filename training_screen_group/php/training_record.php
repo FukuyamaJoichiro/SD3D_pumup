@@ -49,7 +49,7 @@ $hasTraining = $result['count'] > 0;
  <div class="app-container">
 
 <header class="header">
-<div class="back-btn" onclick="history.back()">&#x2039;</div>
+<div class="back-btn" onclick="location.href='calendar.php'">&#x2039;</div>
 <div class="month"><?= $month ?>月</div>
 </header>
 

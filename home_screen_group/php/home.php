@@ -96,7 +96,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
 
                 <div class="routine-scroll-container">
                     <div class="routine-item">
-                        <img src="https://via.placeholder.com/60" alt="ベンチプレス">
+                        <!--<img src="https://via.placeholder.com/60" alt="ベンチプレス">-->
                         <div class="routine-item-text">
                             <h4>ベンチプレス 初級A</h4>
                             <p>合計4種目・16セット</p>
@@ -104,7 +104,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
                     </div>
 
                     <div class="routine-item">
-                        <img src="https://via.placeholder.com/60" alt="スクワット">
+                        <!--<img src="https://via.placeholder.com/60" alt="スクワット">-->
                         <div class="routine-item-text">
                             <h4>スクワット 中級B</h4>
                             <p>合計3種目・12セット</p>

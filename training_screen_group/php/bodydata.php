@@ -101,7 +101,7 @@ $display_fat = ($body_fat_percentage > 0) ? number_format($body_fat_percentage, 
 <div class="app-container">
 
 <header class="header">
-<div class="back-btn" onclick="location.href='training_record.php'">&#x2039;</div>
+<div class="back-btn" onclick="location.href='calendar.php'">&#x2039;</div>
 <div class="month"><?= $month ?>月</div>
 </header>
 
