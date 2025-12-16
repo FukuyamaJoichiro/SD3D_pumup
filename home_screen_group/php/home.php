@@ -54,8 +54,8 @@ $display_goal_subtitle = $user_data['goal_detail'];
         <header class="app-header">
             <span class="logo">GoriFit</span>
             <div class="header-actions">
-                <button class="btn-upgrade">アップグレードする</button>
-                <span class="icon-settings">⚙️</span>
+                <!--<button class="btn-upgrade">アップグレードする</button>
+                <span class="icon-settings">⚙️</span>-->
             </div>
         </header>
 
@@ -66,7 +66,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
             <section class="card">
                 <div class="card-header">
                     <h2 class="card-title">目標</h2>
-                    <span class="icon-menu">...</span>
+                    <!--<span class="icon-menu">...</span>-->
                 </div>
                 
                 <div class="goal-content">
@@ -91,7 +91,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
             <section class="card">
                 <div class="card-header">
                     <h2 class="card-title">おすすめルーティン</h2>
-                    <span class="icon-close">×</span>
+                    <!--<span class="icon-close">×</span>-->
                 </div>
 
                 <div class="routine-scroll-container">
@@ -117,7 +117,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
             <section class="card">
                 <div class="card-header">
                     <h2 class="card-title">運動量の変化</h2>
-                    <span>></span>
+                    <!--<span>></span>-->
                 </div>
 
                 <div class="tabs">

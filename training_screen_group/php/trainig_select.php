@@ -175,6 +175,7 @@ try {
         <?php endif; ?>
     </div>
     
-    <script src="training_select.js"></script>
+    <script src="training_select.js?v=20251216"></script>
+
 </body>
 </html>
