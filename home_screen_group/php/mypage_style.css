@@ -184,3 +184,12 @@ body {
             margin-bottom: 0.25rem;
             /* */
         }
+
+.edit-icon, .my-body-data-link {
+    text-decoration: none !important; /* 強制的に下線を非表示にする */
+}
+
+.edit-link {
+    text-decoration: none;
+    /* 必要であれば、アイコンの位置調整もここで行います */
+}

@@ -180,11 +180,6 @@ try {
   <span class="value"><?= htmlspecialchars($user['birthday']) ?></span>
 </div>
 
-<!-- ===== IDコピー ===== -->
-<div class="user-id">
-  <input id="userId" type="text" readonly value="<?= htmlspecialchars($user['user_id']) ?>">
-  <button class="copy-btn" onclick="copyUserId()">📋</button>
-</div>
 
 <!-- ===== ニックネーム変更モーダル ===== -->
 <div id="nameModal" class="modal-overlay">
