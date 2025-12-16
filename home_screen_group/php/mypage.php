@@ -36,7 +36,7 @@ $fat_rate = isset($user['fat_rate']) && $user['fat_rate'] !== '' ? htmlspecialch
     <section class="profile-section">
       <div class="profile-info">
         <p class="profile-register">
-          プロフィール登録 <a href="profile.php" class="edit-icon">✏️</a>
+          プロフィール編集 <a href="profile.php" class="edit-icon">✏️</a>
         </p>
         <p class="sub-text">自分の記録を保存して下さい</p>
         <button class="upgrade-btn">アップグレードする</button>
