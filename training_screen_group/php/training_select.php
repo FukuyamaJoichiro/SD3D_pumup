@@ -8,23 +8,85 @@ session_start();
 // ユーザーIDを取得
 $user_id = $_SESSION['user_id'] ?? 1;
 
-// セッションに保存されたトレーニングリストを初期化
-if (!isset($_SESSION['workout_trainings'])) {
-    $_SESSION['workout_trainings'] = [];
-}
+// ----------------------------------------------------------------
+// ★★★ 通常の表示処理（メニュー追加 / 読み込み） ★★★
+// ----------------------------------------------------------------
 
-// POSTで新しいトレーニングが送信された場合
-if (isset($_POST['training']) && is_array($_POST['training'])) {
-    foreach ($_POST['training'] as $training_id) {
-        $training_id = (int)$training_id; // 整数に変換
-        // 重複チェック：まだリストにない場合のみ追加
-        if (!in_array($training_id, $_SESSION['workout_trainings'])) {
-            $_SESSION['workout_trainings'][] = $training_id;
-        }
+try {
+    // 1. 現在の日付を取得 (メニューの日付として使用)
+    $today_date = date("Y-m-d"); 
+    $current_session_id = null;
+    
+    // 2. 今日のセッションIDを取得/作成（workout_sessions テーブル操作）
+    $stmt_session = $pdo->prepare("SELECT session_id FROM workout_sessions WHERE user_id = ? AND date = ?");
+    $stmt_session->execute([$user_id, $today_date]);
+    $session_data = $stmt_session->fetch(PDO::FETCH_ASSOC);
+
+    if ($session_data) {
+        $current_session_id = $session_data['session_id'];
+    } else {
+        $stmt_insert_session = $pdo->prepare("INSERT INTO workout_sessions (user_id, date) VALUES (?, ?)");
+        $stmt_insert_session->execute([$user_id, $today_date]);
+        $current_session_id = $pdo->lastInsertId();
     }
-}
 
-$selected_training_ids = $_SESSION['workout_trainings'];
+    // 3. POSTで新しいトレーニングが送信された場合、workout_sets テーブルに登録する
+    if ($current_session_id && isset($_POST['training']) && is_array($_POST['training'])) {
+        $new_training_ids = $_POST['training'];
+        
+        $stmt_max_order = $pdo->prepare("SELECT IFNULL(MAX(order_on), 0) FROM workout_sets WHERE session_id = ?");
+        $stmt_max_order->execute([$current_session_id]);
+        $max_order = (int)$stmt_max_order->fetchColumn();
+        $current_order = $max_order;
+
+        $pdo->beginTransaction();
+        try {
+            // 【最終修正】supersets_id=NULLとduration, set_memoを含める
+            $stmt_insert = $pdo->prepare("INSERT INTO workout_sets 
+                                          (session_id, training_id, user_id, order_on, weight, reps, duration, set_memo, superset_id) 
+                                          VALUES (?, ?, ?, ?, 0, 0, 0, NULL, NULL)"); // superset_idをNULLに設定
+            
+            foreach ($new_training_ids as $training_id) {
+                $training_id = (int)$training_id;
+                
+                $stmt_check = $pdo->prepare("SELECT 1 FROM workout_sets WHERE session_id = ? AND training_id = ? LIMIT 1");
+                $stmt_check->execute([$current_session_id, $training_id]);
+
+                if ($stmt_check->rowCount() == 0) {
+                    $current_order++;
+                    $stmt_insert->execute([$current_session_id, $training_id, $user_id, $current_order]); 
+                }
+            }
+            $pdo->commit();
+        } catch (\PDOException $e) {
+            $pdo->rollBack();
+            echo "<h1>データ登録エラーが発生しました:</h1>";
+            echo "<p>" . $e->getMessage() . "</p>";
+            exit; 
+        }
+        header("Location: " . $_SERVER['PHP_SELF']);
+    exit;
+    }
+
+    // 4. その日に登録されているトレーニングメニューIDをDBから取得
+    $selected_training_ids = [];
+    if ($current_session_id) {
+        $stmt_select_menu = $pdo->prepare("SELECT DISTINCT training_id 
+                                           FROM workout_sets 
+                                           WHERE session_id = ? 
+                                           ORDER BY order_on ASC");
+        $stmt_select_menu->execute([$current_session_id]);
+        $selected_training_ids = $stmt_select_menu->fetchAll(PDO::FETCH_COLUMN);
+    }
+    
+    // 【重要】セッションリストのクリア
+    unset($_SESSION['workout_trainings']);
+
+} catch(PDOException $e) {
+    echo "<h1>全体データ処理エラーが発生しました:</h1>";
+    echo "<p>" . $e->getMessage() . "</p>";
+    exit;
+}
 
 // 現在の日付情報を取得
 $current_date = new DateTime();
@@ -47,7 +109,7 @@ for ($i = 0; $i < 7; $i++) {
     ];
 }
 
-// 選択されたトレーニング情報を取得
+// 選択されたトレーニング情報を取得 (DBから取得した $selected_training_ids を利用)
 $trainings = [];
 if (!empty($selected_training_ids)) {
     $placeholders = implode(',', array_fill(0, count($selected_training_ids), '?'));
@@ -62,6 +124,7 @@ if (!empty($selected_training_ids)) {
         GROUP BY t.training_id
         ORDER BY FIELD(t.training_id, $placeholders)
     ");
+    // $selected_training_ids を2回使って実行
     $stmt->execute(array_merge($selected_training_ids, $selected_training_ids));
     $trainings = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
@@ -207,7 +270,11 @@ if (!empty($selected_training_ids)) {
 <!-- ▲▲▲ 追加はここまで ▲▲▲ -->
 
 </html>
+<script>
+        // PHPで取得したセッションIDをJavaScriptのグローバル変数に格納
+        const CURRENT_SESSION_ID = <?php echo json_encode($current_session_id ?? null); ?>;
+    </script>
+    <script src="training_select.js"></script>
  <script src="training_detail_modal.js"></script>
-
 </body>
 </html>
