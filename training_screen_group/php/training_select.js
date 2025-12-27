@@ -1,4 +1,3 @@
-
 // ===== 状態管理 =====
 let currentTrainingCard = null; // 操作対象のカード
 let totalTimer = 0;
@@ -36,7 +35,6 @@ function addSet(card, config) {
     const container = card.querySelector('.sets-container');
     const count = container.querySelectorAll('.set-row').length;
 
-    // 初回のみヘッダーを作成
     if (count === 0) {
         container.insertAdjacentHTML('beforeend', `
             <div class="set-header">
@@ -48,23 +46,21 @@ function addSet(card, config) {
     row.className = 'set-row';
     row.innerHTML = `
         <span class="set-label">${count + 1}</span>
-        <input type="number" class="set-input" placeholder="0" step="0.5" data-type="weight">
-        <input type="number" class="set-input" placeholder="0" data-type="reps">
+        <input type="number" class="set-input" placeholder="0" step="0.5">
+        <input type="number" class="set-input" placeholder="0">
         <button type="button" class="complete-btn" data-completed="false">未完了</button>
     `;
 
-    // 完了ボタンの切り替え
     const btn = row.querySelector('.complete-btn');
     btn.onclick = () => {
-        const isDone = btn.getAttribute('data-completed') === 'true';
-        btn.setAttribute('data-completed', !isDone);
-        btn.textContent = !isDone ? '完了' : '未完了';
-        btn.classList.toggle('completed', !isDone);
+        const done = btn.dataset.completed === 'true';
+        btn.dataset.completed = (!done).toString();
+        btn.textContent = !done ? '完了' : '未完了';
+        btn.classList.toggle('completed', !done);
     };
 
-    // 入力時の全選択
-    row.querySelectorAll('.set-input').forEach(input => {
-        input.onfocus = () => input.select();
+    row.querySelectorAll('.set-input').forEach(i => {
+        i.onfocus = () => i.select();
     });
 
     container.appendChild(row);
@@ -87,8 +83,10 @@ function initTrainingMenu() {
         btn.onclick = (e) => {
             e.stopPropagation();
             currentTrainingCard = btn.closest('.training-card');
-            document.getElementById('menu-training-name').textContent = 
+
+            document.getElementById('menu-training-name').textContent =
                 currentTrainingCard.querySelector('.training-name').textContent;
+
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         };
@@ -97,18 +95,25 @@ function initTrainingMenu() {
     document.getElementById('menu-close-btn').onclick = closeMenu;
     overlay.onclick = (e) => { if (e.target === overlay) closeMenu(); };
 
-    // スーパーセットボタンのイベント
+    // =============================
+    // ★ スーパーセット（修正箇所）
+    // =============================
     const supersetBtn = document.getElementById('menu-superset');
     if (supersetBtn) {
         supersetBtn.onclick = () => {
-            // モーダルを閉じてからアラートを出す
+            if (!currentTrainingCard) return;
+
+            const trainingId = currentTrainingCard.dataset.trainingId;
+
             closeMenu();
-            // 先ほどのエラーと同じような警告を出す
-            alert('スーパーセット (未実装)');
+
+            // double_select.php に遷移
+            location.href =
+                `double_select.php?first_training_id=${trainingId}`;
         };
     }
 
-    // 削除実行 (remove_training.php へ送信)
+    // 削除
     document.getElementById('menu-delete').onclick = async () => {
         if (!confirm('このトレーニングを削除しますか？')) return;
         if (!currentTrainingCard || typeof CURRENT_SESSION_ID === 'undefined') {
@@ -116,58 +121,47 @@ function initTrainingMenu() {
             return;
         }
 
-        const tid = currentTrainingCard.getAttribute('data-training-id');
+        const tid = currentTrainingCard.dataset.trainingId;
 
         try {
-            const response = await fetch('remove_training.php', {
+            const res = await fetch('remove_training.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `training_id=${tid}&session_id=${CURRENT_SESSION_ID}`
             });
 
-            const data = await response.json();
+            const data = await res.json();
 
             if (data.success) {
-                // 1. カードを画面（DOM）から即座に削除
                 currentTrainingCard.remove();
                 closeMenu();
 
-                // 2. 残りのカードがあるかチェック
                 const remaining = document.querySelectorAll('.training-card');
-                
                 if (remaining.length === 0) {
-                    // 全て消えた場合、POSTデータを引き継がないようにクリーンなリロードを行う
-                    window.location.href = window.location.pathname; 
+                    location.href = location.pathname;
                 } else {
-                    // 残りがある場合は、1種、2種... の番号を振り直す
                     remaining.forEach((card, i) => {
                         const num = card.querySelector('.training-number');
                         if (num) num.textContent = `${i + 1}種`;
                     });
                 }
             } else {
-                alert('削除失敗: ' + (data.message || '不明なエラー'));
+                alert(data.message || '削除に失敗しました');
             }
-        } catch (err) {
-            console.error(err);
+        } catch (e) {
+            console.error(e);
             alert('通信エラーが発生しました');
         }
     };
-    };
+}
 
 function closeMenu() {
     document.getElementById('training-menu-overlay').classList.remove('active');
     document.body.style.overflow = '';
+    currentTrainingCard = null;
 }
 
-function renumberCards(cards) {
-    cards.forEach((card, i) => {
-        const span = card.querySelector('.training-number');
-        if (span) span.textContent = `${i + 1}種`;
-    });
-}
-
-// ===== 3. タイマー機能 =====
+// ===== 3. タイマー =====
 function initTimers() {
     const startBtn = document.querySelector('.start-btn');
     if (!startBtn) return;
@@ -194,8 +188,6 @@ function stopTraining(btn) {
     clearInterval(totalInterval);
     btn.textContent = 'トレーニングスタート';
     btn.style.backgroundColor = '#ff6b6b';
-    // 保存処理など
-    console.log('Final Time:', totalTimer);
 }
 
 function updateTimerDisplay(id, sec) {
@@ -206,24 +198,24 @@ function updateTimerDisplay(id, sec) {
     el.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-// ===== 4. UI切り替え (タブ・日付) =====
+// ===== 4. UI切り替え =====
 function initTabsAndDays() {
-    const bindToggle = (selector) => {
-        document.querySelectorAll(selector).forEach(item => {
-            item.onclick = () => {
+    const bind = (selector) => {
+        document.querySelectorAll(selector).forEach(el => {
+            el.onclick = () => {
                 document.querySelectorAll(selector).forEach(i => i.classList.remove('active'));
-                item.classList.add('active');
+                el.classList.add('active');
             };
         });
     };
-    bindToggle('.day-item');
-    bindToggle('.tab');
+    bind('.day-item');
+    bind('.tab');
 }
 
-// ===== 5. 交換モーダル (簡易版) =====
+// ===== 5. 交換モーダル =====
 function initExchangeModal() {
     document.getElementById('menu-exchange').onclick = () => {
         closeMenu();
-        alert('交換機能：現在の実装に合わせて openExchangeModal() を呼び出してください');
+        alert('交換機能は未実装です');
     };
 }

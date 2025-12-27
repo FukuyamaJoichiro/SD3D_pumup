@@ -41,10 +41,13 @@ try {
 
         $pdo->beginTransaction();
         try {
-            // 【最終修正】supersets_id=NULLとduration, set_memoを含める
-            $stmt_insert = $pdo->prepare("INSERT INTO workout_sets 
-                                          (session_id, training_id, user_id, order_on, weight, reps, duration, set_memo, superset_id) 
-                                          VALUES (?, ?, ?, ?, 0, 0, 0, NULL, NULL)"); // superset_idをNULLに設定
+            // superset_id=NULL と duration, set_memo を含める
+            $stmt_insert = $pdo->prepare("
+                INSERT INTO workout_sets 
+                    (session_id, training_id, user_id, order_on, weight, reps, duration, set_memo, superset_id) 
+                VALUES 
+                    (?, ?, ?, ?, 0, 0, 0, NULL, NULL)
+            ");
             
             foreach ($new_training_ids as $training_id) {
                 $training_id = (int)$training_id;
@@ -64,23 +67,26 @@ try {
             echo "<p>" . $e->getMessage() . "</p>";
             exit; 
         }
+
         header("Location: " . $_SERVER['PHP_SELF']);
-    exit;
+        exit;
     }
 
     // 4. その日に登録されているトレーニングメニューIDをDBから取得
     $selected_training_ids = [];
     if ($current_session_id) {
-        $stmt_select_menu = $pdo->prepare("SELECT DISTINCT training_id 
-                                           FROM workout_sets 
-                                           WHERE session_id = ? 
-                                           ORDER BY order_on ASC");
+        $stmt_select_menu = $pdo->prepare("
+            SELECT DISTINCT training_id 
+            FROM workout_sets 
+            WHERE session_id = ? 
+            ORDER BY order_on ASC
+        ");
         $stmt_select_menu->execute([$current_session_id]);
         $selected_training_ids = $stmt_select_menu->fetchAll(PDO::FETCH_COLUMN);
     }
-    
-    // 【重要】セッションリストのクリア
-    unset($_SESSION['workout_trainings']);
+
+    // ✅【重要】ここが修正点：セッションを消さず、DBの内容と同期する
+    $_SESSION['workout_trainings'] = $selected_training_ids;
 
 } catch(PDOException $e) {
     echo "<h1>全体データ処理エラーが発生しました:</h1>";
@@ -258,23 +264,22 @@ if (!empty($selected_training_ids)) {
             </div>
         </div>
     </div>
-    
-    <script src="training_select.js"></script>
 
     <!-- ▼▼▼ ここから追加：トレーニング詳細モーダル（ⓘ 用） ▼▼▼ -->
-<div id="detail-modal-overlay" class="modal-overlay" style="z-index: 2000; display: none;">
-    <div id="detail-modal-content" class="modal-content detail-modal-box">
-        <!-- training_detail_modal.php の内容が JS によってここへ挿入される -->
+    <div id="detail-modal-overlay" class="modal-overlay" style="z-index: 2000; display: none;">
+        <div id="detail-modal-content" class="modal-content detail-modal-box">
+            <!-- training_detail_modal.php の内容が JS によってここへ挿入される -->
+        </div>
     </div>
-</div>
-<!-- ▲▲▲ 追加はここまで ▲▲▲ -->
+    <!-- ▲▲▲ 追加はここまで ▲▲▲ -->
 
-</html>
-<script>
+    <script>
         // PHPで取得したセッションIDをJavaScriptのグローバル変数に格納
         const CURRENT_SESSION_ID = <?php echo json_encode($current_session_id ?? null); ?>;
     </script>
+
+    <!-- ✅ JSは1回だけ読み込む（二重読み込み防止） -->
     <script src="training_select.js"></script>
- <script src="training_detail_modal.js"></script>
+    <script src="training_detail_modal.js"></script>
 </body>
 </html>
