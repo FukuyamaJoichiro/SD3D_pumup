@@ -1,88 +1,91 @@
 <?php
-// PHPエラー表示設定 (開発時のみ)
+date_default_timezone_set('Asia/Tokyo');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// ヘッダー設定：CORS対応とJSONレスポンス
 header("Content-Type: application/json");
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST, OPTIONS");
 header("Access-Control-Allow-Headers: Content-Type");
 
-// セッション開始
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 認証・DB接続ファイルの読み込み
 require_once("../../auth.php"); 
 require_once("../../db_connect.php"); 
 
-// ==========================================================
-// 🚨 APIとしての認証チェック (require_login() の代替) 🚨
-// ログインしていない場合はリダイレクトせず、JSONエラーを返す
-// ==========================================================
 if (!isset($_SESSION['user_id'])) {
-     http_response_code(401); // Unauthorized
-    echo json_encode(["status" => "error", "message" => "Authentication required (User not logged in)"]);
+    http_response_code(401);
+    echo json_encode(["status" => "error", "message" => "Authentication required"]);
     exit;
 }
 $user_id = $_SESSION['user_id']; 
 
-// 【DB接続チェック】db_connect.phpが失敗した場合の確認
-if (!isset($pdo) || !($pdo instanceof PDO)) {
-    http_response_code(500);
-    echo json_encode(["status" => "error", "message" => "Database connection failed (PDO not set)."]);
-     exit;
-}
-
-
-// POSTリクエスト以外は拒否
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
     echo json_encode(["status" => "error", "message" => "Method not allowed"]);
     exit;
 }
 
-// JSONデータを受け取る
 $json_data = file_get_contents("php://input");
 $data = json_decode($json_data, true);
 
-// 必要なデータの検証
-$date = $data['date'] ?? null;
-$type = $data['type'] ?? null; 
+// 💡 以前の修正に合わせ、activity_id を優先して取得します
+$activity_id = $data['activity_id'] ?? null;
 
-if (!$date || $type !== 'REST') {
+if (!$activity_id) {
     http_response_code(400);
-    echo json_encode(["status" => "error", "message" => "Invalid date or activity type provided"]);
+    echo json_encode(["status" => "error", "message" => "Invalid ID provided. JSからの送信データを確認してください。"]);
     exit;
 }
 
 try {
-    // DB削除クエリの実行
-    $sql = "
-        DELETE FROM calendar_activity 
-        WHERE user_id = :user_id 
-        AND activity_date = :activity_date 
-        AND session_type = 'REST'
-    ";
-    $stmt = $pdo->prepare($sql);
-    $stmt->bindValue(":user_id", $user_id, PDO::PARAM_INT);
-    $stmt->bindValue(":activity_date", $date);
-    $stmt->execute();
+    $pdo->beginTransaction();
 
-    // 削除件数をチェック
-    if ($stmt->rowCount() > 0) {
-        // 成功レスポンス
-         echo json_encode(["status" => "success", "message" => "Rest day removed successfully.", "date" => $date]);
-     } else {
-        // 該当するデータがなかった場合
+    // 1. workout_sets (子) を削除：セッションID経由で特定
+    $stmt_sets = $pdo->prepare("
+        DELETE FROM workout_sets 
+        WHERE session_id IN (
+            SELECT session_id FROM workout_sessions 
+            WHERE user_id = :user_id 
+            AND date = (SELECT activity_date FROM calendar_activity WHERE id = :id)
+        )
+    ");
+    $stmt_sets->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+    $stmt_sets->bindValue(":id", $activity_id, PDO::PARAM_INT);
+    $stmt_sets->execute();
+
+    // 2. workout_sessions (親) を削除
+    $stmt_session = $pdo->prepare("
+        DELETE FROM workout_sessions 
+        WHERE user_id = :user_id 
+        AND date = (SELECT activity_date FROM calendar_activity WHERE id = :id)
+    ");
+    $stmt_session->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+    $stmt_session->bindValue(":id", $activity_id, PDO::PARAM_INT);
+    $stmt_session->execute();
+
+    // 3. calendar_activity (カレンダー) を削除
+    $stmt_main = $pdo->prepare("
+        DELETE FROM calendar_activity 
+        WHERE id = :id AND user_id = :user_id
+    ");
+    $stmt_main->bindValue(":id", $activity_id, PDO::PARAM_INT);
+    $stmt_main->bindValue(":user_id", $user_id, PDO::PARAM_INT);
+    $stmt_main->execute();
+
+    if ($stmt_main->rowCount() > 0) {
+        $pdo->commit();
+        echo json_encode(["status" => "success", "message" => "Removed successfully."]);
+    } else {
+        $pdo->rollBack();
         http_response_code(404);
-         echo json_encode(["status" => "error", "message" => "No matching rest record found."]);
-     }
+        echo json_encode(["status" => "error", "message" => "No matching record found."]);
+    }
 
 } catch (PDOException $e) {
-    // DBエラーが発生した場合
-     http_response_code(500);
-     echo json_encode(["status" => "error", "message" => "Database error: " . $e->getMessage()]);
+    if ($pdo->inTransaction()) $pdo->rollBack();
+    http_response_code(500);
+    echo json_encode(["status" => "error", "message" => "Database error: " . $e->getMessage()]);
 }

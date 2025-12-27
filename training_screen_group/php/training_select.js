@@ -84,8 +84,10 @@ function initTrainingMenu() {
             e.stopPropagation();
             currentTrainingCard = btn.closest('.training-card');
 
-            document.getElementById('menu-training-name').textContent =
-                currentTrainingCard.querySelector('.training-name').textContent;
+            // 💡 修正：メニューのタイトルに種目名を表示し、IDを保持
+            const nameEl = document.getElementById('menu-training-name');
+            nameEl.textContent = currentTrainingCard.querySelector('.training-name').textContent;
+            nameEl.setAttribute('data-training-id', currentTrainingCard.dataset.trainingId);
 
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -95,7 +97,7 @@ function initTrainingMenu() {
     document.getElementById('menu-close-btn').onclick = closeMenu;
     overlay.onclick = (e) => { if (e.target === overlay) closeMenu(); };
 
-    // ★ スーパーセット
+    // スーパーセット
     const supersetBtn = document.getElementById('menu-superset');
     if (supersetBtn) {
         supersetBtn.onclick = () => {
@@ -106,32 +108,37 @@ function initTrainingMenu() {
         };
     }
 
-    // 削除
+    // 💡 削除処理の修正
     document.getElementById('menu-delete').onclick = async () => {
-        if (!confirm('このトレーニングを削除しますか？')) return;
-        if (!currentTrainingCard || typeof CURRENT_SESSION_ID === 'undefined') {
-            alert('セッション情報がありません');
+        if (!confirm('このトレーニング種目を今日の記録から削除しますか？')) return;
+        
+        // PHPから渡された CURRENT_SESSION_ID があるか確認
+        if (!currentTrainingCard || typeof CURRENT_SESSION_ID === 'undefined' || !CURRENT_SESSION_ID) {
+            alert('セッション情報の取得に失敗しました。');
             return;
         }
 
         const tid = currentTrainingCard.dataset.trainingId;
 
         try {
+            // 💡 remove_training.php へリクエスト
             const res = await fetch('remove_training.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: `training_id=${tid}&session_id=${CURRENT_SESSION_ID}`
+                body: `training_id=${encodeURIComponent(tid)}&session_id=${encodeURIComponent(CURRENT_SESSION_ID)}`
             });
 
             const data = await res.json();
 
             if (data.success) {
+                // 画面上のカードを消去
                 currentTrainingCard.remove();
                 closeMenu();
 
+                // 残りの種目の番号（1種、2種...）を振り直す
                 const remaining = document.querySelectorAll('.training-card');
                 if (remaining.length === 0) {
-                    location.href = location.pathname;
+                    location.reload(); // 全て消えたらリロードして空のメッセージを表示
                 } else {
                     remaining.forEach((card, i) => {
                         const num = card.querySelector('.training-number');
@@ -143,7 +150,7 @@ function initTrainingMenu() {
             }
         } catch (e) {
             console.error(e);
-            alert('通信エラーが発生しました');
+            alert('通信エラーが発生しました。DBの削除処理を確認してください。');
         }
     };
 }
@@ -177,19 +184,16 @@ function startTraining(btn) {
     }, 1000);
 }
 
-// ★ 修正箇所：終了時に保存処理を呼び出してカレンダーへ遷移する
 async function stopTraining(btn) {
     clearInterval(totalInterval);
     
     try {
-        // 保存用PHP(save_workout_status.php)を呼び出す
         const res = await fetch('save_workout_status.php', {
             method: 'POST'
         });
         const data = await res.json();
 
         if (data.success) {
-            // 保存に成功したらカレンダー画面へリダイレクト
             window.location.href = 'calendar.php';
         } else {
             alert('データの保存に失敗しました。');
@@ -198,7 +202,6 @@ async function stopTraining(btn) {
         }
     } catch (e) {
         console.error(e);
-        // 通信エラーの場合でもユーザーをカレンダーへ戻す
         window.location.href = 'calendar.php';
     }
 }
