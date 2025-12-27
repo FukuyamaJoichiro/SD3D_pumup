@@ -70,12 +70,13 @@ body {
 }
 
 .calender td {
-    height: 60px; /* 少し大きく */
+    height: 65px !important;
     border: 1px solid #ddd;
     vertical-align: top;
     font-size: 0.8rem;
     position: relative;
-    padding: 0; /* 【重要】子要素(.date-clickable-wrapper)を広げるために0にする */
+    padding: 0;
+    overflow: visible; /* プラスマークのはみ出しを許可 */
 }
 
 .day-num {
@@ -83,6 +84,7 @@ body {
     font-weight: bold;
     font-size: 1rem;
     margin-top: 5px;
+    margin-left: 5px;
     color: #444;
 }
 
@@ -94,55 +96,102 @@ body {
     color: red;
 }
 
-.training-part {
-    /* 複数の部位を表示するために調整 */
+/* --- アイコンと部位名を縦に並べるコンテナ --- */
+.activity-container {
+    display: flex;
+    flex-direction: column; /* 縦並びにする */
+    align-items: flex-start;
+    gap: 2px;
+    padding: 0 4px;
+    width: 100%;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+/* --- アイコンとラベルの1セット --- */
+.workout-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 3px;
+    width: 100%;
+}
+
+/* --- 部位名ラベルのデザイン --- */
+.part-label {
+    background-color: #ff7d7d;
+    color: white;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-size: 7px;
+    font-weight: bold;
+    line-height: 10px;
+    white-space: nowrap;
     display: inline-block;
-    margin: 2px 1px 0;
-    padding: 2px 4px;
-    border-radius: 4px;
-    background-color: #fd5c5c;
-    font-size: 0.6rem;
-    color: #444;
+}
+
+.activity-icon {
+    font-size: 12px;
     line-height: 1;
+    display: inline-block;
+}
+
+/* --- プラスマーク --- */
+.more-mark {
+    position: absolute !important;
+    right: 1px !important;
+    bottom: 1px !important;
+    font-size: 13px;
+    font-weight: bold;
+    color: #ff0000;
+    background: rgba(255, 255, 255, 1);
+    border-radius: 50%;
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ddd;
+    z-index: 10;
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    line-height: 1; /* これを追加 */
+    padding-bottom: 1px; /* もし上に寄るなら下パディングで微調整 */
 }
 
 /* --- 今日の日付のスタイル --- */
 .calender td.today {
-    /* 枠線は内側の.date-clickable-wrapperに任せるため、tdの枠線は標準に戻す */
-    border: 1px solid #ddd !important; 
+    border: 1px solid #ddd !important;
     background-color: #ffb5b5;
     border-radius: 4px;
 }
 
-/* --- 【新規】日付クリック可能なラッパーと選択状態のスタイル --- */
-
+/* --- 日付クリック可能なラッパー --- */
 .calender td .date-clickable-wrapper {
     display: block;
     height: 100%;
     padding: 0;
-    cursor: pointer; /* クリック可能であることを示す */
-    box-sizing: border-box; 
+    cursor: pointer;
+    box-sizing: border-box;
     transition: background-color 0.1s, border 0.1s;
 }
 
-/* 選択された日付のスタイル（1回目のクリックで適用） */
 .calender td .date-clickable-wrapper.selected {
-    background-color: #ffe0e0; /* 薄い赤色でハイライト */
-    border: 2px solid #ff7d7d; /* メインカラーの枠線 */
+    background-color: #ffe0e0;
+    border: 2px solid #ff7d7d;
     border-radius: 4px;
 }
 
-/* 今日の日付(.today)が選択された場合 */
 .calender td.today .date-clickable-wrapper.selected {
-    background-color: #ffcaca; /* 濃いめのハイライト色 */
-    border: 2px solid #d85050; /* 濃い赤の枠線 */
+    background-color: #ffcaca;
+    border: 2px solid #d85050;
 }
 
 /* --- カレンダー下部 --- */
 .calendar-footer {
     text-align: center;
-    padding: 1.5rem 0; /* 余白調整 */
-    background-color: #ffffff; /* 背景を白に */
+    padding: 1.5rem 0;
+    background-color: #ffffff;
     border-top: 1px solid #f0f0f0;
     font-size: 0.9rem;
 }
@@ -154,125 +203,103 @@ body {
 }
 
 .calendar-footer button {
-    width: 90%; /* 幅を広げた */
+    width: 90%;
     max-width: 350px;
     background-color: #ff7d7d;
     color: white;
     border: none;
-    border-radius: 25px; /* 角丸をアプリ風に */
+    border-radius: 25px;
     padding: 14px 20px;
     font-size: 1rem;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(255, 125, 125, 0.3); /* 影を追加 */
+    box-shadow: 0 4px 10px rgba(255, 125, 125, 0.3);
     transition: background-color 0.3s;
 }
 
-.calendar-footer button:hover {
-    background-color: #ff6e6e;
-}
-
 /* --- 下部ナビゲーション --- */
-        .app-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            max-width: 420px; /* コンテナ幅と合わせる */
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-around;
-            background-color: #ffffff;
-            border-top: 1px solid #f0f0f0;
-            padding: 0.5rem 0;
-            padding-bottom: env(safe-area-inset-bottom); /* iPhoneのノッチ対応 */
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-size: 0.7rem;
-            color: #999;
-            text-decoration: none;
-        }
-        
-        .nav-item.active {
-            color: #f87171; /* アクティブ時の色 */
-        }
-
-        .nav-item-icon {
-            font-size: 1.5rem;
-            margin-bottom: 0.25rem;
-            /* */
-        }
-
-@media (max-width: 480px) {
-    .app-header h2 {
-        font-size: 1.8rem;
-    }
-
-    .calender th,
-    .calender td {
-        font-size: 0.75rem;
-        height: 55px;
-    }
-
-    .calendar-footer button {
-        font-size: 1rem;
-    }
+.app-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 420px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-around;
+    background-color: #ffffff;
+    border-top: 1px solid #f0f0f0;
+    padding: 0.5rem 0;
+    padding-bottom: env(safe-area-inset-bottom);
 }
 
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.7rem;
+    color: #999;
+    text-decoration: none;
+}
+
+.nav-item.activ {
+    color: #f87171;
+}
+
+.nav-item-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+/* --- おやすみ（REST）の設定 --- */
 .rest-content {
     display: flex;
-    flex-direction: column; /* 縦に並べる */
-    justify-content: flex-start; /* コンテンツを上端に寄せる */
-    height: 100%; 
+    flex-direction: column;
+    justify-content: flex-start;
     width: 100%;
 }
 .rest-bottom-row {
     display: flex;
     align-items: center;
-    justify-content: center; /* 横並びにした要素全体を中央寄せ */
-    gap: 0.5px; /* 絵文字とボタンの間のスペース */
+    justify-content: flex-start;
+    gap: 0.5px;
+    margin-left: -2px; /* ★マイナス値を指定して枠の端へ強制移動 */
 }
 
-/* スリープ絵文字のスタイル調整 */
 .rest-bottom-row .rest-icon {
-    font-size: 13px; /* 絵文字のサイズ調整 */
+    font-size: 13px;
     line-height: 1;
 }
 
-/* 「おやすみ」ボタンのスタイル */
 .rest-button {
-    background-color: #4a90e2; /* 画像に近い青色に変更 */
+    background-color: #4a90e2;
     color: white;
-    padding: 1px 6px; /* パディングを調整 */
-    border-radius: 6px; /* 角を丸く */
-    font-size: 6px; /* フォントサイズ調整 */
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-size: 6px;
     font-weight: 400;
     line-height: 10px;
-    white-space: nowrap; 
+    white-space: nowrap;
 }
 
+/* --- モーダル設定（最初のコードに戻しました） --- */
 .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); /* 黒い背景 */
+    background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
     align-items: flex-end; /* 画面下部に配置 */
     z-index: 1000;
 }
 
-/* モーダルコンテンツ（ボトムシート） */
 .modal-content {
     background-color: white;
     width: 100%;
-    max-width: 600px; /* PCでの表示を考慮 */
+    max-width: 600px;
     padding: 20px;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;

@@ -95,21 +95,14 @@ function initTrainingMenu() {
     document.getElementById('menu-close-btn').onclick = closeMenu;
     overlay.onclick = (e) => { if (e.target === overlay) closeMenu(); };
 
-    // =============================
-    // ★ スーパーセット（修正箇所）
-    // =============================
+    // ★ スーパーセット
     const supersetBtn = document.getElementById('menu-superset');
     if (supersetBtn) {
         supersetBtn.onclick = () => {
             if (!currentTrainingCard) return;
-
             const trainingId = currentTrainingCard.dataset.trainingId;
-
             closeMenu();
-
-            // double_select.php に遷移
-            location.href =
-                `double_select.php?first_training_id=${trainingId}`;
+            location.href = `double_select.php?first_training_id=${trainingId}`;
         };
     }
 
@@ -161,7 +154,7 @@ function closeMenu() {
     currentTrainingCard = null;
 }
 
-// ===== 3. タイマー =====
+// ===== 3. タイマー & トレーニング完了処理 =====
 function initTimers() {
     const startBtn = document.querySelector('.start-btn');
     if (!startBtn) return;
@@ -184,10 +177,30 @@ function startTraining(btn) {
     }, 1000);
 }
 
-function stopTraining(btn) {
+// ★ 修正箇所：終了時に保存処理を呼び出してカレンダーへ遷移する
+async function stopTraining(btn) {
     clearInterval(totalInterval);
-    btn.textContent = 'トレーニングスタート';
-    btn.style.backgroundColor = '#ff6b6b';
+    
+    try {
+        // 保存用PHP(save_workout_status.php)を呼び出す
+        const res = await fetch('save_workout_status.php', {
+            method: 'POST'
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            // 保存に成功したらカレンダー画面へリダイレクト
+            window.location.href = 'calendar.php';
+        } else {
+            alert('データの保存に失敗しました。');
+            btn.textContent = 'トレーニングスタート';
+            btn.style.backgroundColor = '#ff6b6b';
+        }
+    } catch (e) {
+        console.error(e);
+        // 通信エラーの場合でもユーザーをカレンダーへ戻す
+        window.location.href = 'calendar.php';
+    }
 }
 
 function updateTimerDisplay(id, sec) {
@@ -214,8 +227,11 @@ function initTabsAndDays() {
 
 // ===== 5. 交換モーダル =====
 function initExchangeModal() {
-    document.getElementById('menu-exchange').onclick = () => {
-        closeMenu();
-        alert('交換機能は未実装です');
-    };
+    const exchangeBtn = document.getElementById('menu-exchange');
+    if (exchangeBtn) {
+        exchangeBtn.onclick = () => {
+            closeMenu();
+            alert('交換機能は未実装です');
+        };
+    }
 }
