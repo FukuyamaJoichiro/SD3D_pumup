@@ -11,7 +11,7 @@ if (!$first_training_id) {
     exit('不正なアクセスです');
 }
 
-// 選択済み（training_select.php側で作る前提）
+// 選択済み（training_select.php で DB と同期済み前提）
 $selected_trainings = $_SESSION['workout_trainings'] ?? [];
 $selected_count = is_array($selected_trainings) ? count($selected_trainings) : 0;
 
@@ -23,20 +23,22 @@ if (!$first_training) {
     exit('トレーニングが見つかりません');
 }
 
-// 2種目目候補（2件以上ある時だけ作る）
+// 2種目目候補
 $second_candidates = [];
 if ($selected_count >= 2) {
     $second_candidates = array_values(array_diff($selected_trainings, [$first_training_id]));
 }
 
-// 2種目目候補の表示データ
+// 2種目目候補データ
 $second_trainings = [];
 if (!empty($second_candidates)) {
     $placeholders = implode(',', array_fill(0, count($second_candidates), '?'));
-    $sql = "SELECT training_id, training_name
-            FROM trainings
-            WHERE training_id IN ($placeholders)
-            ORDER BY training_id";
+    $sql = "
+        SELECT training_id, training_name
+        FROM trainings
+        WHERE training_id IN ($placeholders)
+        ORDER BY training_id
+    ";
     $stmt = $pdo->prepare($sql);
     $stmt->execute($second_candidates);
     $second_trainings = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -47,43 +49,77 @@ if (!empty($second_candidates)) {
 <head>
 <meta charset="UTF-8" />
 <title>スーパーセット</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <style>
-/* ===== 背景 ===== */
+/* =========================
+   training_select と同じ見え方
+   外側(PC余白)=グレー / スマホ枠=白
+========================= */
+:root{
+  --app-max: 390px;          /* スマホ枠の最大幅 */
+  --outer-bg: #eaeaea;       /* 外側グレー */
+  --surface: #ffffff;        /* 枠の白 */
+  --header: #ffffff;
+  --row: #f1f1f1;
+  --border: #e0e0e0;
+  --accent: #ff6e6e;
+  --accent-soft: #ffb4b4;
+  --shadow: 0 10px 30px rgba(0,0,0,.12);
+  --radius: 18px;
+}
+
+/* 外側 */
+html, body { height: 100%; }
+
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  background:#ededed;
-}
-
-/* ===== 画面全体 ===== */
-.page{
-  max-width:420px;
-  margin:0 auto;
-  min-height:100vh;
+  background: var(--outer-bg);     /* ←外側グレー */
   display:flex;
-  align-items:center;
   justify-content:center;
-  padding:16px 10px;
 }
 
-/* ===== モーダル箱（画像の角丸） ===== */
+/* 中央のスマホ枠 */
+.page{
+  width: 100%;
+  min-height: 100vh;
+  display:flex;
+  justify-content:center;
+  padding: 14px 10px;
+  box-sizing: border-box;
+}
+
+.app{
+  width: 100%;
+  max-width: var(--app-max);
+  background: var(--surface);      /* ←スマホ枠は白 */
+}
+
+/* モーダル本体 */
 .modal{
   width:100%;
-  border-radius:18px;
+  background: var(--surface);      /* ←白 */
+  border-radius: var(--radius);
   overflow:hidden;
-  background:#d9d9d9;
-  box-shadow:0 10px 30px rgba(0,0,0,.12);
+  box-shadow: var(--shadow);
+  position: relative;
 }
 
-/* ===== ヘッダー ===== */
+/* =========================
+   ヘッダー
+========================= */
 .modal-header{
-  background:#cfcfcf;
+  background: var(--header);
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:14px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid var(--border);
 }
+
 .icon-btn{
   width:34px;
   height:34px;
@@ -93,41 +129,44 @@ body{
   cursor:pointer;
   line-height:34px;
   text-align:center;
+  user-select:none;
 }
+
 .modal-title{
   font-weight:800;
   font-size:16px;
   color:#111;
 }
 
-/* ===== リスト ===== */
+/* =========================
+   リスト
+========================= */
 .list{
-  background:#d9d9d9;
-  padding:10px 0 0;
-}
-.item{
-  background:#bfbfbf;
-  margin:8px 10px;
-  border-radius:4px;
-  display:flex;
-  align-items:center;
-  padding:10px 10px;
-  gap:10px;
+  padding: 10px 0 calc(96px + env(safe-area-inset-bottom));
+  background: var(--surface);
 }
 
-/* チェックボックス：左の赤い枠っぽく */
+.item{
+  background: var(--row);
+  margin: 8px 10px;
+  border-radius: 10px;
+  display:flex;
+  align-items:center;
+  padding: 10px 10px;
+  gap: 10px;
+}
+
 .item input[type="checkbox"]{
   width:18px;
   height:18px;
-  accent-color:#d66b6b; /* 赤系 */
+  accent-color: var(--accent);
 }
 
-/* サムネ（画像枠） */
 .thumb{
   width:38px;
   height:28px;
-  border-radius:3px;
-  background:#e9e9e9;
+  border-radius:4px;
+  background:#ddd;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -135,7 +174,6 @@ body{
   color:#666;
 }
 
-/* 種目名 */
 .name{
   flex:1;
   font-size:14px;
@@ -146,7 +184,6 @@ body{
   text-overflow:ellipsis;
 }
 
-/* A/B */
 .ab{
   width:18px;
   text-align:right;
@@ -155,32 +192,14 @@ body{
   font-size:13px;
 }
 
-/* ===== 下部ボタン（画像の大きい赤ボタン） ===== */
-.footer{
-  background:#d9d9d9;
-  padding:16px 12px 16px;
-}
-.combine-btn{
-  width:100%;
-  border:none;
-  border-radius:10px;
-  padding:14px 12px;
-  font-size:15px;
-  font-weight:800;
-  cursor:pointer;
-  background:#ff6e6e;
-  color:#fff;
-}
-.combine-btn:disabled{
-  background:#ffb4b4;
-  cursor:not-allowed;
-}
-
-/* ===== 案内メッセージ ===== */
+/* =========================
+   案内
+========================= */
 .notice{
-  margin:8px 10px;
-  background:#f7f7f7;
-  border-radius:10px;
+  margin: 8px 10px;
+  background:#f8f8f8;
+  border: 1px solid #f0f0f0;
+  border-radius:12px;
   padding:12px;
   font-size:13px;
   color:#444;
@@ -192,60 +211,121 @@ body{
   margin-top:6px;
   line-height:1.4;
 }
+
+/* =========================
+   下部固定ボタン
+========================= */
+.footer{
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 100%;
+  max-width: var(--app-max);
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(6px);
+  padding: 12px 12px calc(12px + env(safe-area-inset-bottom));
+  box-sizing: border-box;
+  border-top: 1px solid var(--border);
+  z-index: 20;
+}
+
+.combine-btn{
+  width:100%;
+  border:none;
+  border-radius:14px;
+  padding:14px 12px;
+  font-size:15px;
+  font-weight:800;
+  cursor:pointer;
+  background: var(--accent);
+  color:#fff;
+}
+
+.combine-btn:disabled{
+  background: var(--accent-soft);
+  cursor:not-allowed;
+}
+
+/* =========================
+   スマホ実機は全面白にする（外側グレー不要）
+========================= */
+@media (max-width: 480px){
+  body{
+    background: #ffffff;           /* ←スマホは外側も白 */
+  }
+  .page{
+    padding: 0;
+  }
+  .app{
+    max-width: 100%;
+  }
+  .modal{
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 100vh;
+  }
+  .footer{
+    max-width: 100%;
+  }
+}
 </style>
 </head>
 
 <body>
 <div class="page">
-  <div class="modal">
-    <div class="modal-header">
-      <button class="icon-btn" onclick="history.back()">＜</button>
-      <div class="modal-title">スーパーセット</div>
-      <button class="icon-btn" onclick="history.back()">×</button>
-    </div>
+  <div class="app">
+    <div class="modal">
+      <div class="modal-header">
+        <button class="icon-btn" onclick="history.back()">＜</button>
+        <div class="modal-title">スーパーセット</div>
+        <button class="icon-btn" onclick="history.back()">×</button>
+      </div>
 
-    <div class="list" id="supersetList">
-      <!-- A：1種目目（固定表示） -->
-      <label class="item">
-        <input type="checkbox" checked disabled>
-        <div class="thumb">img</div>
-        <div class="name"><?= htmlspecialchars($first_training['training_name']) ?></div>
-        <div class="ab">A</div>
-      </label>
+      <div class="list" id="supersetList">
+        <!-- A：1種目目（固定） -->
+        <label class="item">
+          <input type="checkbox" checked disabled>
+          <div class="thumb">img</div>
+          <div class="name"><?= htmlspecialchars($first_training['training_name']) ?></div>
+          <div class="ab">A</div>
+        </label>
 
-      <?php if ($selected_count < 2): ?>
-        <div class="notice">
-          <strong>スーパーセットを組むには、もう1種目追加してください</strong>
-          <div class="small">
-            追加済みトレーニングが2種目以上になると、ここに候補（B）が表示されます。
+        <?php if ($selected_count < 2): ?>
+          <div class="notice">
+            <strong>スーパーセットを組むには、もう1種目追加してください</strong>
+            <div class="small">
+              追加済みトレーニングが2種目以上になると、ここに候補（B）が表示されます。
+            </div>
           </div>
-        </div>
 
-      <?php elseif (empty($second_trainings)): ?>
-        <div class="notice">
-          <strong>スーパーセット候補がありません</strong>
-          <div class="small">
-            1種目目以外の追加済みトレーニングがありません。
+        <?php elseif (empty($second_trainings)): ?>
+          <div class="notice">
+            <strong>スーパーセット候補がありません</strong>
+            <div class="small">
+              1種目目以外の追加済みトレーニングがありません。
+            </div>
           </div>
-        </div>
 
-      <?php else: ?>
-        <!-- B：候補 -->
-        <?php foreach ($second_trainings as $t): ?>
-          <label class="item">
-            <input type="checkbox" name="second_ids[]" value="<?= (int)$t['training_id'] ?>">
-            <div class="thumb">img</div>
-            <div class="name"><?= htmlspecialchars($t['training_name']) ?></div>
-            <div class="ab">B</div>
-          </label>
-        <?php endforeach; ?>
-      <?php endif; ?>
-    </div>
-
-    <div class="footer">
-      <button class="combine-btn" id="combineBtn" disabled>トレーニングを組み合わせる</button>
+        <?php else: ?>
+          <!-- B：候補 -->
+          <?php foreach ($second_trainings as $t): ?>
+            <label class="item">
+              <input type="checkbox" name="second_ids[]" value="<?= (int)$t['training_id'] ?>">
+              <div class="thumb">img</div>
+              <div class="name"><?= htmlspecialchars($t['training_name']) ?></div>
+              <div class="ab">B</div>
+            </label>
+          <?php endforeach; ?>
+        <?php endif; ?>
+      </div>
     </div>
   </div>
+</div>
+
+<!-- 下固定ボタン -->
+<div class="footer">
+  <button class="combine-btn" id="combineBtn" disabled>トレーニングを組み合わせる</button>
 </div>
 
 <script>

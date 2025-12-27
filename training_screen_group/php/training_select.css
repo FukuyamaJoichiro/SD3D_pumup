@@ -535,156 +535,34 @@ body {
 .menu-item.delete .menu-item-text {
     color: #f44336;
 }
- 
-/* ===== トレーニング交換モーダル ===== */
-.exchange-modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 3000;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+
+/* =========================
+   ✅ スーパーセット：点線で連結表示（確定版）
+========================= */
+
+/* 上側（A） */
+.training-card.superset-top {
+    margin-bottom: 0;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    position: relative;
+    padding-bottom: 24px; /* 点線のスペース */
 }
- 
-.exchange-modal-overlay.active {
-    display: block;
-    opacity: 1;
+
+/* 点線（AとBの間） */
+.training-card.superset-top::after {
+    content: "";
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    bottom: 8px;
+    border-bottom: 2px dashed #bdbdbd;
 }
- 
-.exchange-modal-content {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    max-width: 380px;
-    width: 90%;
-    background-color: white;
-    border-radius: 16px;
-    padding: 24px;
-    transition: transform 0.3s ease;
-    z-index: 3001;
-    max-height: 80vh;
-    overflow-y: auto;
+
+/* 下側（B） */
+.training-card.superset-bottom {
+    margin-top: 0;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    padding-top: 12px;
 }
- 
-.exchange-modal-overlay.active .exchange-modal-content {
-    transform: translate(-50%, -50%) scale(1);
-}
- 
-.exchange-modal-header {
-    margin-bottom: 20px;
-}
- 
-.exchange-modal-title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 8px;
-    text-align: center;
-}
- 
-.exchange-modal-subtitle {
-    font-size: 14px;
-    color: #666;
-    text-align: center;
-}
- 
-.exchange-search {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 14px;
-    margin-bottom: 16px;
-}
- 
-.exchange-search:focus {
-    outline: none;
-    border-color: #ff6b6b;
-}
- 
-.exchange-list {
-    max-height: 300px;
-    overflow-y: auto;
-}
- 
-.exchange-item {
-    display: flex;
-    align-items: center;
-    padding: 12px;
-    border: 1px solid #eee;
-    border-radius: 8px;
-    margin-bottom: 8px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
- 
-.exchange-item:hover {
-    background-color: #f5f5f5;
-    border-color: #ff6b6b;
-}
- 
-.exchange-item.selected {
-    background-color: #ffebee;
-    border-color: #ff6b6b;
-}
- 
-.exchange-item-name {
-    flex: 1;
-    font-size: 14px;
-}
- 
-.exchange-item-check {
-    font-size: 18px;
-    color: #ff6b6b;
-    display: none;
-}
- 
-.exchange-item.selected .exchange-item-check {
-    display: block;
-}
- 
-.exchange-actions {
-    display: flex;
-    gap: 12px;
-    margin-top: 20px;
-}
- 
-.exchange-cancel-btn,
-.exchange-confirm-btn {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
- 
-.exchange-cancel-btn {
-    background-color: #f5f5f5;
-    color: #666;
-}
- 
-.exchange-cancel-btn:hover {
-    background-color: #e0e0e0;
-}
- 
-.exchange-confirm-btn {
-    background-color: #ff6b6b;
-    color: white;
-}
- 
-.exchange-confirm-btn:hover {
-    background-color: #ff5252;
-}
- 
-.exchange-confirm-btn:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
- 
