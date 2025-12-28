@@ -120,7 +120,7 @@ $trainings = [];
 if (!empty($selected_training_ids)) {
     $placeholders = implode(',', array_fill(0, count($selected_training_ids), '?'));
 
-    // ✅ ここだけ修正：FIELDを使わず、MIN(order_on)で並びを安定
+    // ✅ FIELDを使わず、MIN(order_on)で並びを安定
     $stmt = $pdo->prepare("
         SELECT 
             t.training_id,
@@ -156,7 +156,7 @@ if (!empty($selected_training_ids)) {
 <div class="container">
     <!-- ヘッダー -->
     <div class="header">
-        <button class="back-btn" onclick="history.back()">＜</button>
+        <button class="back-btn" onclick="location.href='training_record.php'">＜</button>
         <div class="date-selector">
             <span class="month"><?php echo $current_month; ?>月</span>
         </div>
@@ -195,7 +195,7 @@ if (!empty($selected_training_ids)) {
 
             <?php foreach ($trainings as $index => $training): ?>
                 <?php
-                    // ✅ ここだけ修正：superset判定を厳密に（0/NULL/文字列混在対策）
+                    // ✅ superset判定を厳密に（0/NULL/文字列混在対策）
                     $currSup = !empty($training['superset_id']) ? (int)$training['superset_id'] : null;
                     $prevSup = isset($trainings[$index - 1]) && !empty($trainings[$index - 1]['superset_id'])
                         ? (int)$trainings[$index - 1]['superset_id'] : null;
@@ -281,11 +281,20 @@ if (!empty($selected_training_ids)) {
                 <span class="menu-item-text">トレーニング交換</span>
                 <span class="menu-item-arrow">▷</span>
             </button>
+
             <button class="menu-item" id="menu-superset">
                 <span class="menu-item-icon">🔗</span>
                 <span class="menu-item-text">スーパーセット</span>
                 <span class="menu-item-arrow">▷</span>
             </button>
+
+            <!-- ✅ ここが追加：スーパーセット解除 -->
+            <button class="menu-item" id="menu-unsuperset">
+                <span class="menu-item-icon">⛓️</span>
+                <span class="menu-item-text">スーパーセット解除</span>
+                <span class="menu-item-arrow">▷</span>
+            </button>
+
             <button class="menu-item delete" id="menu-delete">
                 <span class="menu-item-text">削除</span>
             </button>

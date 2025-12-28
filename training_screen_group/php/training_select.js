@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTrainingMenu();
     initExchangeModal();
     initTabsAndDays();
+    initUnsuperset(); // ← ★追加
 });
 
 // ===== 1. トレーニングカードの制御 =====
@@ -84,7 +85,6 @@ function initTrainingMenu() {
             e.stopPropagation();
             currentTrainingCard = btn.closest('.training-card');
 
-            // 💡 修正：メニューのタイトルに種目名を表示し、IDを保持
             const nameEl = document.getElementById('menu-training-name');
             nameEl.textContent = currentTrainingCard.querySelector('.training-name').textContent;
             nameEl.setAttribute('data-training-id', currentTrainingCard.dataset.trainingId);
@@ -108,12 +108,11 @@ function initTrainingMenu() {
         };
     }
 
-    // 💡 削除処理の修正
+    // 削除
     document.getElementById('menu-delete').onclick = async () => {
         if (!confirm('このトレーニング種目を今日の記録から削除しますか？')) return;
-        
-        // PHPから渡された CURRENT_SESSION_ID があるか確認
-        if (!currentTrainingCard || typeof CURRENT_SESSION_ID === 'undefined' || !CURRENT_SESSION_ID) {
+
+        if (!currentTrainingCard || !CURRENT_SESSION_ID) {
             alert('セッション情報の取得に失敗しました。');
             return;
         }
@@ -121,7 +120,6 @@ function initTrainingMenu() {
         const tid = currentTrainingCard.dataset.trainingId;
 
         try {
-            // 💡 remove_training.php へリクエスト
             const res = await fetch('remove_training.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -131,14 +129,12 @@ function initTrainingMenu() {
             const data = await res.json();
 
             if (data.success) {
-                // 画面上のカードを消去
                 currentTrainingCard.remove();
                 closeMenu();
 
-                // 残りの種目の番号（1種、2種...）を振り直す
                 const remaining = document.querySelectorAll('.training-card');
                 if (remaining.length === 0) {
-                    location.reload(); // 全て消えたらリロードして空のメッセージを表示
+                    location.reload();
                 } else {
                     remaining.forEach((card, i) => {
                         const num = card.querySelector('.training-number');
@@ -150,7 +146,7 @@ function initTrainingMenu() {
             }
         } catch (e) {
             console.error(e);
-            alert('通信エラーが発生しました。DBの削除処理を確認してください。');
+            alert('通信エラーが発生しました。');
         }
     };
 }
@@ -159,6 +155,41 @@ function closeMenu() {
     document.getElementById('training-menu-overlay').classList.remove('active');
     document.body.style.overflow = '';
     currentTrainingCard = null;
+}
+
+// ===== ★ 追加：スーパーセット解除 =====
+function initUnsuperset() {
+    const unsupersetBtn = document.getElementById('menu-unsuperset');
+    if (!unsupersetBtn) return;
+
+    unsupersetBtn.onclick = async () => {
+        if (!currentTrainingCard) return;
+
+        const trainingId = currentTrainingCard.dataset.trainingId;
+        if (!trainingId) return;
+
+        if (!confirm('スーパーセットを解除しますか？')) return;
+
+        try {
+            const res = await fetch('release_superset.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: `training_id=${encodeURIComponent(trainingId)}`
+            });
+
+            const data = await res.json();
+
+            if (data.success) {
+                closeMenu();
+                location.reload(); // ← 点線を消すため再読込
+            } else {
+                alert(data.message || '解除に失敗しました');
+            }
+        } catch (e) {
+            console.error(e);
+            alert('通信エラーが発生しました');
+        }
+    };
 }
 
 // ===== 3. タイマー & トレーニング完了処理 =====
@@ -186,11 +217,9 @@ function startTraining(btn) {
 
 async function stopTraining(btn) {
     clearInterval(totalInterval);
-    
+
     try {
-        const res = await fetch('save_workout_status.php', {
-            method: 'POST'
-        });
+        const res = await fetch('save_workout_status.php', { method: 'POST' });
         const data = await res.json();
 
         if (data.success) {
