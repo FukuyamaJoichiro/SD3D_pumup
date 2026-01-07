@@ -180,7 +180,8 @@ if (!empty($selected_training_ids)) {
 
     <!-- インターバルタイマー -->
     <div class="interval-timer">
-        <span>⏱ Interval Timer ⏱</span>
+        <a href="interval_timer.php">⏱ 休憩タイマー ⏱</a>
+
     </div>
 
     <!-- トレーニングリスト -->

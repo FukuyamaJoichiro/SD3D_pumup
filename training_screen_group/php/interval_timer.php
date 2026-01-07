@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>インターバルタイマー</title>
+    <title>休憩タイマー</title>
     <link rel="stylesheet" href="interval_timer.css">
 </head>
 <body>

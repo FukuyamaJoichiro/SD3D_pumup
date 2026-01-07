@@ -566,3 +566,8 @@ body {
     border-top-right-radius: 0;
     padding-top: 12px;
 }
+
+/* ===== リンク（グレー表示） ===== */
+.interval-timer a {
+    color: #888;
+}
