@@ -76,7 +76,8 @@ body {
     font-size: 0.8rem;
     position: relative;
     padding: 0;
-    overflow: visible; /* プラスマークのはみ出しを許可 */
+    /* --- 修正ポイント：はみ出しを隠す --- */
+    overflow: hidden; 
 }
 
 .day-num {
@@ -99,13 +100,13 @@ body {
 /* --- アイコンと部位名を縦に並べるコンテナ --- */
 .activity-container {
     display: flex;
-    flex-direction: column; /* 縦並びにする */
-    align-items: flex-start;
-    gap: 2px;
-    padding: 0 4px;
-    width: 100%;
-    max-height: 50px;
-    overflow: hidden;
+    flex-direction: column;
+    align-items: flex-start; /* これで中身を左に寄せる */
+    justify-content: flex-start;
+    width: 100%;             /* 横幅いっぱいに広げる */
+    clear: both;             /* 数字の回り込みを解除 */
+    margin-top: 2px;         /* 数字との上下の隙間 */
+    gap: 3px;
 }
 
 /* --- アイコンとラベルの1セット --- */
@@ -255,32 +256,46 @@ body {
 /* --- おやすみ（REST）の設定 --- */
 .rest-content {
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    width: 100%;
+    width: 100%;             /* 親の幅いっぱいに広げる */
+    margin: 0;
+    padding: 0;
 }
+
 .rest-bottom-row {
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.5px;
-    margin-left: -2px; /* ★マイナス値を指定して枠の端へ強制移動 */
+    justify-content: flex-start; /* 左寄せを確定させる */
+    gap: 2px;
 }
 
 .rest-bottom-row .rest-icon {
-    font-size: 13px;
+    font-size: 12px;             /* アイコンのサイズ */
     line-height: 1;
 }
 
 .rest-button {
     background-color: #4a90e2;
     color: white;
-    padding: 1px 6px;
-    border-radius: 6px;
-    font-size: 6px;
-    font-weight: 400;
-    line-height: 10px;
-    white-space: nowrap;
+    padding: 1px 5px;            /* 文字周りの余白 */
+    border-radius: 999px;        /* 丸み */
+    font-size: 6.5px;              /* 文字サイズ */
+    font-weight: bold;
+    line-height: 1.1;
+    white-space: nowrap;         /* 改行させない */
+}
+
+/* --- レスポンシブ対応：極端に幅が狭いスマホ向け --- */
+@media screen and (max-width: 380px) {
+    .rest-content {
+        margin-top: 10px;
+    }
+    .rest-bottom-row .rest-icon {
+        font-size: 10px; /* さらに小型化 */
+    }
+    .rest-button {
+        font-size: 7px;
+        padding: 0px 3px;
+    }
 }
 
 /* --- モーダル設定（最初のコードに戻しました） --- */
