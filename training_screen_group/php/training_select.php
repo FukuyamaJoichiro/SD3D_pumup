@@ -175,7 +175,6 @@ if (!empty($selected_training_ids)) {
     <!-- タブ -->
     <div class="tabs">
         <button class="tab active">トレーニング記録</button>
-        <button class="tab">ボディデータ</button>
     </div>
 
     <!-- インターバルタイマー -->
