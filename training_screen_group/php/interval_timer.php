@@ -11,7 +11,7 @@
     <div class="app-container">
 
         <div class="timer-container">
-            <a href="training_record.php" class="back-button">&lt;</a> 
+            <a href="training_select.php" class="back-button">&lt;</a> 
 
             <div class="timer-display">
                 <svg class="progress-ring" width="300" height="300">

@@ -184,8 +184,17 @@ document.querySelectorAll('.toggle-btn').forEach(button => {
         const name = this.getAttribute('data-name');
         const value = this.getAttribute('data-value');
        
-        // type_idは複数選択可能
+        // type_idは複数選択可能（最大2つまで）
         if (name === 'type_id') {
+            const activeButtons = document.querySelectorAll(`.toggle-btn[data-name="type_id"].active`);
+            const isAlreadyActive = this.classList.contains('active');
+
+            // すでに2つ選択済みで、かつ今押したのが「未選択」の場合は弾く
+            if (!isAlreadyActive && activeButtons.length >= 2) {
+                alert('タイプは最大2つまで選択できます。');
+                return;
+            }
+
             this.classList.toggle('active');
             updateHiddenInput(name);
         } else {

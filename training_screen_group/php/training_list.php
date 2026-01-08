@@ -154,6 +154,89 @@ try {
     </form>
 </div>
 
+<!-- ===== 新規トレーニング追加モーダル（スクショ風） ===== -->
+<div id="modal-overlay" class="modal-overlay">
+    <div class="modal-content">
+
+        <!-- 閉じる -->
+        <button type="button" id="modal-close-btn" class="modal-close">×</button>
+
+        <h2>新規トレーニング追加</h2>
+
+        <form id="add-training-form">
+            <!-- トレーニング名 -->
+            <div class="form-group">
+                <label for="training_name">トレーニング名</label>
+                <input
+                    id="training_name"
+                    type="text"
+                    name="training_name"
+                    class="form-input"
+                    placeholder="追加するトレーニング名を入力"
+                    required
+                >
+            </div>
+
+            <!-- カテゴリー（部位） -->
+            <div class="form-group">
+                <label>カテゴリー</label>
+                <div class="button-group">
+                    <?php foreach ($parts as $part): ?>
+                        <button
+                            type="button"
+                            class="toggle-btn"
+                            data-name="part_id"
+                            data-value="<?php echo htmlspecialchars($part['part_id']); ?>"
+                        >
+                            <?php echo htmlspecialchars($part['part_name']); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+                <input type="hidden" id="part_id" name="part_id">
+            </div>
+
+            <!-- ツール -->
+            <div class="form-group">
+                <label>ツール</label>
+                <div class="button-group">
+                    <?php foreach ($tools as $tool): ?>
+                        <button
+                            type="button"
+                            class="toggle-btn"
+                            data-name="tool_id"
+                            data-value="<?php echo htmlspecialchars($tool['tool_id']); ?>"
+                        >
+                            <?php echo htmlspecialchars($tool['tool_name']); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+                <input type="hidden" id="tool_id" name="tool_id">
+            </div>
+
+            <!-- タイプ（複数選択） -->
+            <div class="form-group">
+                <label>タイプ <span class="note">※最大2つまで選択可能</span></label>
+                <div class="button-group">
+                    <?php foreach ($types as $type): ?>
+                        <button
+                            type="button"
+                            class="toggle-btn"
+                            data-name="type_id"
+                            data-value="<?php echo htmlspecialchars($type['type_id']); ?>"
+                        >
+                            <?php echo htmlspecialchars($type['type_name']); ?>
+                        </button>
+                    <?php endforeach; ?>
+                </div>
+                <input type="hidden" id="type_id" name="type_id">
+            </div>
+
+            <button type="submit" class="modal-submit-btn">トレーニングを追加する</button>
+        </form>
+
+    </div>
+</div>
+
 <script src="training_list.js"></script>
 <script src="detail_modal.js"></script>
 <script src="training_detail_modal.js"></script>
