@@ -4,29 +4,32 @@ require_once("../../auth.php");
 require_login('../../initial_screen_group/php/login.php');
 
 // ------------------------------------------------
-// MYボディデータの計算ロジック (bodydata.php から移植)
+// MYボディデータの計算ロジック (統一された最新ロジック)
 // ------------------------------------------------
 
-// ログイン済みのため $_SESSION['user_id'] を利用
-$user_id = $_SESSION['user_id'] ?? 1; // bodydata.php に合わせた仮のID '1' の使用
-global $pdo; // auth.php で $pdo が初期化されていることを前提
+$user_id = $_SESSION['user_id']; 
+global $pdo; 
 
-$weight = 0.0;
+$weight_val = 0.0; // 計算用の数値変数
 $height = 0.0;
 $age = 0;
 $body_fat_percentage = 0.0;
 $muscle_percentage = 0.0;
 
 try {
-    // 体重、身長、生年月日を取得
-    $stmt = $pdo->prepare("SELECT weight, height, birthday FROM users WHERE user_id = :user_id");
+    // 性別(gender)を含めて取得
+    $stmt = $pdo->prepare("SELECT weight, height, birthday, gender FROM users WHERE user_id = :user_id");
     $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
     $stmt->execute();
     $db_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($db_data) {
-        $weight = (float)($db_data['weight'] ?? 0.0);
+        $weight_val = (float)($db_data['weight'] ?? 0.0);
         $height = (float)($db_data['height'] ?? 0.0);
+        
+        // 性別の変換 (男性=1, 女性=0)
+        $gender_str = $db_data['gender'] ?? '男性';
+        $gender_value = ($gender_str === '男性') ? 1 : 0;
 
         // 年齢の計算
         if (!empty($db_data['birthday'])) {
@@ -35,49 +38,41 @@ try {
             $age = $birthday->diff($today_dt)->y;
         }
 
-        // 体組成データの再計算 (bodydata.phpのロジックを完全に再現)
+        // 体組成データの再計算 (Deurenbergの式)
         $height_m = $height / 100;
-        $bmi = ($height_m > 0) ? $weight / ($height_m * $height_m) : 0; 
+        $bmi = ($height_m > 0) ? $weight_val / ($height_m * $height_m) : 0; 
         
-        // 体脂肪率の推定計算
-        if ($bmi < 18.5) {
-            $body_fat_percentage = 15.0 - ($bmi * 0.1) + ($age * 0.05); 
-        } elseif ($bmi < 25) {
-            $body_fat_percentage = 20.0 + ($age * 0.05); 
-        } else {
-            // 注意: mypage.phpとbodydata.phpの計算式が厳密には異なる可能性がありますが、
-            // bodydata.phpのコードを優先します。
-            $body_fat_percentage = 25.0 + ($bmi * 0.5) + ($age * 0.1); 
-        }
-        $body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
+        if ($bmi > 0) {
+            // 体脂肪率の推定計算
+            $body_fat_percentage = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
+            $body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
 
-        // 筋肉率の計算（体脂肪率に依存）
-        $muscle_percentage = 100 - $body_fat_percentage - 15; // 仮に15%を骨/その他とする
-        $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+            // 筋肉率の計算
+            $fixed_other_factor = 18.0; 
+            $muscle_percentage = 100 - $body_fat_percentage - $fixed_other_factor;
+            $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+        }
     } 
 } catch (Exception $e) {
     error_log("マイページ計算エラー: " . $e->getMessage());
 }
 
 // ------------------------------------------------
-// 表示用の値整形 (mypage.phpの既存の変数名に合わせる)
+// 表示用の値整形 (HTML側の変数名に合わせる)
 // ------------------------------------------------
-// mypage.phpのHTMLに単位がないため、ここでは単位「%」を付与します。
 
-// 体重 (例: 80.0)
-$weight = ($weight > 0) ? htmlspecialchars(number_format($weight, 1)) : '-';
+// 体重: $weight 変数を使用 (小数点第1位を表示)
+$weight = ($weight_val > 0) ? htmlspecialchars(number_format($weight_val, 1)) : '-';
 
-// 筋肉率 (例: 35.0 %)
+// 筋肉率: $muscle_rate 変数を使用
 $muscle_rate = ($muscle_percentage > 0) 
     ? htmlspecialchars(number_format($muscle_percentage, 1) . '%') 
     : '-';
 
-// 体脂肪率 (例: 20.0 %)
+// 体脂肪率: $fat_rate 変数を使用
 $fat_rate = ($body_fat_percentage > 0) 
     ? htmlspecialchars(number_format($body_fat_percentage, 1) . '%') 
     : '-';
-    
-// HTML側で体脂肪率と筋肉率の「-」が消え、計算値が表示されます。
 ?>
 
 

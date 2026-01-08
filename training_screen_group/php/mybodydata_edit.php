@@ -9,8 +9,9 @@ global $pdo;
 $logged_in_user_id = $_SESSION['user_id']; 
 
 try {
-    // 必要なデータ (身長、体重、生年月日) をDBから取得
-    $stmt = $pdo->prepare("SELECT height, weight, birthday FROM users WHERE user_id = :id");
+    // 必要なデータ (身長、体重、生年月日、性別) をDBから取得
+    // ★genderを追加しました
+    $stmt = $pdo->prepare("SELECT height, weight, birthday, gender FROM users WHERE user_id = :id");
     $stmt->bindParam(':id', $logged_in_user_id, PDO::PARAM_INT);
     $stmt->execute();
     $db_data = $stmt->fetch();
@@ -21,10 +22,15 @@ try {
         exit;
     }
 
-    // データの整形と年齢計算
+    // データの整形
     $weight = (float)$db_data['weight'];
     $height = (float)$db_data['height'];
     
+    // --- 性別文字列を計算用の数値に変換 ---
+    // 男性=1, 女性=0 として計算式に代入する
+    $gender_str = $db_data['gender'] ?? '男性';
+    $gender_value = ($gender_str === '男性') ? 1 : 0;
+
     // 生年月日 ('date'型) から年齢を計算
     $birthday = new DateTime($db_data['birthday']);
     $today = new DateTime('today');
@@ -35,24 +41,35 @@ try {
     exit("システムエラーが発生しました。時間を置いて再度お試しください。");
 }
 
+// --- 体組成の再計算ロジック (Deurenbergの推定式) ---
+
 $height_m = $height / 100;
 $bmi = ($height_m > 0) ? $weight / ($height_m * $height_m) : 0; 
 
 $body_fat_percentage = 0;
-if ($bmi < 18.5) {
-    $body_fat_percentage = 15.0 - ($bmi * 0.1) + ($age * 0.05); 
-} elseif ($bmi < 25) {
-    $body_fat_percentage = 20.0 + ($age * 0.05); 
-} else {
-    $body_fat_percentage = 25.0 + ($bmi * 0.5) + ($age * 0.1); 
-}
-$body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
+if ($bmi > 0) {
+    /**
+     * 【Deurenbergの推定式】
+     * (1.20 * BMI) + (0.23 * 年齢) - (10.8 * 性別係数) - 5.4
+     * 性別係数: 男性=1, 女性=0
+     */
+    $body_fat_percentage = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
+    
+    // 異常値が出ないよう範囲を制限 (5.0% 〜 50.0%)
+    $body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
 
-$muscle_percentage = 100 - $body_fat_percentage - 15; // 仮に15%を骨/その他とする
-$muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+    /**
+     * 【筋肉率の推定】
+     * 全体(100%) - 体脂肪率 - 固定値(骨・水分など 約18%)
+     */
+    $fixed_other_factor = 18.0; 
+    $muscle_percentage = 100 - $body_fat_percentage - $fixed_other_factor;
+
+    // 異常値が出ないよう範囲を制限 (10.0% 〜 60.0%)
+    $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+}
 
 ?>
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
