@@ -66,7 +66,6 @@ $display_goal_subtitle = $user_data['goal_detail'];
             <section class="card">
                 <div class="card-header">
                     <h2 class="card-title">目標</h2>
-                    <span class="icon-menu">...</span>
                 </div>
                 
                 <div class="goal-content">
@@ -87,27 +86,34 @@ $display_goal_subtitle = $user_data['goal_detail'];
                 <button class="btn-primary" onclick="location.href='../../training_screen_group/php/training_record.php'">トレーニングを始める</button>
             </section>
 
-            <!-- 2. おすすめルーティン -->
+            <!-- 2. おすすめ種目 -->
             <section class="card">
                 <div class="card-header">
-                    <h2 class="card-title">おすすめルーティン</h2>
-                    <span class="icon-close">×</span>
+                    <h2 class="card-title">おすすめ種目</h2>
                 </div>
 
                 <div class="routine-scroll-container">
                     <div class="routine-item">
                         <img src="https://via.placeholder.com/60" alt="ベンチプレス">
                         <div class="routine-item-text">
-                            <h4>ベンチプレス 初級A</h4>
-                            <p>合計4種目・16セット</p>
+                            <h4>ベンチプレス</h4>
+                            <p>10回 × 3set</p>
                         </div>
                     </div>
 
                     <div class="routine-item">
                         <img src="https://via.placeholder.com/60" alt="スクワット">
                         <div class="routine-item-text">
-                            <h4>スクワット 中級B</h4>
-                            <p>合計3種目・12セット</p>
+                            <h4>スクワット</h4>
+                            <p>10回 × 3set</p>
+                        </div>
+                    </div>
+
+                    <div class="routine-item">
+                        <img src="https://via.placeholder.com/60" alt="デッドリフト">
+                        <div class="routine-item-text">
+                            <h4>デッドリフト</h4>
+                            <p>10回 × 3set</p>
                         </div>
                     </div>
                 </div>
@@ -117,7 +123,6 @@ $display_goal_subtitle = $user_data['goal_detail'];
             <section class="card">
                 <div class="card-header">
                     <h2 class="card-title">運動量の変化</h2>
-                    <span>></span>
                 </div>
 
                 <div class="tabs">
