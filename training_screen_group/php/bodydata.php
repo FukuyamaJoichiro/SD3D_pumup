@@ -1,39 +1,33 @@
 <?php
 // DB接続とセッションの開始
-require_once("../../db_connect.php"); // ★ 接続ファイルはここ
+require_once("../../db_connect.php"); 
 session_start();
 
-// ユーザーIDの取得 (ログイン処理が完了していることを前提)
-$user_id = $_SESSION['user_id'] ?? 1; // ログインしていなければ仮のID '1' を使用
+// ユーザーIDの取得
+$user_id = $_SESSION['user_id'] ?? 1; 
 
 global $pdo;
 
 // --- カレンダー表示用の日付計算ロジック ---
-// クエリパラメータから日付を取得、なければ今日の日付を使用
 $selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
-
-// 今日の日付
 $today = date('Y-m-d');
-$month = date('n', strtotime($selected_date)); // 選択された日付の月を表示
+$month = date('n', strtotime($selected_date));
 
-// $selected_date を基準に、その週の日付を計算
 $timestamp = strtotime($selected_date);
-$day_of_week = date('w', $timestamp); // 0 (日) から 6 (土)
-// 週の始まり（日曜日）のタイムスタンプ
+$day_of_week = date('w', $timestamp); 
 $start_of_week_timestamp = strtotime("-$day_of_week days", $timestamp); 
 
 $dates_of_week = [];
 for ($i = 0; $i < 7; $i++) {
-$current_timestamp = strtotime("+$i days", $start_of_week_timestamp);
-$dates_of_week[] = [
-'full_date' => date('Y-m-d', $current_timestamp),
-'day' => date('j', $current_timestamp), // 日付(1, 2, 3...)
-'weekday' => date('w', $current_timestamp) // 曜日番号
-];
+    $current_timestamp = strtotime("+$i days", $start_of_week_timestamp);
+    $dates_of_week[] = [
+        'full_date' => date('Y-m-d', $current_timestamp),
+        'day' => date('j', $current_timestamp),
+        'weekday' => date('w', $current_timestamp)
+    ];
 }
-// ----------------------------------------
 
-// --- データ取得と計算 (ここから元のロジック) ---
+// --- データ取得と計算 ---
 $weight = 0.0;
 $height = 0.0;
 $age = 0;
@@ -41,45 +35,61 @@ $body_fat_percentage = 0.0;
 $muscle_percentage = 0.0;
 
 try {
-$stmt = $pdo->prepare("SELECT weight, height, birthday FROM users WHERE user_id = :user_id");
-$stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
-$stmt->execute();
-$db_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    // ユーザー情報を取得
+    $stmt = $pdo->prepare("SELECT weight, height, birthday, gender FROM users WHERE user_id = :user_id");
+    $stmt->bindParam(':user_id', $user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    $db_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
- if ($db_data) {
-$weight = (float)$db_data['weight'];
-$height = (float)$db_data['height'];
+    if ($db_data) {
+        $weight = (float)$db_data['weight'];
+        $height = (float)$db_data['height'];
+        
+        // --- 性別文字列を計算用の数値に変換 ---
+        // 男性=1, 女性=0 として計算式に代入する
+        $gender_str = $db_data['gender'] ?? '男性';
+        $gender_value = ($gender_str === '男性') ? 1 : 0;
 
-// 年齢の計算
-$birthday = new DateTime($db_data['birthday']);
-$today_dt = new DateTime('today');
-$age = $birthday->diff($today_dt)->y;
+        // 年齢の計算
+        $birthday = new DateTime($db_data['birthday']);
+        $today_dt = new DateTime('today');
+        $age = $birthday->diff($today_dt)->y;
 
-// 体組成データの再計算
-$height_m = $height / 100;
-$bmi = ($height_m > 0) ? $weight / ($height_m * $height_m) : 0; 
+        // BMIの計算
+        $height_m = $height / 100;
+        $bmi = ($height_m > 0) ? $weight / ($height_m * $height_m) : 0; 
 
-if ($bmi < 18.5) {
-$body_fat_percentage = 15.0 - ($bmi * 0.1) + ($age * 0.05); 
-} elseif ($bmi < 25) {
-$body_fat_percentage = 20.0 + ($age * 0.05); 
-} else {
-$body_fat_percentage = 25.0 + ($bmi * 0.5) + ($age * 0.1); 
-}
-$body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
+        if ($bmi > 0) {
+            /**
+             * 【Deurenbergの推定式】
+             * 成人の体脂肪率をBMI・年齢・性別から推測する世界標準の式
+             * 式: (1.20 * BMI) + (0.23 * Age) - (10.8 * gender) - 5.4
+             */
+            $body_fat_percentage = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
+            
+            // 現実的な範囲に丸める (5%〜50%)
+            $body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
 
-// 筋肉率の計算（体脂肪率に依存）
-$muscle_percentage = 100 - $body_fat_percentage - 15; // 仮に15%を骨/その他とする
-$muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
- } 
+            /**
+             * 【筋肉率の推定】
+             * 体重から脂肪と、骨・水分・内臓（約18%）を引いた値を筋肉と定義する
+             */
+            $fixed_other_factor = 18.0; 
+            $muscle_percentage = 100 - $body_fat_percentage - $fixed_other_factor;
+
+            // 異常値ガード
+            $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+        }
+    } 
 } catch (Exception $e) {
-error_log("ボディデータ取得エラー: " . $e->getMessage());
+    error_log("ボディデータ取得エラー: " . $e->getMessage());
 }
 
-$display_weight = ($weight > 0) ? number_format($weight, 1) . ' kg' : 'データを追加してください。';
-$display_height = ($height > 0) ? number_format($height, 1) . ' cm' : 'データを追加してください。';
-$display_muscle = ($muscle_percentage > 0) ? number_format($muscle_percentage, 1) . ' %' : 'データを追加してください。';
-$display_fat = ($body_fat_percentage > 0) ? number_format($body_fat_percentage, 1) . ' %' : 'データを追加してください。';
+// 表示用データの整形
+$display_weight = ($weight > 0) ? number_format($weight, 1) . ' kg' : '未登録';
+$display_height = ($height > 0) ? number_format($height, 1) . ' cm' : '未登録';
+$display_muscle = ($muscle_percentage > 0) ? number_format($muscle_percentage, 1) . ' %' : '--- %';
+$display_fat = ($body_fat_percentage > 0) ? number_format($body_fat_percentage, 1) . ' %' : '--- %';
 
 ?>
 <!DOCTYPE html>
@@ -101,7 +111,7 @@ $display_fat = ($body_fat_percentage > 0) ? number_format($body_fat_percentage, 
 <div class="app-container">
 
 <header class="header">
-<div class="back-btn" onclick="location.href='training_record.php'">&#x2039;</div>
+<div class="back-btn" onclick="location.href='calendar.php'">&#x2039;</div>
 <div class="month"><?= $month ?>月</div>
 </header>
 

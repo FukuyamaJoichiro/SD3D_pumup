@@ -54,8 +54,8 @@ $display_goal_subtitle = $user_data['goal_detail'];
         <header class="app-header">
             <span class="logo">GoriFit</span>
             <div class="header-actions">
-                <button class="btn-upgrade">アップグレードする</button>
-                <span class="icon-settings">⚙️</span>
+                <!--<button class="btn-upgrade">アップグレードする</button>
+                <span class="icon-settings">⚙️</span>-->
             </div>
         </header>
 
@@ -66,6 +66,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
             <section class="card">
                 <div class="card-header">
                     <h2 class="card-title">目標</h2>
+                    <!--<span class="icon-menu">...</span>-->
                 </div>
                 
                 <div class="goal-content">
@@ -94,7 +95,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
 
                 <div class="routine-scroll-container">
                     <div class="routine-item">
-                        <img src="https://via.placeholder.com/60" alt="ベンチプレス">
+                        <!--<img src="https://via.placeholder.com/60" alt="ベンチプレス">-->
                         <div class="routine-item-text">
                             <h4>ベンチプレス</h4>
                             <p>10回 × 3set</p>
@@ -102,7 +103,7 @@ $display_goal_subtitle = $user_data['goal_detail'];
                     </div>
 
                     <div class="routine-item">
-                        <img src="https://via.placeholder.com/60" alt="スクワット">
+                        <!--<img src="https://via.placeholder.com/60" alt="スクワット">-->
                         <div class="routine-item-text">
                             <h4>スクワット</h4>
                             <p>10回 × 3set</p>

@@ -41,7 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $stmt->execute();
 
-    header("Location: mypage.php");
+    header("Location: profile.php");
     exit;
 }
 
@@ -97,26 +97,25 @@ try {
 <div class="info-item">
   <span class="label">ニックネーム</span>
   <span class="value">
-    <?= htmlspecialchars($user['user_name'] ?? '', ENT_QUOTES, 'UTF-8');?>
-    <button class="ed it-btn" onclick="toggleEdit('editName')">変更</button>
+    <?= htmlspecialchars($user['user_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+    <button
+      type="button"
+      class="edit-btn"
+      data-open-modal="nameModal"
+    >
+      変更
+    </button>
   </span>
 </div>
-<div id="editName" class="edit-area">
-  <form method="post">
-    <input type="text" name="new_name" value="<?= htmlspecialchars($user['user_name']) ?>">
-    <input type="hidden" name="new_gender" value="<?= htmlspecialchars($user['gender']) ?>">
-    <input type="hidden" name="new_weight" value="<?= htmlspecialchars($user['weight']) ?>">
-    <input type="hidden" name="new_height" value="<?= htmlspecialchars($user['height']) ?>">
-    <button class="submit-btn">保存</button>
-  </form>
-</div>
+
+
 
 <!-- ========== 性別 ========== -->
 <div class="info-item">
   <span class="label">性別</span>
   <span class="value">
     <?= htmlspecialchars($user['gender']) ?>
-    <button class="edit-btn" onclick="toggleEdit('editGender')">変更</button>
+    <!--<button class="edit-btn" onclick="toggleEdit('editGender')">変更</button>-->
   </span>
 </div>
 <div id="editGender" class="edit-area">
@@ -140,7 +139,7 @@ try {
   <span class="label">体重</span>
   <span class="value">
     <?= htmlspecialchars($user['weight']) ?> kg
-    <button class="edit-btn" onclick="toggleEdit('editWeight')">変更</button>
+    <!--<button class="edit-btn" onclick="toggleEdit('editWeight')">変更</button>-->
   </span>
 </div>
 <div id="editWeight" class="edit-area">
@@ -160,7 +159,7 @@ try {
   <span class="label">身長</span>
   <span class="value">
     <?= htmlspecialchars($user['height']) ?> cm
-    <button class="edit-btn" onclick="toggleEdit('editHeight')">変更</button>
+    <!--<button class="edit-btn" onclick="toggleEdit('editHeight')">変更</button>-->
   </span>
 </div>
 <div id="editHeight" class="edit-area">
@@ -181,11 +180,38 @@ try {
   <span class="value"><?= htmlspecialchars($user['birthday']) ?></span>
 </div>
 
-<!-- ===== IDコピー ===== -->
-<div class="user-id">
-  <input id="userId" type="text" readonly value="<?= htmlspecialchars($user['user_id']) ?>">
-  <button class="copy-btn" onclick="copyUserId()">📋</button>
+
+<!-- ===== ニックネーム変更モーダル ===== -->
+<div id="nameModal" class="modal-overlay">
+  <div class="modal-box">
+    <h3>ニックネーム変更</h3>
+
+    <form method="post">
+      <input
+        type="text"
+        name="new_name"
+        value="<?= htmlspecialchars($user['user_name'] ?? '', ENT_QUOTES, 'UTF-8') ?>"
+        required
+      >
+
+      <!-- 他の値を保持 -->
+      <input type="hidden" name="new_gender"
+        value="<?= htmlspecialchars($user['gender'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+      <input type="hidden" name="new_weight"
+        value="<?= htmlspecialchars($user['weight'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+      <input type="hidden" name="new_height"
+        value="<?= htmlspecialchars($user['height'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
+
+      <div class="modal-actions">
+        <button type="submit" class="submit-btn">保存</button>
+        <button type="button" class="cancel-btn" data-close-modal>
+          キャンセル
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
+
 
 </main>
 
@@ -203,5 +229,8 @@ try {
   </nav>
 
 </div>
+
+<script src="profile.js"></script>
+
 </body>
 </html>

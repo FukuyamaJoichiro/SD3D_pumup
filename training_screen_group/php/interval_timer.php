@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>インターバルタイマー</title>
+    <title>休憩タイマー</title>
     <link rel="stylesheet" href="interval_timer.css">
 </head>
 <body>
@@ -11,7 +11,7 @@
     <div class="app-container">
 
         <div class="timer-container">
-            <a href="training_record.php" class="back-button">&lt;</a> 
+            <a href="training_select.php" class="back-button">&lt;</a> 
 
             <div class="timer-display">
                 <svg class="progress-ring" width="300" height="300">

@@ -218,7 +218,9 @@ h1 {
     transform: translateY(0);
 }
  
-.modal-close {
+/* ▼▼▼ ここが修正（idでも×ボタンが同じ見た目になる） ▼▼▼ */
+.modal-close,
+#modal-close-btn {
     position: absolute;
     top: 16px;
     right: 16px;
@@ -231,9 +233,11 @@ h1 {
     line-height: 1;
 }
  
-.modal-close:hover {
+.modal-close:hover,
+#modal-close-btn:hover {
     color: #000;
 }
+/* ▲▲▲ 修正ここまで ▲▲▲ */
  
 .modal-content h2 {
     font-size: 20px;
@@ -318,4 +322,37 @@ h1 {
 .modal-submit-btn:active {
     background-color: #ff3838;
 }
- 
+
+/* ▼▼▼ 追加：モーダル内の form の素の submit を見た目整える（HTMLを変えないため） ▼▼▼ */
+#add-training-form button[type="submit"] {
+    width: 100%;
+    padding: 16px;
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 12px;
+}
+#add-training-form button[type="submit"]:hover {
+    background-color: #ff5252;
+}
+#add-training-form button[type="submit"]:active {
+    background-color: #ff3838;
+}
+
+#add-training-form input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+#add-training-form input[type="text"]:focus {
+    outline: none;
+    border-color: #333;
+}
+/* ▲▲▲ 追加ここまで ▲▲▲ */
