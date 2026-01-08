@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTrainingMenu();
     initExchangeModal();
     initTabsAndDays();
-    initUnsuperset(); // ← ★追加
+    initUnsuperset();
 });
 
 // ===== 1. トレーニングカードの制御 =====
@@ -29,10 +29,8 @@ function initTrainingCards() {
             duration: typeIds.includes('3')
         };
 
-        // 最初の1セットを自動追加
         addSet(card, config);
 
-        // セット追加・削除ボタン
         card.querySelector('.add-set-btn').onclick = () => addSet(card, config);
         card.querySelector('.delete-set-btn').onclick = () => deleteLastSet(card);
     });
@@ -49,14 +47,65 @@ function addSet(card, config) {
             </div>`);
     }
 
-    const row = document.createElement('div');
+const row = document.createElement('div');
     row.className = 'set-row';
     row.innerHTML = `
         <span class="set-label">${count + 1}</span>
-        <input type="number" class="set-input" placeholder="0" step="0.5">
-        <input type="number" class="set-input" placeholder="0">
+        <input type="number" class="set-input weight-input" placeholder="0" step="0.5">
+        <input type="number" class="set-input reps-input" placeholder="0">
         <button type="button" class="complete-btn" data-completed="false">未完了</button>
     `;
+
+// --- ★DB更新ロジック (確実に動くように調整) ---
+    const updateDB = async () => {
+        const weightInput = row.querySelector('.weight-input');
+        const repsInput = row.querySelector('.reps-input');
+        
+        const weight = weightInput.value || 0;
+        const reps = repsInput.value || 0;
+        const tid = card.dataset.trainingId;
+        
+        // カード内の全セット行から現在の行のインデックスを取得
+        const allSetsInCard = Array.from(container.querySelectorAll('.set-row'));
+        const setIndex = allSetsInCard.indexOf(row);
+
+        // デバッグ用ログ (これがコンソールに出るか確認)
+        console.log("Attempting to save:", {tid, weight, reps, setIndex, CURRENT_SESSION_ID});
+
+        if (!CURRENT_SESSION_ID) {
+            console.error("SESSION ID IS MISSING!");
+            return;
+        }
+
+        const formData = new URLSearchParams();
+        formData.append('training_id', tid);
+        formData.append('weight', weight);
+        formData.append('reps', reps);
+        formData.append('set_index', setIndex);
+        formData.append('session_id', CURRENT_SESSION_ID);
+
+        try {
+            const response = await fetch('update_workout_set.php', {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            console.log("Server Response:", result);
+        } catch (e) {
+            console.error("Fetch Error:", e);
+        }
+    };
+
+// 最も確実な 'onchange' と 'oninput' を直接指定
+    const wIn = row.querySelector('.weight-input');
+    const rIn = row.querySelector('.reps-input');
+    
+    wIn.onchange = updateDB;
+    rIn.onchange = updateDB;
+    wIn.oninput = updateDB;
+    rIn.oninput = updateDB;
+
+    // --- ここまで ---
 
     const btn = row.querySelector('.complete-btn');
     btn.onclick = () => {
@@ -73,10 +122,6 @@ function addSet(card, config) {
         }
     };
 
-    row.querySelectorAll('.set-input').forEach(i => {
-        i.onfocus = () => i.select();
-    });
-
     container.appendChild(row);
 }
 
@@ -92,25 +137,20 @@ function deleteLastSet(card) {
 // ===== 2. トレーニングメニュー & 削除処理 =====
 function initTrainingMenu() {
     const overlay = document.getElementById('training-menu-overlay');
-
     document.querySelectorAll('.menu-btn').forEach(btn => {
         btn.onclick = (e) => {
             e.stopPropagation();
             currentTrainingCard = btn.closest('.training-card');
-
             const nameEl = document.getElementById('menu-training-name');
             nameEl.textContent = currentTrainingCard.querySelector('.training-name').textContent;
             nameEl.setAttribute('data-training-id', currentTrainingCard.dataset.trainingId);
-
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         };
     });
-
     document.getElementById('menu-close-btn').onclick = closeMenu;
     overlay.onclick = (e) => { if (e.target === overlay) closeMenu(); };
 
-    // スーパーセット
     const supersetBtn = document.getElementById('menu-superset');
     if (supersetBtn) {
         supersetBtn.onclick = () => {
@@ -121,46 +161,25 @@ function initTrainingMenu() {
         };
     }
 
-    // 削除
     document.getElementById('menu-delete').onclick = async () => {
         if (!confirm('このトレーニング種目を今日の記録から削除しますか？')) return;
-
-        if (!currentTrainingCard || !CURRENT_SESSION_ID) {
-            alert('セッション情報の取得に失敗しました。');
-            return;
-        }
-
+        if (!currentTrainingCard || !CURRENT_SESSION_ID) return;
         const tid = currentTrainingCard.dataset.trainingId;
-
         try {
             const res = await fetch('remove_training.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `training_id=${encodeURIComponent(tid)}&session_id=${encodeURIComponent(CURRENT_SESSION_ID)}`
             });
-
             const data = await res.json();
-
             if (data.success) {
                 currentTrainingCard.remove();
                 closeMenu();
-
-                const remaining = document.querySelectorAll('.training-card');
-                if (remaining.length === 0) {
+                if (document.querySelectorAll('.training-card').length === 0) {
                     location.reload();
-                } else {
-                    remaining.forEach((card, i) => {
-                        const num = card.querySelector('.training-number');
-                        if (num) num.textContent = `${i + 1}種`;
-                    });
                 }
-            } else {
-                alert(data.message || '削除に失敗しました');
             }
-        } catch (e) {
-            console.error(e);
-            alert('通信エラーが発生しました。');
-        }
+        } catch (e) { console.error(e); }
     };
 }
 
@@ -170,38 +189,24 @@ function closeMenu() {
     currentTrainingCard = null;
 }
 
-// ===== ★ 追加：スーパーセット解除 =====
 function initUnsuperset() {
     const unsupersetBtn = document.getElementById('menu-unsuperset');
     if (!unsupersetBtn) return;
-
     unsupersetBtn.onclick = async () => {
         if (!currentTrainingCard) return;
-
         const trainingId = currentTrainingCard.dataset.trainingId;
-        if (!trainingId) return;
-
         if (!confirm('スーパーセットを解除しますか？')) return;
-
         try {
             const res = await fetch('release_superset.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `training_id=${encodeURIComponent(trainingId)}`
             });
-
-            const data = await res.json();
-
-            if (data.success) {
+            if ((await res.json()).success) {
                 closeMenu();
-                location.reload(); // ← 点線を消すため再読込
-            } else {
-                alert(data.message || '解除に失敗しました');
+                location.reload();
             }
-        } catch (e) {
-            console.error(e);
-            alert('通信エラーが発生しました');
-        }
+        } catch (e) { console.error(e); }
     };
 }
 
@@ -209,7 +214,6 @@ function initUnsuperset() {
 function initTimers() {
     const startBtn = document.querySelector('.start-btn');
     if (!startBtn) return;
-
     startBtn.onclick = () => {
         if (startBtn.textContent === 'トレーニングスタート') {
             startTraining(startBtn);
@@ -234,22 +238,12 @@ async function stopTraining(btn) {
     workoutStarted = false; // ★追加
     stopRestTimer();        // ★追加（休憩タイマー停止）
     clearInterval(totalInterval);
-
     try {
         const res = await fetch('save_workout_status.php', { method: 'POST' });
-        const data = await res.json();
-
-        if (data.success) {
+        if ((await res.json()).success) {
             window.location.href = 'calendar.php';
-        } else {
-            alert('データの保存に失敗しました。');
-            btn.textContent = 'トレーニングスタート';
-            btn.style.backgroundColor = '#ff6b6b';
         }
-    } catch (e) {
-        console.error(e);
-        window.location.href = 'calendar.php';
-    }
+    } catch (e) { window.location.href = 'calendar.php'; }
 }
 
 function updateTimerDisplay(id, sec) {
