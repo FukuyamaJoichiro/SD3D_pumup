@@ -3,6 +3,12 @@ let currentTrainingCard = null; // 操作対象のカード
 let totalTimer = 0;
 let totalInterval = null;
 
+// ★追加：トレーニング開始状態 & 休憩タイマー
+let workoutStarted = false;
+let restTimer = 0;
+let restIntervalId = null;
+const REST_SECONDS = 60; // ← 休憩時間（秒）。必要ならここを変更
+
 // ===== 初期化 =====
 document.addEventListener('DOMContentLoaded', () => {
     initTrainingCards();
@@ -104,9 +110,16 @@ const row = document.createElement('div');
     const btn = row.querySelector('.complete-btn');
     btn.onclick = () => {
         const done = btn.dataset.completed === 'true';
+
+        // 状態更新（未完了⇄完了）
         btn.dataset.completed = (!done).toString();
         btn.textContent = !done ? '完了' : '未完了';
         btn.classList.toggle('completed', !done);
+
+        // ★未完了→完了 かつ トレーニング開始中なら休憩タイマー自動スタート
+        if (!done && workoutStarted) {
+            startRestTimer(REST_SECONDS);
+        }
     };
 
     container.appendChild(row);
@@ -211,8 +224,10 @@ function initTimers() {
 }
 
 function startTraining(btn) {
+    workoutStarted = true; // ★追加
     btn.textContent = 'トレーニング終了';
     btn.style.backgroundColor = '#666';
+
     totalInterval = setInterval(() => {
         totalTimer++;
         updateTimerDisplay('total-timer', totalTimer);
@@ -220,6 +235,8 @@ function startTraining(btn) {
 }
 
 async function stopTraining(btn) {
+    workoutStarted = false; // ★追加
+    stopRestTimer();        // ★追加（休憩タイマー停止）
     clearInterval(totalInterval);
     try {
         const res = await fetch('save_workout_status.php', { method: 'POST' });
@@ -235,6 +252,43 @@ function updateTimerDisplay(id, sec) {
     const m = Math.floor(sec / 60);
     const s = sec % 60;
     el.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+}
+
+// ===== ★追加：休憩タイマー =====
+function startRestTimer(seconds = REST_SECONDS) {
+    const restEl = document.getElementById('rest-timer');
+    if (!restEl) return;
+
+    // 既に動いてたら上書き
+    stopRestTimer();
+
+    restTimer = seconds;
+    renderRestTimer(restTimer);
+
+    restIntervalId = setInterval(() => {
+        restTimer--;
+        renderRestTimer(restTimer);
+
+        if (restTimer <= 0) {
+            stopRestTimer();
+            // ここで音/通知などを追加したければ後から追加可能
+        }
+    }, 1000);
+}
+
+function stopRestTimer() {
+    if (restIntervalId) {
+        clearInterval(restIntervalId);
+        restIntervalId = null;
+    }
+}
+
+function renderRestTimer(sec) {
+    const el = document.getElementById('rest-timer');
+    if (!el) return;
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
 }
 
 // ===== 4. UI切り替え =====
