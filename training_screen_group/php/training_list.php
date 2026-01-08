@@ -107,9 +107,7 @@ try {
     <div class="bookmark-filter">
         <input type="checkbox" class="checkbox" id="bookmark-only">
         <label for="bookmark-only">ブックマークのみ見る</label>
-        <button class="sort-btn">
-            並び替え <span>↕️</span>
-        </button>
+        
     </div>
 
     <form method="post" action="training_select.php">
