@@ -46,7 +46,6 @@ try {
         $height = (float)$db_data['height'];
         
         // --- 性別文字列を計算用の数値に変換 ---
-        // 男性=1, 女性=0 として計算式に代入する
         $gender_str = $db_data['gender'] ?? '男性';
         $gender_value = ($gender_str === '男性') ? 1 : 0;
 
@@ -61,24 +60,20 @@ try {
 
         if ($bmi > 0) {
             /**
-             * 【Deurenbergの推定式】
-             * 成人の体脂肪率をBMI・年齢・性別から推測する世界標準の式
-             * 式: (1.20 * BMI) + (0.23 * Age) - (10.8 * gender) - 5.4
+             * 1. 体脂肪率の推定（Deurenbergの式）
              */
-            $body_fat_percentage = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
-            
-            // 現実的な範囲に丸める (5%〜50%)
-            $body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
+            $calc_fat = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
+            $body_fat_percentage = max(5.0, min(50.0, round($calc_fat, 1)));
 
             /**
-             * 【筋肉率の推定】
-             * 体重から脂肪と、骨・水分・内臓（約18%）を引いた値を筋肉と定義する
+             * 2. 筋肉率の推定 (修正箇所)
+             * 除脂肪率(100 - 体脂肪) に 筋肉係数(0.5) を掛ける方式に変更
              */
-            $fixed_other_factor = 18.0; 
-            $muscle_percentage = 100 - $body_fat_percentage - $fixed_other_factor;
+            $lean_body_mass_percent = 100 - $body_fat_percentage;
+            $calc_muscle = $lean_body_mass_percent * 0.5;
 
-            // 異常値ガード
-            $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+            // 異常値の制限 (範囲を 70.0% まで拡大)
+            $muscle_percentage = max(10.0, min(70.0, round($calc_muscle, 1)));
         }
     } 
 } catch (Exception $e) {
