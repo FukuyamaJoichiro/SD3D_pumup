@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const weightDisplay = document.getElementById('weightDisplay');
     const heightDisplay = document.getElementById('heightDisplay');
 
-    // PHPから渡されたデータ (HTML側のscriptタグで定義されている前提)
+    // PHPから渡されたデータ
     const age = typeof userAge !== 'undefined' ? userAge : 30; 
     const gender = typeof userGender !== 'undefined' ? userGender : 1; // 1:男性, 0:女性
 
@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const DECIMAL_MAX = 9;
 
     // === ピッカー生成と操作ロジック ===
-    
     function generatePickerItems(pickerElement, min, max, initialValue) {
         pickerElement.innerHTML = '';
         const values = [];
@@ -90,7 +89,6 @@ document.addEventListener('DOMContentLoaded', () => {
     scrollHandler(decimalPicker);
 
     // === モーダル操作 ===
-    
     function openModal(type) {
         currentTarget = type;
         let initialValue;
@@ -159,8 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal();
     });
 
-    // === 計算ロジック (Deurenbergの推定式に更新) ===
-    
+    // === 【修正箇所】計算ロジック ===
     function calculateBodyData(weight_kg, height_cm, user_age) {
         if (!weight_kg || !height_cm || height_cm <= 0) {
             return { muscle_percentage: 0.0, body_fat_percentage: 0.0 };
@@ -169,23 +166,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const height_m = height_cm / 100;
         const bmi = weight_kg / (height_m * height_m);
         
-        /**
-         * 【Deurenbergの推定式】
-         * PHP側と完全に一致させています
-         */
+        // 体脂肪率の計算
         let body_fat = (1.20 * bmi) + (0.23 * user_age) - (10.8 * gender) - 5.4;
-
-        // 範囲制限 (5%〜50%)
         body_fat = Math.max(5.0, Math.min(50.0, body_fat));
 
-        /**
-         * 【筋肉率の推定】
-         * 100% - 体脂肪率 - 固定係数(18.0)
-         */
-        let muscle = 100 - body_fat - 18.0;
+        // 筋肉率の計算（引き算方式から、除脂肪×係数方式へ変更）
+        // これにより、体脂肪が減るほど数値が動き、60%で止まらなくなります
+        let lean_body_mass_percent = 100 - body_fat;
+        let muscle = lean_body_mass_percent * 0.5;
         
-        // 範囲制限 (10%〜60%)
-        muscle = Math.max(10.0, Math.min(60.0, muscle));
+        // 制限を 70% まで引き上げ
+        muscle = Math.max(10.0, Math.min(70.0, muscle));
 
         return {
             muscle_percentage: Math.round(muscle * 10) / 10,
@@ -193,9 +184,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    /**
-     * 表示されている身長・体重に基づいて計算結果を更新する関数
-     */
     function updateCalculatedData() {
         const weight = parseFloat(weightInput.value);
         const height = parseFloat(heightInput.value);
@@ -206,11 +194,9 @@ document.addEventListener('DOMContentLoaded', () => {
         bodyFatRateOutput.textContent = result.body_fat_percentage.toFixed(1);
     }
 
-    // モーダル外クリックで閉じる処理
     modalOverlay.addEventListener('click', (e) => {
         if (e.target === modalOverlay) closeModal();
     });
 
-    // 初回計算の実行
     updateCalculatedData();
 });

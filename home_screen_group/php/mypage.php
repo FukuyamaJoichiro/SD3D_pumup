@@ -1,5 +1,5 @@
 <?php
-// mypage.php の元々の上部
+// mypage.php の上部
 require_once("../../auth.php");
 require_login('../../initial_screen_group/php/login.php');
 
@@ -43,14 +43,16 @@ try {
         $bmi = ($height_m > 0) ? $weight_val / ($height_m * $height_m) : 0; 
         
         if ($bmi > 0) {
-            // 体脂肪率の推定計算
-            $body_fat_percentage = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
-            $body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
+            // 1. 体脂肪率の推定計算
+            $calc_fat = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
+            $body_fat_percentage = max(5.0, min(50.0, round($calc_fat, 1)));
 
-            // 筋肉率の計算
-            $fixed_other_factor = 18.0; 
-            $muscle_percentage = 100 - $body_fat_percentage - $fixed_other_factor;
-            $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+            // 2. 筋肉率の計算 (掛け算方式に統一)
+            $lean_body_mass_percent = 100 - $body_fat_percentage;
+            $calc_muscle = $lean_body_mass_percent * 0.5;
+
+            // 異常値の制限 (上限を70.0に拡大)
+            $muscle_percentage = max(10.0, min(70.0, round($calc_muscle, 1)));
         }
     } 
 } catch (Exception $e) {
@@ -75,7 +77,6 @@ $fat_rate = ($body_fat_percentage > 0)
     : '-';
 ?>
 
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -83,28 +84,24 @@ $fat_rate = ($body_fat_percentage > 0)
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>マイページ</title>
 
-  <!-- CSS 読み込み -->
   <link rel="stylesheet" href="mypage_style.css">
 </head>
 
 <body>
   <div class="container">
 
-    <!-- プロフィール登録 -->
     <section class="profile-section">
       <div class="profile-info">
         <p class="profile-register">
           プロフィール編集 <a href="profile.php" class="edit-icon">✏️</a>
         </p>
         <p class="sub-text">自分の記録を保存して下さい</p>
-        <!--<button class="upgrade-btn">アップグレードする</button>-->
       </div>
     </section>
 
-    <!-- MYボディデータ -->
     <section class="body-data">
       <h2>MYボディデータ<a href="../../training_screen_group/php/mybodydata_edit.php" class="edit-link">
-         📝</a></h2>
+          📝</a></h2>
       <div class="body-card-container">
         <div class="body-card">
           <div class="icon">🏋️‍♀️</div>
@@ -132,7 +129,6 @@ $fat_rate = ($body_fat_percentage > 0)
       </div>
     </section>
 
-    <!-- トレーニングレポート -->
     <section class="training-report">
       <div class="report-header">
         <h2>トレーニングレポート</h2>
@@ -148,15 +144,14 @@ $fat_rate = ($body_fat_percentage > 0)
 
   </div>
 
-  <!-- 下部ナビ -->
   <nav class="app-nav">
-    <a href="home.php" class="nav-item active">
+    <a href="home.php" class="nav-item">
       <span class="nav-item-icon">🏠</span> ホーム
     </a>
     <a href="../../training_screen_group/php/calendar.php" class="nav-item">
       <span class="nav-item-icon">💪</span> カレンダー
     </a>
-    <a href="mypage.php" class="nav-item">
+    <a href="mypage.php" class="nav-item active">
       <span class="nav-item-icon">👤</span> マイページ
     </a>
   </nav>

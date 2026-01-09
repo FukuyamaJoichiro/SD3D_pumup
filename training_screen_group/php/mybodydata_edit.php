@@ -47,26 +47,30 @@ $height_m = $height / 100;
 $bmi = ($height_m > 0) ? $weight / ($height_m * $height_m) : 0; 
 
 $body_fat_percentage = 0;
+$muscle_percentage = 0;
+
 if ($bmi > 0) {
     /**
-     * 【Deurenbergの推定式】
-     * (1.20 * BMI) + (0.23 * 年齢) - (10.8 * 性別係数) - 5.4
-     * 性別係数: 男性=1, 女性=0
+     * 1. 体脂肪率の推定（Deurenbergの式）
      */
-    $body_fat_percentage = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
-    
-    // 異常値が出ないよう範囲を制限 (5.0% 〜 50.0%)
-    $body_fat_percentage = max(5.0, min(50.0, round($body_fat_percentage, 1)));
+    $calc_fat = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
+    $body_fat_percentage = max(5.0, min(50.0, round($calc_fat, 1)));
 
     /**
-     * 【筋肉率の推定】
-     * 全体(100%) - 体脂肪率 - 固定値(骨・水分など 約18%)
+     * 2. 筋肉率の推定
+     * 100%から体脂肪率を引いた「除脂肪率」に、筋肉の比率係数を掛けます。
+     * 一般的に除脂肪量の約60%〜90%が骨格筋などの筋肉組織と言われています。
+     * ここでは、より変化が出やすく、かつ自然な数値になる「0.8」を係数として採用します。
      */
-    $fixed_other_factor = 18.0; 
-    $muscle_percentage = 100 - $body_fat_percentage - $fixed_other_factor;
+    // 除脂肪率 = 100 - 体脂肪率
+    $lean_body_mass_percent = 100 - $body_fat_percentage;
+    
+    // 筋肉率 = 除脂肪率 × 筋肉係数(0.8)
+    // これにより、体脂肪が減るほど筋肉率がスムーズに上昇し、かつ上限に張り付きにくくなります。
+    $calc_muscle = $lean_body_mass_percent * 0.5;
 
-    // 異常値が出ないよう範囲を制限 (10.0% 〜 60.0%)
-    $muscle_percentage = max(10.0, min(60.0, round($muscle_percentage, 1)));
+    // 異常値の制限 (範囲を少し広めに設定)
+    $muscle_percentage = max(10.0, min(70.0, round($calc_muscle, 1)));
 }
 
 ?>
