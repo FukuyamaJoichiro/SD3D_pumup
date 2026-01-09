@@ -97,7 +97,7 @@ try {
 <div class="info-item">
   <span class="label">ニックネーム</span>
   <span class="value">
-    <?= htmlspecialchars($user['user_name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+    <?= htmlspecialchars($user['user_name'] ?? 'ゲスト', ENT_QUOTES, 'UTF-8'); ?>
     <button
       type="button"
       class="edit-btn"
