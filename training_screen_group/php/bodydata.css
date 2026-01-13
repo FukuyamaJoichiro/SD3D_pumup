@@ -130,22 +130,19 @@ background-color: #ff4a4a; /* アクティブカラーの赤い丸 (内側の円
 z-index: -1;
 }
 
-/* --- 今日(本日)の日付マーク（未選択時） --- */
-.calendar-week td.today-mark a {
-/* 真円にするための調整 */
-display: inline-flex;
-align-items: center; 
-justify-content: center;
-width: 35px;
-height: 35px;
-padding: 0;
-
-color: #ff6e6e;
-border: 1px solid #ff6e6e; 
-border-radius: 50%; 
-position: relative;
-z-index: 10;
+.calendar-week td.today-mark:not(.selected)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border: 1px solid #ff6e6e;
+    border-radius: 50%;
+    box-sizing: border-box;
 }
+
 
 /* --- 今日が選択されている場合（二重丸/◎スタイル） --- */
 
