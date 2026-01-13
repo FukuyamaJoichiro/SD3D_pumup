@@ -166,21 +166,25 @@ document.addEventListener('DOMContentLoaded', () => {
         const height_m = height_cm / 100;
         const bmi = weight_kg / (height_m * height_m);
         
-        // 体脂肪率の計算
-        let body_fat = (1.20 * bmi) + (0.23 * user_age) - (10.8 * gender) - 5.4;
+        // 1. 体脂肪率の計算
+        let body_fat_raw = (1.20 * bmi) + (0.23 * user_age) - (10.8 * gender) - 5.4;
+        
+        // ★PHP側に合わせ、ここで一度小数点第1位に丸める
+        let body_fat = Math.round(body_fat_raw * 10) / 10;
         body_fat = Math.max(5.0, Math.min(50.0, body_fat));
 
-        // 筋肉率の計算（引き算方式から、除脂肪×係数方式へ変更）
-        // これにより、体脂肪が減るほど数値が動き、60%で止まらなくなります
+        // 2. 筋肉率の計算
+        // 丸められた body_fat を使って計算することでPHPと数値を一致させる
         let lean_body_mass_percent = 100 - body_fat;
-        let muscle = lean_body_mass_percent * 0.5;
+        let muscle_raw = lean_body_mass_percent * 0.5;
         
         // 制限を 70% まで引き上げ
-        muscle = Math.max(10.0, Math.min(70.0, muscle));
+        let muscle = Math.max(10.0, Math.min(70.0, muscle_raw));
 
         return {
+            // 最後に小数点第1位に丸めて返す
             muscle_percentage: Math.round(muscle * 10) / 10,
-            body_fat_percentage: Math.round(body_fat * 10) / 10,
+            body_fat_percentage: body_fat,
         };
     }
 

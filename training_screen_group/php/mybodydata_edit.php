@@ -53,8 +53,9 @@ if ($bmi > 0) {
     /**
      * 1. 体脂肪率の推定（Deurenbergの式）
      */
-    $calc_fat = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
-    $body_fat_percentage = max(5.0, min(50.0, round($calc_fat, 1)));
+    $lean_body_mass_percent = 100 - $body_fat_percentage; 
+    $calc_muscle = $lean_body_mass_percent * 0.5;
+    $muscle_percentage = max(10.0, min(70.0, round($calc_muscle, 1)));
 
     /**
      * 2. 筋肉率の推定
