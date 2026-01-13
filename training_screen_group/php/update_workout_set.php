@@ -4,21 +4,27 @@ require_once('../../db_connect.php');
 
 header('Content-Type: application/json');
 
-// セッションから取得、なければDBにある45番を一旦デフォルトにする
+// セッションからユーザーID取得
 $user_id     = $_SESSION['user_id'] ?? 45; 
 $training_id = $_POST['training_id'] ?? null;
 $weight      = $_POST['weight'] ?? 0;
 $reps        = $_POST['reps'] ?? 0;
-$session_id  = $_POST['session_id'] ?? null;
 $set_index   = isset($_POST['set_index']) ? (int)$_POST['set_index'] : 0;
-
-if (!$training_id || !$session_id) {
-    echo json_encode(['success' => false, 'message' => 'IDが不足しています']);
-    exit;
-}
+// ★追加：JSから送られてきた日付
+$target_date = $_POST['date'] ?? date("Y-m-d");
 
 try {
-    // ユーザーIDの条件をあえて外して、セッションと種目だけで探してみる（テスト用）
+    // ★重要：送られてきた日付に対応する session_id を取得し直す
+    $stmt_sid = $pdo->prepare("SELECT session_id FROM workout_sessions WHERE user_id = ? AND date = ?");
+    $stmt_sid->execute([$user_id, $target_date]);
+    $session_id = $stmt_sid->fetchColumn();
+
+    if (!$session_id) {
+        echo json_encode(['success' => false, 'message' => '該当するセッションが見つかりません']);
+        exit;
+    }
+
+    // 正しい session_id を使ってセットを探す
     $stmt = $pdo->prepare("
         SELECT set_id FROM workout_sets 
         WHERE session_id = ? AND training_id = ?
@@ -35,13 +41,14 @@ try {
         echo json_encode([
             'success' => true, 
             'updated_id' => $target_id,
-            'val' => "{$weight}kg / {$reps}回"
+            'val' => "{$weight}kg / {$reps}回",
+            'date' => $target_date // デバッグ用
         ]);
     } else {
         echo json_encode([
             'success' => false, 
             'message' => '該当セットなし',
-            'debug' => ['sid' => $session_id, 'tid' => $training_id, 'count' => count($ids)]
+            'debug' => ['sid' => $session_id, 'tid' => $training_id, 'count' => count($ids), 'date' => $target_date]
         ]);
     }
 } catch (Exception $e) {

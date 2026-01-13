@@ -567,15 +567,11 @@ body {
 
 /* 上側（A） */
 .training-card.superset-top {
-    margin-bottom: 0;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
+    margin-bottom: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
     position: relative;
-<<<<<<< Updated upstream
-    padding-bottom: 24px;
-=======
-    padding-bottom: 24px; 
->>>>>>> Stashed changes
+    padding-bottom: none;
 }
 
 /* 点線（AとBの間） */
@@ -584,14 +580,14 @@ body {
     position: absolute;
     left: 16px;
     right: 16px;
-    bottom: 8px;
+    bottom: 0px;
     border-bottom: 2px dashed #bdbdbd;
 }
 
 /* 下側（B） */
 .training-card.superset-bottom {
-    margin-top: 0;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
+    margin-top: 0 !important;
+    border-top-left-radius: 0 !important;
+    border-top-right-radius: 0 !important;
     padding-top: 12px;
 }

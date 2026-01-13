@@ -146,7 +146,7 @@ try {
         </div>
 
         <section class="status-section">
-            <p class="rest" onclick="location.href='training_rest.php'">🛏 今日は休みます 🛏</p>
+            <p class="rest" onclick="location.href='training_rest.php?date=<?= $selected_date ?>'">🛏 今日は休みます 🛏</p>
         </section>
 
         <nav class="app-nav">
