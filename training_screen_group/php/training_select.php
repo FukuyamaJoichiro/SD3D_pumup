@@ -137,6 +137,9 @@ if (!empty($selected_training_ids)) {
     <title>トレーニング記録</title>
     <link rel="stylesheet" href="training_select.css">
 </head>
+<div id="detail-modal-overlay" class="modal-overlay" style="z-index: 2000; display: none;">
+    <div id="detail-modal-content" class="modal-content detail-modal-box"></div>
+</div>
 <body>
 <div class="container">
     <div class="header">
@@ -188,7 +191,7 @@ if (!empty($selected_training_ids)) {
                     <div class="training-header">
                         <span class="training-number"><?php echo $index + 1; ?>種</span>
                         <span class="training-name"><?php echo htmlspecialchars($training['training_name']); ?></span>
-                        <button class="info-btn" data-training-id="<?php echo (int)$training['training_id']; ?>">ⓘ</button>
+                        <button class="info-btn info-icon" data-training-id="<?php echo (int)$training['training_id']; ?>">ⓘ</button>
                         <button class="menu-btn">⋮</button>
                     </div>
                     <div class="sets-container"></div>

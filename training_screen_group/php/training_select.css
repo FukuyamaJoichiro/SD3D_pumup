@@ -591,3 +591,78 @@ body {
     border-top-right-radius: 0 !important;
     padding-top: 12px;
 }
+
+/* ============================================
+   詳細モーダル (ボトムシート形式) への修正
+   ============================================ */
+
+/* 1. 背景のオーバーレイ：下揃えに設定 */
+#detail-modal-overlay.modal-overlay {
+    display: none; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 5000;
+    justify-content: center;
+    align-items: flex-end; /* 💡 下側にくっつける */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* 表示時 */
+#detail-modal-overlay.modal-overlay.active {
+    display: flex !important;
+    opacity: 1;
+}
+
+/* 2. モーダル本体：下側の角丸をなくし、画面底に固定 */
+.modal-content.detail-modal-box {
+    background-color: white;
+    width: 100%;          /* 横幅いっぱい */
+    max-width: 428px;     /* containerの幅に合わせる */
+    border-radius: 20px 20px 0 0; /* 💡 上側だけ角丸にする */
+    padding: 24px;
+    padding-bottom: env(safe-area-inset-bottom, 24px); /* iPhoneのホームバー対策 */
+    position: relative;
+    transform: translateY(100%); /* 💡 下からスライドさせるための初期位置 */
+    transition: transform 0.3s ease;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.2);
+}
+
+/* アクティブ時に下からスライドアップ */
+#detail-modal-overlay.modal-overlay.active .modal-content.detail-modal-box {
+    transform: translateY(0);
+}
+
+/* 3. 中身の要素微調整 */
+.detail-modal-box .modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 24px;
+    color: #666;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 10;
+}
+
+.detail-modal-box h2 {
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.detail-modal-box video, 
+.detail-modal-box img {
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
