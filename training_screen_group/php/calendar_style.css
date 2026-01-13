@@ -188,6 +188,26 @@ body {
     border: 2px solid #d85050;
 }
 
+.calender td.calendar-cell.selected {
+    outline: 2px solid #ff2020 !important; /* 外側に赤い太枠 */
+    outline-offset: -2px;                  /* 枠を内側に寄せる */
+    background-color: #ffe0e0 !important;  /* 選択時の薄い赤背景 */
+    z-index: 10;                           /* 他の要素より手前に出す */
+    position: relative;
+}
+
+/* 2. 今日の日付が選択された場合 */
+.calender td.today.selected {
+    outline: 2px solid #ff2020 !important;
+    background-color: #ffcaca !important;
+}
+
+/* 3. 中身のラッパーに対する古い設定を上書き（念のため） */
+.calender td .date-clickable-wrapper.selected {
+    border: none !important;
+    background: transparent !important;
+}
+
 /* --- カレンダー下部 --- */
 .calendar-footer {
     text-align: center;

@@ -11,6 +11,8 @@ try {
         exit('ログイン情報がありません');
     }
 
+    $selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+
     // trainings + parts（表示制御込み）
     $stmt = $pdo->prepare("
         SELECT
@@ -88,7 +90,7 @@ try {
 <div class="container">
 
     <div class="header">
-        <button class="back-btn" onclick="history.back()">＜</button>
+        <button class="back-btn" onclick="location.href='training_record.php?date=<?= $selected_date ?>'">＜</button>
         <h1>トレーニング一覧</h1>
     </div>
 
@@ -110,7 +112,7 @@ try {
         
     </div>
 
-    <form method="post" action="training_select.php">
+    <form method="post" action="training_select.php?date=<?= $selected_date ?>">
         <div class="training-list">
             <?php foreach ($trainings as $training): ?>
                 <div class="training-item"

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTimers();
     initTrainingMenu();
     initExchangeModal();
-    initTabsAndDays();
+    initTabsAndDays(); // ← ここで日付の赤丸とクリック遷移を制御
     initUnsuperset();
 });
 
@@ -29,8 +29,7 @@ function initTrainingCards() {
             duration: typeIds.includes('3')
         };
 
-        addSet(card, config);
-
+        // 既存のセット表示を維持しつつ、追加ボタンを有効化
         card.querySelector('.add-set-btn').onclick = () => addSet(card, config);
         card.querySelector('.delete-set-btn').onclick = () => deleteLastSet(card);
     });
@@ -47,7 +46,7 @@ function addSet(card, config) {
             </div>`);
     }
 
-const row = document.createElement('div');
+    const row = document.createElement('div');
     row.className = 'set-row';
     row.innerHTML = `
         <span class="set-label">${count + 1}</span>
@@ -56,7 +55,7 @@ const row = document.createElement('div');
         <button type="button" class="complete-btn" data-completed="false">未完了</button>
     `;
 
-// --- ★DB更新ロジック (確実に動くように調整) ---
+    // --- ★DB更新ロジック ---
     const updateDB = async () => {
         const weightInput = row.querySelector('.weight-input');
         const repsInput = row.querySelector('.reps-input');
@@ -65,17 +64,10 @@ const row = document.createElement('div');
         const reps = repsInput.value || 0;
         const tid = card.dataset.trainingId;
         
-        // カード内の全セット行から現在の行のインデックスを取得
         const allSetsInCard = Array.from(container.querySelectorAll('.set-row'));
         const setIndex = allSetsInCard.indexOf(row);
 
-        // デバッグ用ログ (これがコンソールに出るか確認)
-        console.log("Attempting to save:", {tid, weight, reps, setIndex, CURRENT_SESSION_ID});
-
-        if (!CURRENT_SESSION_ID) {
-            console.error("SESSION ID IS MISSING!");
-            return;
-        }
+        if (!CURRENT_SESSION_ID) return;
 
         const formData = new URLSearchParams();
         formData.append('training_id', tid);
@@ -85,38 +77,25 @@ const row = document.createElement('div');
         formData.append('session_id', CURRENT_SESSION_ID);
 
         try {
-            const response = await fetch('update_workout_set.php', {
+            await fetch('update_workout_set.php', {
                 method: 'POST',
                 body: formData
             });
-            const result = await response.json();
-            console.log("Server Response:", result);
-        } catch (e) {
-            console.error("Fetch Error:", e);
-        }
+        } catch (e) { console.error("Fetch Error:", e); }
     };
 
-// 最も確実な 'onchange' と 'oninput' を直接指定
     const wIn = row.querySelector('.weight-input');
     const rIn = row.querySelector('.reps-input');
-    
     wIn.onchange = updateDB;
     rIn.onchange = updateDB;
-    wIn.oninput = updateDB;
-    rIn.oninput = updateDB;
-
-    // --- ここまで ---
 
     const btn = row.querySelector('.complete-btn');
     btn.onclick = () => {
         const done = btn.dataset.completed === 'true';
-
-        // 状態更新（未完了⇄完了）
         btn.dataset.completed = (!done).toString();
         btn.textContent = !done ? '完了' : '未完了';
         btn.classList.toggle('completed', !done);
 
-        // ★未完了→完了 かつ トレーニング開始中なら休憩タイマー自動スタート
         if (!done && workoutStarted) {
             startRestTimer(REST_SECONDS);
         }
@@ -143,7 +122,6 @@ function initTrainingMenu() {
             currentTrainingCard = btn.closest('.training-card');
             const nameEl = document.getElementById('menu-training-name');
             nameEl.textContent = currentTrainingCard.querySelector('.training-name').textContent;
-            nameEl.setAttribute('data-training-id', currentTrainingCard.dataset.trainingId);
             overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         };
@@ -151,19 +129,8 @@ function initTrainingMenu() {
     document.getElementById('menu-close-btn').onclick = closeMenu;
     overlay.onclick = (e) => { if (e.target === overlay) closeMenu(); };
 
-    const supersetBtn = document.getElementById('menu-superset');
-    if (supersetBtn) {
-        supersetBtn.onclick = () => {
-            if (!currentTrainingCard) return;
-            const trainingId = currentTrainingCard.dataset.trainingId;
-            closeMenu();
-            location.href = `double_select.php?first_training_id=${trainingId}`;
-        };
-    }
-
     document.getElementById('menu-delete').onclick = async () => {
         if (!confirm('このトレーニング種目を今日の記録から削除しますか？')) return;
-        if (!currentTrainingCard || !CURRENT_SESSION_ID) return;
         const tid = currentTrainingCard.dataset.trainingId;
         try {
             const res = await fetch('remove_training.php', {
@@ -171,13 +138,10 @@ function initTrainingMenu() {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: `training_id=${encodeURIComponent(tid)}&session_id=${encodeURIComponent(CURRENT_SESSION_ID)}`
             });
-            const data = await res.json();
-            if (data.success) {
+            if ((await res.json()).success) {
                 currentTrainingCard.remove();
                 closeMenu();
-                if (document.querySelectorAll('.training-card').length === 0) {
-                    location.reload();
-                }
+                location.reload();
             }
         } catch (e) { console.error(e); }
     };
@@ -224,10 +188,9 @@ function initTimers() {
 }
 
 function startTraining(btn) {
-    workoutStarted = true; // ★追加
+    workoutStarted = true;
     btn.textContent = 'トレーニング終了';
     btn.style.backgroundColor = '#666';
-
     totalInterval = setInterval(() => {
         totalTimer++;
         updateTimerDisplay('total-timer', totalTimer);
@@ -235,15 +198,23 @@ function startTraining(btn) {
 }
 
 async function stopTraining(btn) {
-    workoutStarted = false; // ★追加
-    stopRestTimer();        // ★追加（休憩タイマー停止）
+    workoutStarted = false;
+    stopRestTimer();
     clearInterval(totalInterval);
+
+    // ★修正箇所: どの日付（12日など）を保存するか明示的に送る
+    const formData = new URLSearchParams();
+    formData.append('date', SELECTED_DATE); 
+
     try {
-        const res = await fetch('save_workout_status.php', { method: 'POST' });
-        if ((await res.json()).success) {
-            window.location.href = 'calendar.php';
-        }
-    } catch (e) { window.location.href = 'calendar.php'; }
+        const res = await fetch('save_workout_status.php', { 
+            method: 'POST',
+            body: formData 
+        });
+        window.location.href = 'calendar.php';
+    } catch (e) { 
+        window.location.href = 'calendar.php'; 
+    }
 }
 
 function updateTimerDisplay(id, sec) {
@@ -254,25 +225,14 @@ function updateTimerDisplay(id, sec) {
     el.textContent = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
 }
 
-// ===== ★追加：休憩タイマー =====
 function startRestTimer(seconds = REST_SECONDS) {
-    const restEl = document.getElementById('rest-timer');
-    if (!restEl) return;
-
-    // 既に動いてたら上書き
     stopRestTimer();
-
     restTimer = seconds;
     renderRestTimer(restTimer);
-
     restIntervalId = setInterval(() => {
         restTimer--;
         renderRestTimer(restTimer);
-
-        if (restTimer <= 0) {
-            stopRestTimer();
-            // ここで音/通知などを追加したければ後から追加可能
-        }
+        if (restTimer <= 0) stopRestTimer();
     }, 1000);
 }
 
@@ -291,18 +251,36 @@ function renderRestTimer(sec) {
     el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
 }
 
-// ===== 4. UI切り替え =====
+// ===== 4. UI切り替え（修正版） =====
 function initTabsAndDays() {
-    const bind = (selector) => {
-        document.querySelectorAll(selector).forEach(el => {
-            el.onclick = () => {
-                document.querySelectorAll(selector).forEach(i => i.classList.remove('active'));
-                el.classList.add('active');
-            };
-        });
-    };
-    bind('.day-item');
-    bind('.tab');
+    // 日付アイテム（週スライダー）の制御
+    const dayItems = document.querySelectorAll('.day-item');
+    dayItems.forEach((el, index) => {
+        // クリックした日付へ遷移させる処理を追加
+        el.onclick = () => {
+            // URLの日付から基準日を計算し、クリックされた日の日付を特定する
+            const baseDate = new Date(SELECTED_DATE);
+            const dayOfWeek = baseDate.getDay(); // 0(日)〜6(土)
+            const clickedDate = new Date(baseDate);
+            clickedDate.setDate(baseDate.getDate() - dayOfWeek + index);
+            
+            const y = clickedDate.getFullYear();
+            const m = (clickedDate.getMonth() + 1).toString().padStart(2, '0');
+            const d = clickedDate.getDate().toString().padStart(2, '0');
+            const dateStr = `${y}-${m}-${d}`;
+
+            // URLを切り替えてその日のページへ飛ばす
+            window.location.href = `training_select.php?date=${dateStr}`;
+        };
+    });
+
+    // タブの制御（既存ロジック）
+    document.querySelectorAll('.tab').forEach(el => {
+        el.onclick = () => {
+            document.querySelectorAll('.tab').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+        };
+    });
 }
 
 // ===== 5. 交換モーダル =====

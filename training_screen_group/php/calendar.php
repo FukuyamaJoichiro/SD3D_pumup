@@ -26,7 +26,7 @@ $holidays = [
 ];
 
 // ==========================================================
-// 3. DBからデータを取得（idを追加取得！）
+// 3. DBからデータを取得
 // ==========================================================
 $sql = "
     SELECT 
@@ -49,7 +49,7 @@ $activity_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 $training_days = []; 
 foreach ($activity_data as $row) {
     $training_days[$row['date']][] = [
-        'id' => $row['id'], // 💡 IDを保存
+        'id' => $row['id'], 
         'type' => $row['session_type'], 
         'part_id' => $row['part_id']
     ];
@@ -71,7 +71,23 @@ foreach($training_days as $date_key => $activities) {
         }
     }
 }
-$streak = 0; 
+$streak = 0;
+$check_date = date('Y-m-d');
+
+while (true) {
+    $check_sql = "SELECT COUNT(*) FROM calendar_activity WHERE user_id = :uid AND activity_date = :d AND session_type = 'WORKOUT'";
+    $check_stmt = $pdo->prepare($check_sql);
+    $check_stmt->bindValue(":uid", $user_id);
+    $check_stmt->bindValue(":d", $check_date);
+    $check_stmt->execute();
+    
+    if ($check_stmt->fetchColumn() > 0) {
+        $streak++;
+        $check_date = date('Y-m-d', strtotime($check_date . ' -1 day'));
+    } else {
+        break;
+    }
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -111,12 +127,11 @@ $streak = 0;
                     $is_today = ($current_date == $today);
                     $is_holiday = in_array($current_date, $holidays);
 
-                    $class_list = [];
+                    $class_list = ["calendar-cell"]; // JSで判定しやすいよう共通クラス追加
                     if ($is_today) $class_list[] = "today";
                     if ($weekday == 0 || $is_holiday) $class_list[] = "holiday";
                     elseif ($weekday == 6) $class_list[] = "saturday";
                     
-                    // 背景色判定用のクラス付与
                     if (isset($training_days[$current_date])) {
                         foreach($training_days[$current_date] as $act) {
                             if ($act['type'] === 'WORKOUT') { $class_list[] = "trained"; break; }
@@ -124,12 +139,10 @@ $streak = 0;
                         }
                     }
 
-                    echo "<td class='" . implode(' ', $class_list) . "'>";
-                    
-                    // 💡 修正箇所：一番最初のレコードのIDをデフォルトとして持たせる
+                    // 💡 data-id属性とdata-dateをTDに直接持たせる
                     $first_id = isset($training_days[$current_date][0]) ? $training_days[$current_date][0]['id'] : '';
                     
-                    echo "<div class='date-clickable-wrapper' data-date='$current_date' data-id='$first_id' onclick='handleDateClick(this)'>";
+                    echo "<td class='" . implode(' ', $class_list) . "' data-date='$current_date' data-id='$first_id'>";
                     echo "<div class='day-num'>$day</div>";
 
                     if (isset($training_days[$current_date])) {
@@ -140,8 +153,6 @@ $streak = 0;
 
                         foreach ($activities as $activity) {
                             if ($count < $limit) {
-                                // 💡 各アイテムをクリックした際にそのIDを優先するように拡張も可能ですが
-                                // 今回はシンプルにラッパーにIDを持たせています
                                 if ($activity['type'] === 'REST') {
                                     echo "<div class='rest-content'>";
                                     echo "  <div class='rest-bottom-row'>";
@@ -158,8 +169,8 @@ $streak = 0;
                                         4 => ['icon' => '💪', 'label' => '腕'],
                                         5 => ['icon' => '🛡️', 'label' => '腹筋'],
                                         6 => ['icon' => '🦵', 'label' => '脚'],
-                                            default => ['icon' => '🏋️', 'label' => 'トレ']
-                                            };
+                                        default => ['icon' => '🏋️', 'label' => 'トレ']
+                                    };
                                     echo "<div class='workout-item'>";
                                     echo "  <span class='activity-icon'>{$part_info['icon']}</span>";
                                     echo "  <span class='part-label'>{$part_info['label']}</span>";
@@ -171,7 +182,7 @@ $streak = 0;
                         if ($count > $limit) echo "<div class='more-mark'>+</div>";
                         echo "</div>";
                     }
-                    echo "</div></td>";
+                    echo "</td>";
 
                     if ($weekday == 6) echo "</tr><tr>";
                     $day++;
@@ -186,22 +197,22 @@ $streak = 0;
         </div>
 
         <div class="calendar-footer">
-            <p><?= date('n月j日 D', strtotime($today)) ?>（<?= $streak ?>日継続中！）</p>
+            <p id="display-date-text"><?= date('n月j日 D', strtotime($today)) ?>（<?= $streak ?>日継続中！）</p>
             <button onclick="location.href='training_record.php'">今日のトレーニングプランを立てる</button>
         </div>
     </div>
 
-          <nav class="app-nav">
-    <a href="../../home_screen_group/php/home.php" class="nav-item">
-      <span class="nav-item-icon">🏠</span> ホーム
-    </a>
-    <a href="calendar.php" class="nav-item activ">
-      <span class="nav-item-icon">💪</span> カレンダー
-    </a>
-    <a href="../../home_screen_group/php/mypage.php" class="nav-item">
-      <span class="nav-item-icon">👤</span> マイページ
-    </a>
-  </nav>
+    <nav class="app-nav">
+        <a href="../../home_screen_group/php/home.php" class="nav-item">
+            <span class="nav-item-icon">🏠</span> ホーム
+        </a>
+        <a href="calendar.php" class="nav-item active">
+            <span class="nav-item-icon">💪</span> カレンダー
+        </a>
+        <a href="../../home_screen_group/php/mypage.php" class="nav-item">
+            <span class="nav-item-icon">👤</span> マイページ
+        </a>
+    </nav>
 
     <div id="activity-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content">

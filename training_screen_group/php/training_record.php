@@ -96,10 +96,9 @@ try {
                     if ($date_info['weekday'] == 6) $classes[] = 'weekday-sat';
                     $class_string = implode(' ', $classes);
                 ?>
-                <td class="<?= $class_string ?>">
-                    <a href="?date=<?= $date_info['full_date'] ?>">
-                        <?= $date_info['day'] ?>
-                    </a>
+                <td class="<?= $class_string ?>" data-full-date="<?= $date_info['full_date'] ?>">
+                    <?= $date_info['day'] ?>
+                        </td>
                 </td>
                 <?php endforeach; ?>
                 </tr>
@@ -116,7 +115,7 @@ try {
                 <section class="training-card empty-card">
                     <h3>今日のトレーニング</h3>
                     <p>トレーニングを計画してみましょう！</p>
-                    <button class="training-btn" onclick="location.href='training_list.php'">トレーニング選択</button>
+                    <button class="training-btn" onclick="location.href='training_list.php?date=<?= $selected_date ?>'">トレーニング選択</button>
                 </section>
             <?php else: ?>
                 <?php $idx = 1; foreach ($recorded_trainings as $trainingName => $data): ?>
