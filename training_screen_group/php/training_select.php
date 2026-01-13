@@ -4,8 +4,84 @@ session_start();
 
 $user_id = $_SESSION['user_id'] ?? 1;
 
+<<<<<<< Updated upstream
 if (!isset($_SESSION['workout_trainings'])) {
     $_SESSION['workout_trainings'] = [];
+=======
+try {
+    // 1) 日付の取得（URLから取得し、なければ今日にする）
+    $selected_date = isset($_GET['date']) ? $_GET['date'] : date("Y-m-d");
+    $today_date = $selected_date; 
+    $current_session_id = null;
+
+    // 2) セッションID取得/作成
+    $stmt_session = $pdo->prepare("SELECT session_id FROM workout_sessions WHERE user_id = ? AND date = ?");
+    $stmt_session->execute([$user_id, $today_date]);
+    $session_data = $stmt_session->fetch(PDO::FETCH_ASSOC);
+
+    if ($session_data) {
+        $current_session_id = (int)$session_data['session_id'];
+    } else {
+        $stmt_insert_session = $pdo->prepare("INSERT INTO workout_sessions (user_id, date) VALUES (?, ?)");
+        $stmt_insert_session->execute([$user_id, $today_date]);
+        $current_session_id = (int)$pdo->lastInsertId();
+    }
+
+    // 3) POSTでトレーニング追加が来た場合の登録処理
+    if ($current_session_id && isset($_POST['training']) && is_array($_POST['training'])) {
+        $new_training_ids = $_POST['training'];
+
+        $stmt_max_order = $pdo->prepare("SELECT IFNULL(MAX(order_on), 0) FROM workout_sets WHERE session_id = ?");
+        $stmt_max_order->execute([$current_session_id]);
+        $max_order = (int)$stmt_max_order->fetchColumn();
+        $current_order = $max_order;
+
+        $pdo->beginTransaction();
+        try {
+            $stmt_insert = $pdo->prepare("
+                INSERT INTO workout_sets
+                (session_id, training_id, user_id, order_on, weight, reps, duration, set_memo, superset_id)
+                VALUES (?, ?, ?, ?, 0, 0, 0, NULL, NULL)
+            ");
+
+            foreach ($new_training_ids as $training_id) {
+                $training_id = (int)$training_id;
+                $stmt_check = $pdo->prepare("SELECT 1 FROM workout_sets WHERE session_id = ? AND training_id = ? LIMIT 1");
+                $stmt_check->execute([$current_session_id, $training_id]);
+
+                if ($stmt_check->rowCount() == 0) {
+                    $current_order++;
+                    $stmt_insert->execute([$current_session_id, $training_id, $user_id, $current_order]);
+                }
+            }
+            $pdo->commit();
+        } catch (\PDOException $e) {
+            $pdo->rollBack();
+            exit("データ登録エラー: " . $e->getMessage());
+        }
+
+        header("Location: " . $_SERVER['PHP_SELF'] . "?date=" . $today_date);
+        exit;
+    }
+
+    // 4) 登録されているデータの取得
+    $selected_training_ids = [];
+    if ($current_session_id) {
+        $stmt_select_menu = $pdo->prepare("
+            SELECT training_id
+            FROM workout_sets
+            WHERE session_id = ?
+            GROUP BY training_id
+            ORDER BY MIN(order_on) ASC
+        ");
+        $stmt_select_menu->execute([$current_session_id]);
+        $selected_training_ids = $stmt_select_menu->fetchAll(PDO::FETCH_COLUMN);
+    }
+    $_SESSION['workout_trainings'] = array_map('intval', $selected_training_ids);
+
+} catch(PDOException $e) {
+    exit("全体処理エラー: " . $e->getMessage());
+>>>>>>> Stashed changes
 }
 
 if (isset($_POST['training']) && is_array($_POST['training'])) {
@@ -47,6 +123,10 @@ for ($i = 0; $i < 7; $i++) {
     ];
 }
 
+<<<<<<< Updated upstream
+=======
+// トレーニング情報の取得
+>>>>>>> Stashed changes
 $trainings = [];
 if (!empty($selected_training_ids)) {
     $placeholders = implode(',', array_fill(0, count($selected_training_ids), '?'));
@@ -161,6 +241,7 @@ if (!empty($selected_training_ids)) {
   <?php endif; ?>
 </div>
 
+<<<<<<< Updated upstream
 <!-- ===== 3点メニュー（既存）+ 解除を追加 ===== -->
 <div class="training-menu-overlay" id="training-menu-overlay">
   <div class="training-menu-content">
@@ -222,6 +303,40 @@ if (!empty($selected_training_ids)) {
   </div>
 </div>
 <?php endif; ?>
+=======
+<div class="training-menu-overlay" id="training-menu-overlay">
+    <div class="training-menu-content">
+        <div class="menu-header">
+            <span class="menu-training-name" id="menu-training-name">種目名</span>
+            <button class="menu-close-btn" id="menu-close-btn">✕</button>
+        </div>
+        <div class="menu-items">
+            <button class="menu-item" id="menu-exchange">
+                <span class="menu-item-icon">⇄</span>
+                <span class="menu-item-text">トレーニング交換</span>
+                <span class="menu-item-arrow">▷</span>
+            </button>
+            <button class="menu-item" id="menu-superset">
+                <span class="menu-item-icon">🔗</span>
+                <span class="menu-item-text">スーパーセット</span>
+                <span class="menu-item-arrow">▷</span>
+            </button>
+            <button class="menu-item" id="menu-unsuperset">
+                <span class="menu-item-icon">⛓️</span>
+                <span class="menu-item-text">スーパーセット解除</span>
+                <span class="menu-item-arrow">▷</span>
+            </button>
+            <button class="menu-item delete" id="menu-delete">
+                <span class="menu-item-text">削除</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="detail-modal-overlay" class="modal-overlay" style="z-index: 2000; display: none;">
+    <div id="detail-modal-content" class="modal-content detail-modal-box"></div>
+</div>
+>>>>>>> Stashed changes
 
 <script>
   const CURRENT_SESSION_ID = <?php echo json_encode($current_session_id); ?>;

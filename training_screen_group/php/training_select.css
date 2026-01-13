@@ -160,6 +160,7 @@ body {
     border-radius: 12px;
     padding: 16px;
     margin-bottom: 16px;
+    position: relative; /* 子要素のz-indexを有効にするため */
 }
  
 .training-header {
@@ -183,13 +184,17 @@ body {
     font-weight: 500;
 }
  
+/* 💡 修正：クリックを確実に反応させるための設定 */
 .info-btn, .menu-btn {
     background: none;
     border: none;
     font-size: 18px;
     cursor: pointer;
     color: #666;
-    padding: 4px 8px;
+    padding: 8px; /* クリック範囲を広げる */
+    position: relative; /* z-indexを有効化 */
+    z-index: 10; /* カレンダーの赤丸(10)と同等以上に設定 */
+    pointer-events: auto !important; /* クリックを確実に受け取る */
 }
  
 .info-btn:hover, .menu-btn:hover {
@@ -557,7 +562,7 @@ body {
 }
 
 /* =========================
-   ✅ スーパーセット：点線で連結表示（確定版）
+   ✅ スーパーセット：点線で連結表示
 ========================= */
 
 /* 上側（A） */
@@ -566,7 +571,11 @@ body {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     position: relative;
+<<<<<<< Updated upstream
     padding-bottom: 24px;
+=======
+    padding-bottom: 24px; 
+>>>>>>> Stashed changes
 }
 
 /* 点線（AとBの間） */
