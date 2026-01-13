@@ -10,11 +10,10 @@ $logged_in_user_id = $_SESSION['user_id'];
 
 try {
     // 必要なデータ (身長、体重、生年月日、性別) をDBから取得
-    // ★genderを追加しました
     $stmt = $pdo->prepare("SELECT height, weight, birthday, gender FROM users WHERE user_id = :id");
     $stmt->bindParam(':id', $logged_in_user_id, PDO::PARAM_INT);
     $stmt->execute();
-    $db_data = $stmt->fetch();
+    $db_data = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if (!$db_data) {
         logout();
@@ -23,57 +22,49 @@ try {
     }
 
     // データの整形
-    $weight = (float)$db_data['weight'];
-    $height = (float)$db_data['height'];
-    
+    $weight = (float)($db_data['weight'] ?? 0);
+    $height = (float)($db_data['height'] ?? 0);
+
     // --- 性別文字列を計算用の数値に変換 ---
     // 男性=1, 女性=0 として計算式に代入する
     $gender_str = $db_data['gender'] ?? '男性';
     $gender_value = ($gender_str === '男性') ? 1 : 0;
 
     // 生年月日 ('date'型) から年齢を計算
-    $birthday = new DateTime($db_data['birthday']);
-    $today = new DateTime('today');
-    $age = $birthday->diff($today)->y;
+    $age = 0;
+    if (!empty($db_data['birthday'])) {
+        $birthday = new DateTime($db_data['birthday']);
+        $today = new DateTime('today');
+        $age = $birthday->diff($today)->y;
+    }
 
 } catch (Exception $e) {
     error_log("データ取得エラー: " . $e->getMessage());
     exit("システムエラーが発生しました。時間を置いて再度お試しください。");
 }
 
-// --- 体組成の再計算ロジック (Deurenbergの推定式) ---
+// ------------------------------------------------------
+// ★ 体組成の再計算ロジック（mypage.php と統一）
+//   体脂肪率：Deurenberg
+//   筋肉率：除脂肪率 × 0.5
+// ------------------------------------------------------
 
 $height_m = $height / 100;
-$bmi = ($height_m > 0) ? $weight / ($height_m * $height_m) : 0; 
+$bmi = ($height_m > 0) ? $weight / ($height_m * $height_m) : 0;
 
-$body_fat_percentage = 0;
-$muscle_percentage = 0;
+$body_fat_percentage = 0.0;
+$muscle_percentage   = 0.0;
 
 if ($bmi > 0) {
-    /**
-     * 1. 体脂肪率の推定（Deurenbergの式）
-     */
-    $lean_body_mass_percent = 100 - $body_fat_percentage; 
-    $calc_muscle = $lean_body_mass_percent * 0.5;
-    $muscle_percentage = max(10.0, min(70.0, round($calc_muscle, 1)));
+    // 1) 体脂肪率（Deurenberg）
+    $calc_fat = (1.20 * $bmi) + (0.23 * $age) - (10.8 * $gender_value) - 5.4;
+    $body_fat_percentage = max(5.0, min(50.0, round($calc_fat, 1)));
 
-    /**
-     * 2. 筋肉率の推定
-     * 100%から体脂肪率を引いた「除脂肪率」に、筋肉の比率係数を掛けます。
-     * 一般的に除脂肪量の約60%〜90%が骨格筋などの筋肉組織と言われています。
-     * ここでは、より変化が出やすく、かつ自然な数値になる「0.8」を係数として採用します。
-     */
-    // 除脂肪率 = 100 - 体脂肪率
+    // 2) 筋肉率（除脂肪率×0.5）
     $lean_body_mass_percent = 100 - $body_fat_percentage;
-    
-    // 筋肉率 = 除脂肪率 × 筋肉係数(0.8)
-    // これにより、体脂肪が減るほど筋肉率がスムーズに上昇し、かつ上限に張り付きにくくなります。
     $calc_muscle = $lean_body_mass_percent * 0.5;
-
-    // 異常値の制限 (範囲を少し広めに設定)
     $muscle_percentage = max(10.0, min(70.0, round($calc_muscle, 1)));
 }
-
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -162,8 +153,9 @@ if ($bmi > 0) {
     </div>
 
     <script>
-        // JSで利用するための年齢データ
-        const userAge = <?= $age ?>;
+        // JSで利用するためのデータ（★gender も追加）
+        const userAge = <?= (int)$age ?>;
+        const userGender = <?= (int)$gender_value ?>; // 男性=1, 女性=0
     </script>
     <script src="mybodydata_edit.js"></script>
 </body>

@@ -291,13 +291,29 @@ function initTabsAndDays() {
     bind('.tab');
 }
 
-// ===== 5. 交換モーダル =====
+// ===== 5. 交換モーダル（★修正版：training_list.phpへ戻る） =====
 function initExchangeModal() {
     const exchangeBtn = document.getElementById('menu-exchange');
-    if (exchangeBtn) {
-        exchangeBtn.onclick = () => {
-            closeMenu();
-            alert('交換機能は未実装です');
-        };
-    }
+    if (!exchangeBtn) return;
+
+    exchangeBtn.onclick = () => {
+        if (!currentTrainingCard) return;
+
+        const oldTrainingId = currentTrainingCard.dataset.trainingId;
+
+        // メニューを閉じる
+        closeMenu();
+
+        // 日付があれば一緒に渡す（無くてもOK）
+        const dateParam =
+            (typeof SELECTED_DATE !== 'undefined')
+                ? `&date=${encodeURIComponent(SELECTED_DATE)}`
+                : '';
+
+        // ★ 種目選択画面へ戻す
+        location.href =
+            `training_list.php?mode=exchange`
+            + `&old_training_id=${encodeURIComponent(oldTrainingId)}`
+            + dateParam;
+    };
 }
